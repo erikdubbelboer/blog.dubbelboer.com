@@ -1,3 +1,3 @@
 
-Repository for erikdubbelboer.github.com
+Repository for [blog.dubbelboer.com](http://blog.dubbelboer.com)
 

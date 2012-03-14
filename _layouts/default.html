@@ -3,7 +3,7 @@
 <head>
 <meta charset=utf-8>
 <title>{{ page.title }}</title>
-<link href="/css/documentation.css" media="screen" rel="stylesheet" type="text/css">
+<link href="/css/common.css" media="screen" rel="stylesheet" type="text/css">
 <link href="/css/pygments.css" media="screen" rel="stylesheet" type="text/css">
 </head>  
 <body>
@@ -11,10 +11,10 @@
     <div id="header-wrapper">
       <div id="header" class="basic" >
         <div class="site">
-          <a class="logo" href="/">Erik's code</a>
+          <a class="logo" href="/"><h1>Erik's code</h1></a>
           <div class="topsearch">
             <ul class="nav logged_out">
-              <li><a href="http://github.com/">Back to Index</a></li>
+              <li><a href="/">Back to Index</a></li>
             </ul>
           </div><!-- .topsearch -->
         </div><!-- .site -->
@@ -22,7 +22,9 @@
     </div><!-- #header-wrapper -->
     <div id="wrapper">
       <div id="content" class="site">
+
         {{ content }}
+
       </div><!-- #content -->
     </div><!-- #wrapper -->
   </div><!-- #main -->

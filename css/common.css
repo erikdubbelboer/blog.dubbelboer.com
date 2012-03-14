@@ -37,15 +37,6 @@ h2 {
   margin: 2em auto 1em;
 }
 
-  body.api .content h2 {
-    background: transparent url(../images/crud-sprite.png) left 2px no-repeat;
-    padding-left: 22px;
-  }
-
-h2 span.step {
-  color: #666;
-}
-
 h3 {
   font-size: 14px;
   color: #333;
@@ -167,12 +158,13 @@ a img {
   text-decoration: none;
 }
 
+
 /*------------------------------------------------------------------------------
     Not Footer
 ------------------------------------------------------------------------------*/
+
 #wrapper {
   padding: 20px 25px;
-  overflow:hidden;
   height: auto;
   width: 920px;
   margin: -20px auto 0;
@@ -252,7 +244,7 @@ p code {
 .content .intro {
   color: #868686;
 }
-/* @end */
+
 
 /*------------------------------------------------------------------------------
      Pre/Code Styles
@@ -410,211 +402,3 @@ span.bash-output {
   user-select: none;
 }
 
-/* end */
-
-/*------------------------------------------------------------------------------
-    More Info Expander
-------------------------------------------------------------------------------*/
-
-.more-info {
-  margin: 10px 0;
-  position: relative;
-}
-.more-info > h4 {
-  background-image: url('../images/dropdown_sprites.jpg');
-  background-repeat: no-repeat;
-  padding: .25em 0 .25em 25px;
-  cursor: pointer;
-  color: #4183C4;
-  font-weight: normal;
-}
-.more-info h4.compressed {
-  background-position: 0 0;
-}
-.more-info:hover h4.compressed {
-  background-position: 0 -23px;
-}
-.more-info h4.expanded {
-  background-position: 0 -46px;
-}
-.more-info:hover h4.expanded {
-  background-position: 0 -69px;
-}
-
-.more-info .more-content {
-  display: none;
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px;
-  border-radius: 3px;
-  background-color: #FFFFFF;
-  border: 3px solid #DDDDDD;
-  padding: 1em 2em;
-  -webkit-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-  margin: 15px 0 30px;
-}
-
-.more-info .more-content h4 {
-  margin-top: 1em;
-}
-
-.more-info .more-content pre {
-  margin-left: 0px;
-}
-
-/****************************/
-/*       List Module        */
-/****************************/
-
-.list-module h2 {
-  border: solid #cacaca;
-  border-width: 1px;
-  border-radius: 3px 3px 0px 0px;
-  -moz-border-radius: 3px 3px 0px 0px;
-  -webkit-border-bottom-right-radius: 0px;
-  -webkit-border-bottom-left-radius: 0px;
-  -moz-background-clip: padding;
-  -webkit-background-clip: padding-box;
-  background-clip: padding-box;
-  padding: 6px 10px;
-  background-color: #f1f1f1;
-  background-image: -moz-linear-gradient(top, #f1f1f1, #e1e1e1); 
-  background-image: -ms-linear-gradient(top, #f1f1f1, #e1e1e1); 
-  background-image: -o-linear-gradient(top, #f1f1f1, #e1e1e1); 
-  background-image: -webkit-gradient(linear, left top, left bottom, from(#f1f1f1), to(#e1e1e1)); 
-  background-image: -webkit-linear-gradient(top, #f1f1f1, #e1e1e1); 
-  background-image: linear-gradient(top, #f1f1f1, #e1e1e1);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorStr='#f1f1f1', EndColorStr='#e1e1e1');
-  color: #666;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
-  font-size: 16px;
-  line-height: 22px;
-  margin: 0px;
-}
-
-.list-module .list-body {
-  border: solid #cacaca;
-  border-width: 0px 1px 1px 1px;
-  border-radius: 0px 0px 3px 3px;
-  -moz-border-radius: 0px 0px 3px 3px;
-  -webkit-border-bottom-right-radius: 3px;
-  -webkit-border-bottom-left-radius: 3px;
-  -moz-background-clip: padding;
-  -webkit-background-clip: padding-box;
-  background-clip: padding-box;
-  background-color: #fafafb;
-  color: #666;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
-}
-
-.list-module .list-body .icon {
-  display: block;
-  height: 28px;
-  width: 28px;
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background: transparent url(images/popular_guide_sprites.png) 0 0 no-repeat;
-}
-
-.list-module a {
-  border-top: 1px solid #fff;
-  border-bottom: 1px solid #e9ecee;
-  padding: 6px 10px;
-  position: relative;
-  display: block;
-}
-
-.list-module a:hover {
-  border-top: 1px solid #fafafb;
-  border-bottom: 1px solid #e5e8ea;
-  background-color: #f0f0f3;
-  text-decoration: none;
-}
-
-.list-module a h3 {
-  color: #4183C4;
-}
-
-.list-module a:hover h3 {
-  text-decoration: underline;
-}
-
-.list-module ul {
-  list-style-type: none;
-  margin: 0px;
-}
-
-.list-module h3 {
-  margin: 0px;
-  font-size: 13px;
-}
-
-.list-module .list-body a p {
-  color: #666;
-  margin: 0px;
-}
-
-/* @end */
-
-/****************************/
-/*  Expandable List Module  */
-/****************************/
-
-div.expandable > ul h3 {
-  display: table;
-  width: 100%;
-}
-
-div.expandable > ul h3 > a {
-  display: table-cell;
-  background-color: #e1e1e1;
-  background-image: -moz-linear-gradient(top, #f1f1f1, #e1e1e1); 
-  background-image: -ms-linear-gradient(top, #f1f1f1, #e1e1e1); 
-  background-image: -o-linear-gradient(top, #f1f1f1, #e1e1e1); 
-  background-image: -webkit-gradient(linear, left top, left bottom, from(#f1f1f1), to(#e1e1e1)); 
-  background-image: -webkit-linear-gradient(top, #f1f1f1, #e1e1e1); 
-  background-image: linear-gradient(top, #f1f1f1, #e1e1e1);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorStr='#f1f1f1', EndColorStr='#e1e1e1');
-}
-
-div.expandable > ul h3 > a:hover {
-  background-color: #e1e1e1;
-  background-image: -moz-linear-gradient(top, #e1e1e1, #d1d1d1);
-  background-image: -ms-linear-gradient(top, #e1e1e1, #d1d1d1);
-  background-image: -o-linear-gradient(top, #e1e1e1, #d1d1d1);
-  background-image: -webkit-gradient(linear, left top, left bottom, from(#e1e1e1), to(#d1d1d1));
-  background-image: -webkit-linear-gradient(top, #e1e1e1, #d1d1d1);
-  background-image: linear-gradient(top, #e1e1e1, #d1d1d1);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorStr='#e1e1e1', EndColorStr='#d1d1d1');
-}
-
-div.expandable > ul h3 > a.collapsed,
-div.expandable > ul h3 > a.expanded {
-  background-image: url(/images/expand-arrows.png);
-  background-position: 0px -3px;
-  background-repeat: no-repeat;
-  width: 13px;
-  border-right: 1px solid #cacaca;
-  padding: 8px 11px;
-}
-
-div.expandable > ul h3 > a.expanded {
-  background-position: -38px -3px;
-}
-
-div.expandable > ul h3 > a.collapsed:hover {
-  background-image: url(/images/expand-arrows.png);
-  background-position: 0px -43px;
-  background-repeat: no-repeat;
-  width: 13px;
-  border-right: 1px solid #cacaca;
-  padding: 8px 11px;
-}
-
-div.expandable > ul h3 > a.expanded:hover {
-  background-position: -38px -43px;
-}
-
-/* @end */
