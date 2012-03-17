@@ -1,6 +1,4 @@
-/*------------------------------------------------------------------------------
-     Global Documentation Styles
-------------------------------------------------------------------------------*/
+/* Mostly from: https://github.com/pages/pages.github.com/ */
 
 html {
   height:100%;
@@ -96,15 +94,13 @@ a img {
   border: 0px;
 }
 
-/*------------------------------------------------------------------------------
-     Header Styles
-------------------------------------------------------------------------------*/
+
 
 #header-wrapper {
   margin-bottom: 0;
   clear: both;
   height: 91px;
-  background: white url(../images/background-v2.png) 0 0 repeat-x;
+  background: white url(../images/header-background.png) 0 0 repeat-x;
 }
 
 #header {
@@ -116,6 +112,10 @@ a img {
   float: left;
   margin-top: 15px;
   display: inline-block;
+}
+
+#header a.logo h1 {
+  border-bottom: 0;
 }
 
 #header ul.nav {
@@ -160,7 +160,7 @@ a img {
 
 
 /*------------------------------------------------------------------------------
-    Not Footer
+    Content
 ------------------------------------------------------------------------------*/
 
 #wrapper {
@@ -400,5 +400,16 @@ span.bash-output {
   -moz-user-select: none;
   -khtml-user-select: none;
   user-select: none;
+}
+
+
+/*------------------------------------------------------------------------------
+    About
+------------------------------------------------------------------------------*/
+
+#about span {
+color: #999;
+float: left;
+width: 5em;
 }
 
