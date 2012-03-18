@@ -1,8 +1,7 @@
 ---
 title: PHP .user.ini
 layout: post
-tags:
-- php
+keywords: php user ini
 ---
 
 A feature of PHP that many people don't seem to be aware of is the [.user.ini](http://php.net/manual/en/configuration.file.per-user.php) file.

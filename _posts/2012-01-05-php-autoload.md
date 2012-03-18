@@ -1,8 +1,7 @@
 ---
 title: PHP autoloader exception weirdness
 layout: post
-tags:
-- php
+keywords: php class autoloader exception
 ---
 
 While writing some object oriented php at my job we ran into the following strange php behaviour.

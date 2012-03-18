@@ -1,8 +1,7 @@
 ---
 title: Premature C optimizations
 layout: post
-tags:
-- c
+keywords: c gcc assembly branch prediction
 ---
 
 If you are writing some really high performance C code. Or if you just like to do some premature C optimizations. Here's a gcc compiler buildin you can use:

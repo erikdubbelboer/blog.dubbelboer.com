@@ -1,9 +1,7 @@
 ---
 title: The multipart/x-mixed-replace content type
 layout: post
-tags:
-- php
-- http
+keywords: php http content-type multipart x-mixed-replace
 ---
 
 Looking at the new Google Analytics live view I noticed they use the [multipart/x-mixed-replace](http://en.wikipedia.org/wiki/MIME#Mixed-Replace_.28experimental.29) content type to push live updates to the webbrowser.
