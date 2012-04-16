@@ -3,8 +3,8 @@ title: Posts
 layout: default
 ---
 
-{{ page.title }}
-=====
+{{ page.title }} [![RSS](/images/rss.png)](/atom.xml)
+=====================================================
 
 {% for post in site.posts %}
 

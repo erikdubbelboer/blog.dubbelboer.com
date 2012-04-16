@@ -1,5 +1,5 @@
 ---
-title: All you need to know about SYN cookies
+title: All you need to know about SYN floods
 layout: post
 keywords: c tcp kernel syn cookies
 ---
