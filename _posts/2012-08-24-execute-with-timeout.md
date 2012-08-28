@@ -7,6 +7,16 @@ keywords: php exec timeout
 
 This function allows you to execute another process but with a timeout on how long it's allowed to run.
 
+Update *2012-08-28* 
+-------------------
+
+Changed the code to use exec inside `proc_open`. This causes `proc_terminate` to work correctly. One disadvantage is that you need to use the full path of the executable you want to run.
+
+Also setting environment variables using VARIABLE=something before the command won't work anymore. This can be fixed by calling `putenv` before calling the function.
+
+The function now throws an exception in case of an error.
+
+
 {% highlight php %}
 <?
 
@@ -27,7 +37,7 @@ function exec_timeout($cmd, $timeout) {
   );
 
   // Start the process.
-  $process = proc_open($cmd, $descriptors, $pipes);
+  $process = proc_open('exec ' . $cmd, $descriptors, $pipes);
 
   if (!is_resource($process)) {
     throw new \Exception('Could not execute process');
@@ -67,6 +77,13 @@ function exec_timeout($cmd, $timeout) {
 
     // Subtract the number of microseconds that we waited.
     $timeout -= (microtime(true) - $start) * 1000000;
+  }
+
+  // Check if there were any errors.
+  $errors = stream_get_contents($pipes[2]);
+
+  if (!empty($errors)) {
+    throw new \Exception($errors);
   }
 
   // Kill the process in case the timeout expired and it's still running.
