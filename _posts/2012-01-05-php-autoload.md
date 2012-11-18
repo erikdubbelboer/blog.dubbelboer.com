@@ -44,3 +44,8 @@ In this case PHP will ignore the Exception thrown and will continue to handle it
 
 What we learned is that you shouldn't rely on exceptions from the autoloader and just use `class_exists()` when you aren't sure if a class will exists or not.
 
+Update 18 Nov 2012
+------------------
+
+This issue has been fixed in PHP 5.3.0. See the [bug report](https://bugs.php.net/bug.php?id=61442).
+
