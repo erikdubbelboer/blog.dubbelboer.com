@@ -12,10 +12,10 @@ These two functions are the functions that I miss most in this case, and I actua
 
 `getCookieByName(name)` returns the value of the cookie with the specified name.
 
-These functions have been tested in: IE 6-10, Firefox 6-12, Chrome 22, Safari 6 and Opera 12.
+These functions work in: IE 6+, Firefox 6+, Chrome 22+, Safari 6+ and Opera 12+.
 
 
-[getParameterByName](https://github.com/ErikDubbelboer/erik-misc-code/tree/master/getParameterByName/index.html)
+[getParameterByName](http://dubbelboer.com/erik-misc-code/getParameterByName/index.html)
 ==================
 
 {% highlight javascript %}
@@ -40,7 +40,7 @@ function getParameterByName(name) {
 {% endhighlight %}
 
 
-[getCookieByName](https://github.com/ErikDubbelboer/erik-misc-code/tree/master/getCookieByName/index.html)
+[getCookieByName](http://dubbelboer.com/erik-misc-code/getCookieByName/index.html)
 ===============
 
 {% highlight javascript %}
