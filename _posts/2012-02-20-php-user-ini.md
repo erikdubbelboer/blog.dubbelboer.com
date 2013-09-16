@@ -2,6 +2,7 @@
 title: PHP .user.ini
 layout: post
 keywords: php user ini
+description: How to use the PHP .user.ini file.
 ---
 
 A feature of PHP that many people don't seem to be aware of is the [.user.ini](http://php.net/manual/en/configuration.file.per-user.php) file.

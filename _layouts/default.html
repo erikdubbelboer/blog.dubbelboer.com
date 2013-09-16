@@ -23,6 +23,9 @@
 <meta name=keywords content="{{ page.keywords }}">
 <link rel="author" href="https://plus.google.com/112629878803154668236" />
 {% endif %}
+{% if page.description %}
+<meta name=description content="{{ page.description }}">
+{% endif %}
 <link href="/css/common.css" media="screen" rel="stylesheet" type="text/css">
 <link href="/css/pygments.css" media="screen" rel="stylesheet" type="text/css">
 </head>  
@@ -31,7 +34,7 @@
     <div id="header-wrapper">
       <div id="header" class="basic" >
         <div class="site">
-          <a class="logo" href="/"><h1>Erik's Code</h1></a>
+          <a class="logo" href="/"><h2>Erik's Code</h2></a>
           <div class="topsearch">
             <ul class="nav logged_out">
               <li><a href="/about.html">About Erik</a></li>

@@ -2,6 +2,7 @@
 title: The PHP use keyword
 layout: post
 keywords: php use
+description: How to use the PHP 'use' keyword.
 ---
 
 Anonymous functions

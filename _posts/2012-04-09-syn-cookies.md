@@ -2,6 +2,7 @@
 title: All you need to know about SYN floods
 layout: post
 keywords: c tcp kernel syn cookies
+description: A deep look into what causes the 'Possible SYN flooding on port ...' message.
 ---
 
 SYN cookies

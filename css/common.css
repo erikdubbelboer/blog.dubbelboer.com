@@ -18,21 +18,21 @@ p {
   margin: 1em 0;
 }
 
-h1 {
+h2 {
   font-size: 20px;
   border-bottom: 1px solid #cccccc;
   padding: .5em 0;
   margin: 2em 0 1em;
 }
 
-h1:first-child {
+h2:first-child {
   margin: 0 0 1em;
 }
 
-h2 {
-  font-size: 16px;
+h1 {
+  font-size: 20px;
   color: #333;
-  margin: 2em auto 1em;
+  margin: .5em 0 1em;
 }
 
 h3 {
@@ -108,7 +108,7 @@ a img {
   display: inline-block;
 }
 
-#header a.logo h1 {
+#header a.logo h2 {
   border-bottom: 0;
 }
 
