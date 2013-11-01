@@ -9,9 +9,11 @@ SYN cookies
 -----------
 
 So one day I noticed `/var/log/syslog` on one of our servers was filled with the following message:
+{% raw %}
 <pre>
 TCP: Possible SYN flooding on port 80. Sending cookies.
 </pre>
+{% endraw %}
 
 This message can come a from a [SYN DDOS](http://en.wikipedia.org/wiki/SYN_flood), but in our case it was because of the amount of new connections one of our application was receiving.
 The syslog message is emitted when the SYN backlog of a socket is full.
