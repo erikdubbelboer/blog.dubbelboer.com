@@ -11,6 +11,12 @@ Using this special Content-type you can replace the contents of a page. You can 
 {% highlight php %}
 <?
 
+// Make sure PHP isn't buffereing anything.
+ob_end_clean();
+
+// Sending this header will prevent nginx from buffering the output.
+header('X-Accel-Buffering: no');
+
 header('Content-type: multipart/x-mixed-replace; boundary=endofsection');
 
 // Keep in mind that the empty line is important to separate the headers
@@ -41,4 +47,13 @@ echo '
 {% endhighlight %}
 
 It's fun to experiment with but since it isn't supported by IE it's not really practical for real usage.
+
+
+### Update 16-10-2014 ###
+
+Fixed PHP and/or nginx buffering bug.
+
+The current version of Safari (7.0.6) will not display the cat image but instead download it and open it in Preview.
+
+The current version of Chrome (36) Opera Next (24) will not display anything anymore.
 
