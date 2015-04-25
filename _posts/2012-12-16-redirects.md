@@ -1,6 +1,6 @@
 ---
 published: true
-title: How many redirects do browsers follow
+title: How many redirects do browsers follow (updated 2015-04-07)
 layout: post
 keywords: 302 redirects browsers ie firefox chrome opera safari
 ---
@@ -10,15 +10,16 @@ There are some posts about this but I couldn't find a source which was up to dat
 
 <table>
 <tr><th style="width: 9em">Browser</th><th>Redirects</th></tr>
-<tr><td>Firefox (6.0 - 18.0)</td><td>20</td></tr>
-<tr><td>Chrome (22 - 23)</td><td>20</td></tr>
-<tr><td>Opera (12)</td><td>20</td></tr>
-<tr><td>Safari (6)</td><td>16</td></tr>
-<tr><td>IE 6</td><td>100</td></tr>
-<tr><td>IE 7</td><td>10</td></tr>
-<tr><td>IE 8</td><td>10</td></tr>
-<tr><td>IE 9</td><td>110</td></tr>
-<tr><td>IE 10</td><td>110</td></tr>
+<tr><td>Firefox 6 - 37</td><td>20 </td></tr>
+<tr><td>Chrome 22 - 23</td><td>20 </td></tr>
+<tr><td>Chrome 41     </td><td>20 but will automatically retry after a couple of seconds</td></tr>
+<tr><td>Opera 12      </td><td>20 </td></tr>
+<tr><td>Opera Next 29 </td><td>20 </td></tr>
+<tr><td>Safari 6 - 8  </td><td>16 </td></tr>
+<tr><td>IE 6          </td><td>100</td></tr>
+<tr><td>IE 7          </td><td>10 </td></tr>
+<tr><td>IE 8          </td><td>10 </td></tr>
+<tr><td>IE 9 - 11     </td><td>110</td></tr>
 </table>
 
 And here's the little nodejs script I used to test this.
