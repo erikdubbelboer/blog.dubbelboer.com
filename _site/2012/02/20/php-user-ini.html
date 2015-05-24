@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset=utf-8>
+
+
+
+<title>PHP .user.ini - Erik's Code</title>
+
+<meta name=keywords content="php user ini">
+<link rel="author" href="https://plus.google.com/+ErikDubbelboer" />
+
+
+<meta name=description content="How to use the PHP .user.ini file.">
+
+<link href="/css/common.css" media="screen" rel="stylesheet" type="text/css">
+<link href="/css/pygments.css" media="screen" rel="stylesheet" type="text/css">
+</head>  
+<body>
+  <div id="main">
+    <div id="header-wrapper">
+      <div id="header" class="basic" >
+        <div class="site">
+          <a class="logo" href="/"><h2>Erik's Code</h2></a>
+          <div class="topsearch">
+            <ul class="nav logged_out">
+              <li><a href="/about.html">About Erik</a></li>
+            </ul>
+          </div><!-- .topsearch -->
+        </div><!-- .site -->
+      </div><!-- #header -->
+    </div><!-- #header-wrapper -->
+    <div id="wrapper">
+      <div id="content" class="site">
+
+        <h1>PHP .user.ini</h1>
+
+<em>Date: 20 Feb 2012</em><br>
+<em>Author: Erik Dubbelboer</em>
+
+<p>A feature of PHP that many people don’t seem to be aware of is the <a href="http://php.net/manual/en/configuration.file.per-user.php">.user.ini</a> file.</p>
+
+<p>This per directory configuration file can be very useful in combination with the following settings</p>
+
+<p> </p>
+
+<p><code>auto_prepend_file</code></p>
+
+<p>If your application always includes a common include file you can also add it like this. In our applications we use a <code>auto_prepend_file = "autoloader.php"</code> which registers a class autoloader. This way we never have to include anything.</p>
+
+<p> </p>
+
+<p><code>magic_quotes_gpc</code></p>
+
+<p>Setting this in the ini file allows you to control this setting per application. This can be useful if you are running some old and new applications on the same host.</p>
+
+
+
+<div id=disqus_thread></div>
+<script>
+  var disqus_shortname = 'erikscode';
+
+  (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+
+
+
+      </div><!-- #content -->
+    </div><!-- #wrapper -->
+  </div><!-- #main -->
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-7915266-3', 'dubbelboer.com');
+    ga('send', 'pageview');
+  </script>
+</body>
+</html>

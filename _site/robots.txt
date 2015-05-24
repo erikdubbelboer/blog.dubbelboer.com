@@ -1,0 +1,3 @@
+User-Agent: *
+Allow: /
+Sitemap: http://blog.dubbelboer.com/sitemap.xml

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset=utf-8>
+
+
+
+<title>Unicode domain support in browsers - Erik's Code</title>
+
+<meta name=keywords content="firefox chrome ie safari dom referrer Unicode Punycode">
+<link rel="author" href="https://plus.google.com/+ErikDubbelboer" />
+
+
+<link href="/css/common.css" media="screen" rel="stylesheet" type="text/css">
+<link href="/css/pygments.css" media="screen" rel="stylesheet" type="text/css">
+</head>  
+<body>
+  <div id="main">
+    <div id="header-wrapper">
+      <div id="header" class="basic" >
+        <div class="site">
+          <a class="logo" href="/"><h2>Erik's Code</h2></a>
+          <div class="topsearch">
+            <ul class="nav logged_out">
+              <li><a href="/about.html">About Erik</a></li>
+            </ul>
+          </div><!-- .topsearch -->
+        </div><!-- .site -->
+      </div><!-- #header -->
+    </div><!-- #header-wrapper -->
+    <div id="wrapper">
+      <div id="content" class="site">
+
+        <h1>Unicode domain support in browsers</h1>
+
+<em>Date: 10 May 2015</em><br>
+<em>Author: Erik Dubbelboer</em>
+
+<p>According to <a href="http://tools.ietf.org/html/rfc3492">RFC 3492</a> Unicode domains are encoded using <a href="http://en.wikipedia.org/wiki/Punycode">Punycode</a>. So <a href="http://日本語.jp">http://日本語.jp</a> is actually <a href="http://xn--wgv71a119e.jp">http://xn–wgv71a119e.jp</a></p>
+
+<p>I was interested in when browsers would use Unicode and when they would use Punycode. Here are the results of my tests:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>browser</th>
+      <th>location bar</th>
+      <th>location.href</th>
+      <th>dom referrer</th>
+      <th>http referrer</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>firefox 36</td>
+      <td>Unicode</td>
+      <td>Unicode</td>
+      <td>ASCII</td>
+      <td>ASCII</td>
+    </tr>
+    <tr>
+      <td>safari  8.0.3</td>
+      <td>Unicode</td>
+      <td>ASCII</td>
+      <td>ASCII</td>
+      <td>ASCII</td>
+    </tr>
+    <tr>
+      <td>chrome 41</td>
+      <td>ASCII</td>
+      <td>ASCII</td>
+      <td>ASCII</td>
+      <td>ASCII</td>
+    </tr>
+    <tr>
+      <td>IE 9</td>
+      <td>Unicode</td>
+      <td>Unicode</td>
+      <td>Unicode</td>
+      <td>ASCII</td>
+    </tr>
+    <tr>
+      <td>IE 11</td>
+      <td>Unicode</td>
+      <td>Unicode</td>
+      <td>Unicode</td>
+      <td>ASCII</td>
+    </tr>
+    <tr>
+      <td>opera 12</td>
+      <td>Unicode</td>
+      <td>Unicode</td>
+      <td>Unicode</td>
+      <td>ASCII</td>
+    </tr>
+    <tr>
+      <td>opera 28</td>
+      <td>ASCII</td>
+      <td>ASCII</td>
+      <td>ASCII</td>
+      <td>ASCII</td>
+    </tr>
+  </tbody>
+</table>
+
+
+
+<div id=disqus_thread></div>
+<script>
+  var disqus_shortname = 'erikscode';
+
+  (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+
+
+
+      </div><!-- #content -->
+    </div><!-- #wrapper -->
+  </div><!-- #main -->
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-7915266-3', 'dubbelboer.com');
+    ga('send', 'pageview');
+  </script>
+</body>
+</html>

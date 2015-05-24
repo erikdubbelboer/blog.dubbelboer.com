@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset=utf-8>
+
+
+
+<title>Faster queues in Go - Erik's Code</title>
+
+<meta name=keywords content="golang go queue slice memory ring buffer">
+<link rel="author" href="https://plus.google.com/+ErikDubbelboer" />
+
+
+<link href="/css/common.css" media="screen" rel="stylesheet" type="text/css">
+<link href="/css/pygments.css" media="screen" rel="stylesheet" type="text/css">
+</head>  
+<body>
+  <div id="main">
+    <div id="header-wrapper">
+      <div id="header" class="basic" >
+        <div class="site">
+          <a class="logo" href="/"><h2>Erik's Code</h2></a>
+          <div class="topsearch">
+            <ul class="nav logged_out">
+              <li><a href="/about.html">About Erik</a></li>
+            </ul>
+          </div><!-- .topsearch -->
+        </div><!-- .site -->
+      </div><!-- #header -->
+    </div><!-- #header-wrapper -->
+    <div id="wrapper">
+      <div id="content" class="site">
+
+        <h1>Faster queues in Go</h1>
+
+<em>Date: 25 Apr 2015</em><br>
+<em>Author: Erik Dubbelboer</em>
+
+<p>In my <a href="/2015/04/06/go-queue.html">previous post</a> I tested the implementation of a queue in Go.
+As I noted in the post I was a bit surprised at how in Go you don’t need a ring buffer to implement a queue.
+Today for comparison I also implemented the same queue using a ring buffer in Go.
+The result surprised me. The ring version seems to be more than twice as fast and uses less memory:</p>
+
+<pre>
+BenchmarkSliceAdd       20000000                42.2 ns/op            41 B/op          0 allocs/op
+BenchmarkRingAdd        30000000                23.5 ns/op            17 B/op          0 allocs/op
+BenchmarkSliceRemove    10000000                92.8 ns/op            16 B/op          0 allocs/op
+BenchmarkRingRemove     20000000                37.6 ns/op             0 B/op          0 allocs/op
+</pre>
+
+<p>The <a target="_blank" href="https://github.com/ErikDubbelboer/ringqueue/blob/master/ringqueue.go">code for the queue</a> and some tests can be found in this Github repository: <a target="_blank" href="https://github.com/ErikDubbelboer/ringqueue">https://github.com/ErikDubbelboer/ringqueue</a></p>
+
+
+
+<div id=disqus_thread></div>
+<script>
+  var disqus_shortname = 'erikscode';
+
+  (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+
+
+
+      </div><!-- #content -->
+    </div><!-- #wrapper -->
+  </div><!-- #main -->
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-7915266-3', 'dubbelboer.com');
+    ga('send', 'pageview');
+  </script>
+</body>
+</html>

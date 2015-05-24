@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset=utf-8>
+
+
+
+<title>Ports to avoid - Erik's Code</title>
+
+<meta name=keywords content="port http chrome">
+<link rel="author" href="https://plus.google.com/+ErikDubbelboer" />
+
+
+<link href="/css/common.css" media="screen" rel="stylesheet" type="text/css">
+<link href="/css/pygments.css" media="screen" rel="stylesheet" type="text/css">
+</head>  
+<body>
+  <div id="main">
+    <div id="header-wrapper">
+      <div id="header" class="basic" >
+        <div class="site">
+          <a class="logo" href="/"><h2>Erik's Code</h2></a>
+          <div class="topsearch">
+            <ul class="nav logged_out">
+              <li><a href="/about.html">About Erik</a></li>
+            </ul>
+          </div><!-- .topsearch -->
+        </div><!-- .site -->
+      </div><!-- #header -->
+    </div><!-- #header-wrapper -->
+    <div id="wrapper">
+      <div id="content" class="site">
+
+        <h1>Ports to avoid</h1>
+
+<em>Date: 25 Aug 2013</em><br>
+<em>Author: Erik Dubbelboer</em>
+
+<p>When developing web applications I very often use ports different than 80. Mostly because port 80 is already taken.</p>
+
+<p>When using Chrome there are actually some ports you want to avoid because they are blocked by default. Here is a list of those ports and what runs on them normally:</p>
+
+<pre>
+1,    // tcpmux
+7,    // echo
+9,    // discard
+11,   // systat
+13,   // daytime
+15,   // netstat
+17,   // qotd
+19,   // chargen
+20,   // ftp data
+21,   // ftp access
+22,   // ssh
+23,   // telnet
+25,   // smtp
+37,   // time
+42,   // name
+43,   // nicname
+53,   // domain
+77,   // priv-rjs
+79,   // finger
+87,   // ttylink
+95,   // supdup
+101,  // hostriame
+102,  // iso-tsap
+103,  // gppitnp
+104,  // acr-nema
+109,  // pop2
+110,  // pop3
+111,  // sunrpc
+113,  // auth
+115,  // sftp
+117,  // uucp-path
+119,  // nntp
+123,  // NTP
+135,  // loc-srv /epmap
+139,  // netbios
+143,  // imap2
+179,  // BGP
+389,  // ldap
+465,  // smtp+ssl
+512,  // print / exec
+513,  // login
+514,  // shell
+515,  // printer
+526,  // tempo
+530,  // courier
+531,  // chat
+532,  // netnews
+540,  // uucp
+556,  // remotefs
+563,  // nntp+ssl
+587,  // stmp?
+601,  // ??
+636,  // ldap+ssl
+993,  // ldap+ssl
+995,  // pop3+ssl
+2049, // nfs
+3659, // apple-sasl / PasswordServer
+4045, // lockd
+6000, // X11
+6665, // Alternate IRC [Apple addition]
+6666, // Alternate IRC [Apple addition]
+6667, // Standard IRC [Apple addition]
+6668, // Alternate IRC [Apple addition]
+6669, // Alternate IRC [Apple addition]
+</pre>
+
+
+
+<div id=disqus_thread></div>
+<script>
+  var disqus_shortname = 'erikscode';
+
+  (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+
+
+
+      </div><!-- #content -->
+    </div><!-- #wrapper -->
+  </div><!-- #main -->
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-7915266-3', 'dubbelboer.com');
+    ga('send', 'pageview');
+  </script>
+</body>
+</html>

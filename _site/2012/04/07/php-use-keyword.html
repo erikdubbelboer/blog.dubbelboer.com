@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset=utf-8>
+
+
+
+<title>The PHP use keyword - Erik's Code</title>
+
+<meta name=keywords content="php use">
+<link rel="author" href="https://plus.google.com/+ErikDubbelboer" />
+
+
+<meta name=description content="How to use the PHP 'use' keyword.">
+
+<link href="/css/common.css" media="screen" rel="stylesheet" type="text/css">
+<link href="/css/pygments.css" media="screen" rel="stylesheet" type="text/css">
+</head>  
+<body>
+  <div id="main">
+    <div id="header-wrapper">
+      <div id="header" class="basic" >
+        <div class="site">
+          <a class="logo" href="/"><h2>Erik's Code</h2></a>
+          <div class="topsearch">
+            <ul class="nav logged_out">
+              <li><a href="/about.html">About Erik</a></li>
+            </ul>
+          </div><!-- .topsearch -->
+        </div><!-- .site -->
+      </div><!-- #header -->
+    </div><!-- #header-wrapper -->
+    <div id="wrapper">
+      <div id="content" class="site">
+
+        <h1>The PHP use keyword</h1>
+
+<em>Date: 07 Apr 2012</em><br>
+<em>Author: Erik Dubbelboer</em>
+
+<h2 id="anonymous-functions">Anonymous functions</h2>
+
+<p>As of 5.3.0 PHP has support for anonymous functions. There are two well known and one lesser known way to pass variables to your anonymous functions.</p>
+
+<ol>
+  <li>Using the global scope.</li>
+  <li>Passing them as arguments (optionally as reference if you want to be able to modify them).</li>
+  <li>Using the <code>use</code> keyword.</li>
+</ol>
+
+<h2 id="the-use-keyword">The <code>use</code> keyword</h2>
+
+<p>The <code>use</code> keyword allows you to introduce local variables into the local scope of an anonymous function. This is useful in the case where you pass the anonymous function to some other function which you have no control over.</p>
+
+<p>In this simple example we have no control over which arguments <code>array_filter</code> passes to our anonymous function. The only other way to access the <code>$half</code> variable in this example function would be to make it a global variable. The <code>use</code> keyword allows us to solve this elegantly without polluting our global scope.</p>
+
+<div class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span>
+<span class="k">function</span> <span class="nf">remove_lowest_half</span><span class="p">(</span><span class="nv">$arr</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nv">$half</span> <span class="o">=</span> <span class="nb">array_sum</span><span class="p">(</span><span class="nv">$arr</span><span class="p">)</span> <span class="o">/</span> <span class="nb">count</span><span class="p">(</span><span class="nv">$arr</span><span class="p">);</span> <span class="c1">// Calculate the average value.</span>
+
+  <span class="k">return</span> <span class="nb">array_filter</span><span class="p">(</span><span class="nv">$arr</span><span class="p">,</span> <span class="k">function</span><span class="p">(</span><span class="nv">$v</span><span class="p">)</span> <span class="k">use</span> <span class="p">(</span><span class="nv">$half</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">(</span><span class="nv">$v</span> <span class="o">&gt;</span> <span class="nv">$half</span><span class="p">);</span>
+  <span class="p">});</span>
+<span class="p">}</span>
+
+<span class="c1">// 8 elements which sum up to 40.</span>
+<span class="c1">// So half will be 5.</span>
+<span class="nv">$input</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">);</span>
+
+<span class="nb">var_dump</span><span class="p">(</span><span class="nx">remove_lowest_half</span><span class="p">(</span><span class="nv">$input</span><span class="p">));</span></code></pre></div>
+
+<p>This will output the expected:</p>
+
+<pre>
+array(4) {
+  [4]=&gt;
+  int(6)
+  [5]=&gt;
+  int(7)
+  [6]=&gt;
+  int(8)
+  [7]=&gt;
+  int(9)
+}
+</pre>
+
+<p>Variables passed through <code>use</code> are not passed by reference. Like normal function arguments modifying them will not modify the original. The usage of <code>&amp;</code> to make them references is possible.</p>
+
+<p>Using this we can build another example. A simple counting function with an initial value using no global variables for the counting.</p>
+
+<div class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span>
+<span class="k">function</span> <span class="nf">counter</span><span class="p">(</span><span class="nv">$start</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nv">$value</span> <span class="o">=</span> <span class="nv">$start</span><span class="p">;</span>
+
+  <span class="k">return</span> <span class="k">function</span><span class="p">()</span> <span class="k">use</span> <span class="p">(</span><span class="o">&amp;</span><span class="nv">$value</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nv">$value</span><span class="o">++</span><span class="p">;</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+
+<span class="nv">$counter</span> <span class="o">=</span> <span class="nx">counter</span><span class="p">(</span><span class="mi">6</span><span class="p">);</span>
+
+<span class="k">echo</span> <span class="nv">$counter</span><span class="p">()</span> <span class="o">.</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+<span class="k">echo</span> <span class="nv">$counter</span><span class="p">()</span> <span class="o">.</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span></code></pre></div>
+
+<p>This will output the expected:</p>
+
+<pre>
+6
+7
+</pre>
+
+<p>Note: <code>use</code> can only be used with anonymous functions. Using it with named functions gives a syntax error.</p>
+
+
+
+<div id=disqus_thread></div>
+<script>
+  var disqus_shortname = 'erikscode';
+
+  (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+
+
+
+      </div><!-- #content -->
+    </div><!-- #wrapper -->
+  </div><!-- #main -->
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-7915266-3', 'dubbelboer.com');
+    ga('send', 'pageview');
+  </script>
+</body>
+</html>

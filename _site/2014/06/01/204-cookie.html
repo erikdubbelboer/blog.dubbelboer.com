@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset=utf-8>
+
+
+
+<title>204 No Content and cookies - Erik's Code</title>
+
+<meta name=keywords content="204 header cookie http">
+<link rel="author" href="https://plus.google.com/+ErikDubbelboer" />
+
+
+<link href="/css/common.css" media="screen" rel="stylesheet" type="text/css">
+<link href="/css/pygments.css" media="screen" rel="stylesheet" type="text/css">
+</head>  
+<body>
+  <div id="main">
+    <div id="header-wrapper">
+      <div id="header" class="basic" >
+        <div class="site">
+          <a class="logo" href="/"><h2>Erik's Code</h2></a>
+          <div class="topsearch">
+            <ul class="nav logged_out">
+              <li><a href="/about.html">About Erik</a></li>
+            </ul>
+          </div><!-- .topsearch -->
+        </div><!-- .site -->
+      </div><!-- #header -->
+    </div><!-- #header-wrapper -->
+    <div id="wrapper">
+      <div id="content" class="site">
+
+        <h1>204 No Content and cookies</h1>
+
+<em>Date: 01 Jun 2014</em><br>
+<em>Author: Erik Dubbelboer</em>
+
+<p>When working on a project I was wondering if all browsers would accept cookies set in 204 No Content http responses.</p>
+
+<p>I wrote a small test page: <a href="http://dubbelboer.com/204cookie.php">dubbelboer.com/204cookie.php</a></p>
+
+<p>What I found is that <strong>all major browsers</strong>, IE (6, 7, 8, 9, 10, 11), FF (6 - 29), Safari (5 - 7), Opera (12 - 22) on both windows and Mac, <strong>set cookies on 204 http responses</strong>.</p>
+
+<h3 id="cookiephp">204cookie.php</h3>
+
+<div class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;show&#39;</span><span class="p">]))</span> <span class="p">{</span>
+<span class="cp">?&gt;</span><span class="x"></span>
+<span class="x">&lt;!doctype html&gt;</span>
+<span class="x">&lt;html&gt;</span>
+<span class="x">&lt;head&gt;</span>
+<span class="x">&lt;meta charset=utf-8&gt;</span>
+<span class="x">&lt;title&gt;204 cookie test&lt;/title&gt;</span>
+<span class="x">&lt;/head&gt;</span>
+<span class="x">&lt;body&gt;</span>
+<span class="cp">&lt;?</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$_COOKIE</span><span class="p">[</span><span class="s1">&#39;test&#39;</span><span class="p">])</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nv">$_COOKIE</span><span class="p">[</span><span class="s1">&#39;test&#39;</span><span class="p">]</span> <span class="o">===</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;show&#39;</span><span class="p">]))</span> <span class="p">{</span>
+    <span class="k">echo</span> <span class="s1">&#39;Success&#39;</span><span class="p">;</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="k">echo</span> <span class="s1">&#39;Failed&#39;</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="cp">?&gt;</span><span class="x">&lt;br&gt;&lt;br&gt;&lt;a href=&quot;?a=</span><span class="cp">&lt;?</span><span class="o">=</span><span class="nb">microtime</span><span class="p">(</span><span class="k">true</span><span class="p">)</span> <span class="cm">/* Random url to prevent caching. */</span><span class="cp">?&gt;</span><span class="x">&quot;&gt;try again...&lt;/a&gt;&lt;br&gt;</span>
+<span class="x">&lt;/body&gt;</span>
+<span class="x">&lt;/html&gt;</span>
+<span class="cp">&lt;?</span>
+<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;set&#39;</span><span class="p">]))</span> <span class="p">{</span>
+  <span class="nb">header</span><span class="p">(</span><span class="s1">&#39;P3P: CP=&quot;no policy&quot;&#39;</span><span class="p">);</span>
+  <span class="nb">setcookie</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;set&#39;</span><span class="p">],</span> <span class="nb">time</span><span class="p">()</span> <span class="o">+</span> <span class="mi">60</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="s1">&#39;.dubbelboer.com&#39;</span><span class="p">);</span>
+  <span class="nb">header</span><span class="p">(</span><span class="s1">&#39;HTTP/1.0 204 No Content&#39;</span><span class="p">);</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+  <span class="nv">$id</span> <span class="o">=</span> <span class="nb">intval</span><span class="p">(</span><span class="nb">microtime</span><span class="p">(</span><span class="k">true</span><span class="p">));</span>
+<span class="cp">?&gt;</span><span class="x"></span>
+<span class="x">&lt;!doctype html&gt;</span>
+<span class="x">&lt;html&gt;</span>
+<span class="x">&lt;head&gt;</span>
+<span class="x">&lt;meta charset=utf-8&gt;</span>
+<span class="x">&lt;title&gt;204 cookie test&lt;/title&gt;</span>
+<span class="x">&lt;/head&gt;</span>
+<span class="x">&lt;body&gt;</span>
+<span class="x">&lt;iframe src=&quot;?set=</span><span class="cp">&lt;?</span><span class="o">=</span><span class="nv">$id</span><span class="cp">?&gt;</span><span class="x">&quot; width=1 height=1&gt;&lt;/iframe&gt;</span>
+<span class="x">Placing cookie...&lt;br&gt;</span>
+<span class="x">&lt;script&gt;</span>
+<span class="x">// Give the iframe some time to load.</span>
+<span class="x">setTimeout(function() {</span>
+<span class="x">  document.location = &#39;?show=</span><span class="cp">&lt;?</span><span class="o">=</span><span class="nv">$id</span><span class="cp">?&gt;</span><span class="x">&#39;;</span>
+<span class="x">}, 2000);</span>
+<span class="x">&lt;/script&gt;</span>
+<span class="x">&lt;/body&gt;</span>
+<span class="x">&lt;/html&gt;</span>
+<span class="cp">&lt;?</span>
+<span class="p">}</span></code></pre></div>
+
+
+
+<div id=disqus_thread></div>
+<script>
+  var disqus_shortname = 'erikscode';
+
+  (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+
+
+
+      </div><!-- #content -->
+    </div><!-- #wrapper -->
+  </div><!-- #main -->
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-7915266-3', 'dubbelboer.com');
+    ga('send', 'pageview');
+  </script>
+</body>
+</html>

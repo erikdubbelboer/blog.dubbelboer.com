@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset=utf-8>
+
+
+
+<title>Premature C optimizations - Erik's Code</title>
+
+<meta name=keywords content="c gcc assembly branch prediction">
+<link rel="author" href="https://plus.google.com/+ErikDubbelboer" />
+
+
+<link href="/css/common.css" media="screen" rel="stylesheet" type="text/css">
+<link href="/css/pygments.css" media="screen" rel="stylesheet" type="text/css">
+</head>  
+<body>
+  <div id="main">
+    <div id="header-wrapper">
+      <div id="header" class="basic" >
+        <div class="site">
+          <a class="logo" href="/"><h2>Erik's Code</h2></a>
+          <div class="topsearch">
+            <ul class="nav logged_out">
+              <li><a href="/about.html">About Erik</a></li>
+            </ul>
+          </div><!-- .topsearch -->
+        </div><!-- .site -->
+      </div><!-- #header -->
+    </div><!-- #header-wrapper -->
+    <div id="wrapper">
+      <div id="content" class="site">
+
+        <h1>Premature C optimizations</h1>
+
+<em>Date: 17 Mar 2012</em><br>
+<em>Author: Erik Dubbelboer</em>
+
+<p>If you are writing some really high performance C code. Or if you just like to do some premature C optimizations. Here’s a gcc compiler buildin you can use:</p>
+
+<div class="highlight"><pre><code class="language-c" data-lang="c"><span class="n">integer</span> <span class="n">__builtin_expect</span><span class="p">((</span><span class="n">integer</span> <span class="n">variable</span><span class="p">),(</span><span class="n">expected</span> <span class="n">value</span><span class="p">))</span></code></pre></div>
+
+<p>Since CPU’s prefetch instructions in a sequential way, jumps to other instructions will flush all prefetched instructions. Because of this it is better to only jump in the least expected case so the expected case can keep using the prefetched instructions.</p>
+
+<p>This buildin allows you to hint the compiler about which case is more likely to happen. The return value of __builtin_expect is the first argument passed to it. The expected value needs to be a compile-time constant.</p>
+
+<p>Example usage:</p>
+
+<div class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">int</span> <span class="nf">example</span><span class="p">(</span><span class="kt">int</span> <span class="n">almostalwaysone</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">__builtin_expect</span><span class="p">(</span><span class="n">almostalwaysone</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> <span class="p">{</span>
+    <span class="c1">// most likely path</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="c1">// least likely path</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></div>
+
+<p>This code will result in the assambly looking something like this:</p>
+
+<div class="highlight"><pre><code class="language-nasm" data-lang="nasm"><span class="c1">; almostalwaysone is placed in eax</span>
+
+  <span class="nf">test</span>   <span class="nb">eax</span><span class="p">,</span> <span class="nb">eax</span>
+  <span class="nf">je</span>     <span class="nv">.else</span>
+  <span class="c1">; if case</span>
+  <span class="nf">ret</span>
+<span class="nf">.else</span>
+  <span class="c1">; else case</span>
+  <span class="nf">ret</span></code></pre></div>
+
+<p>As you can see the if case is execute sequentially while the else case requires a jump.</p>
+
+<h2 id="update-2012-05-05">Update <em>2012-05-05</em></h2>
+
+<p>Here is another gcc compiler buildin that can be useful from time to time:</p>
+
+<div class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">void</span> <span class="n">__builtin_unreachable</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span></code></pre></div>
+
+<p>This function will tell the compiler that a point in your code is never reached. It is useful in situations where the compiler cannot deduce the unreachability of the code.</p>
+
+<p>Example usage:</p>
+
+<div class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">int</span> <span class="nf">example</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">function_that_never_returns</span><span class="p">();</span>
+  <span class="n">__builtin_unreachable</span><span class="p">();</span>
+<span class="p">}</span></code></pre></div>
+
+
+
+<div id=disqus_thread></div>
+<script>
+  var disqus_shortname = 'erikscode';
+
+  (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+
+
+
+      </div><!-- #content -->
+    </div><!-- #wrapper -->
+  </div><!-- #main -->
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-7915266-3', 'dubbelboer.com');
+    ga('send', 'pageview');
+  </script>
+</body>
+</html>

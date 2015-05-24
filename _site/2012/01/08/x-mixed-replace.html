@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset=utf-8>
+
+
+
+<title>The multipart/x-mixed-replace content type - Erik's Code</title>
+
+<meta name=keywords content="php http content-type multipart x-mixed-replace">
+<link rel="author" href="https://plus.google.com/+ErikDubbelboer" />
+
+
+<link href="/css/common.css" media="screen" rel="stylesheet" type="text/css">
+<link href="/css/pygments.css" media="screen" rel="stylesheet" type="text/css">
+</head>  
+<body>
+  <div id="main">
+    <div id="header-wrapper">
+      <div id="header" class="basic" >
+        <div class="site">
+          <a class="logo" href="/"><h2>Erik's Code</h2></a>
+          <div class="topsearch">
+            <ul class="nav logged_out">
+              <li><a href="/about.html">About Erik</a></li>
+            </ul>
+          </div><!-- .topsearch -->
+        </div><!-- .site -->
+      </div><!-- #header -->
+    </div><!-- #header-wrapper -->
+    <div id="wrapper">
+      <div id="content" class="site">
+
+        <h1>The multipart/x-mixed-replace content type</h1>
+
+<em>Date: 08 Jan 2012</em><br>
+<em>Author: Erik Dubbelboer</em>
+
+<p>Looking at the new Google Analytics live view I noticed they use the <a href="http://en.wikipedia.org/wiki/MIME#Mixed-Replace_.28experimental.29">multipart/x-mixed-replace</a> content type to push live updates to the webbrowser.</p>
+
+<p>Using this special Content-type you can replace the contents of a page. You can find this example here: <a href="http://dubbelboer.com/multipart.php">dubbelboer.com/multipart.php</a>.</p>
+
+<div class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span>
+
+<span class="c1">// Make sure PHP isn&#39;t buffereing anything.</span>
+<span class="nb">ob_end_clean</span><span class="p">();</span>
+
+<span class="c1">// Sending this header will prevent nginx from buffering the output.</span>
+<span class="nb">header</span><span class="p">(</span><span class="s1">&#39;X-Accel-Buffering: no&#39;</span><span class="p">);</span>
+
+<span class="nb">header</span><span class="p">(</span><span class="s1">&#39;Content-type: multipart/x-mixed-replace; boundary=endofsection&#39;</span><span class="p">);</span>
+
+<span class="c1">// Keep in mind that the empty line is important to separate the headers</span>
+<span class="c1">// from the content.</span>
+<span class="k">echo</span> <span class="s1">&#39;Content-type: text/plain</span>
+
+<span class="s1">After 5 seconds this will go away and a cat will appear...</span>
+<span class="s1">--endofsection</span>
+<span class="s1">&#39;</span><span class="p">;</span>
+<span class="nb">flush</span><span class="p">();</span> <span class="c1">// Don&#39;t forget to flush the content to the browser.</span>
+
+
+<span class="nb">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>
+
+
+<span class="k">echo</span> <span class="s1">&#39;Content-type: image/jpg</span>
+
+<span class="s1">&#39;</span><span class="p">;</span>
+
+<span class="nv">$stream</span> <span class="o">=</span> <span class="nb">fopen</span><span class="p">(</span><span class="s1">&#39;cat.jpg&#39;</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">);</span>
+<span class="nb">fpassthru</span><span class="p">(</span><span class="nv">$stream</span><span class="p">);</span>
+<span class="nb">fclose</span><span class="p">(</span><span class="nv">$stream</span><span class="p">);</span>
+
+<span class="k">echo</span> <span class="s1">&#39;</span>
+<span class="s1">--endofsection</span>
+<span class="s1">&#39;</span><span class="p">;</span></code></pre></div>
+
+<p>It’s fun to experiment with but since it isn’t supported by IE it’s not really practical for real usage.</p>
+
+<h3 id="update-16-10-2014">Update 16-10-2014</h3>
+
+<p>Fixed PHP and/or nginx buffering bug.</p>
+
+<p>The current version of Safari (7.0.6) will not display the cat image but instead download it and open it in Preview.</p>
+
+<p>The current version of Chrome (36) Opera Next (24) will not display anything anymore.</p>
+
+
+
+<div id=disqus_thread></div>
+<script>
+  var disqus_shortname = 'erikscode';
+
+  (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+
+
+
+      </div><!-- #content -->
+    </div><!-- #wrapper -->
+  </div><!-- #main -->
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-7915266-3', 'dubbelboer.com');
+    ga('send', 'pageview');
+  </script>
+</body>
+</html>

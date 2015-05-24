@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset=utf-8>
+
+
+
+<title>LRU cache - map vs unordered_map - Erik's Code</title>
+
+<meta name=keywords content="LRU cache map unordered_map">
+<link rel="author" href="https://plus.google.com/+ErikDubbelboer" />
+
+
+<link href="/css/common.css" media="screen" rel="stylesheet" type="text/css">
+<link href="/css/pygments.css" media="screen" rel="stylesheet" type="text/css">
+</head>  
+<body>
+  <div id="main">
+    <div id="header-wrapper">
+      <div id="header" class="basic" >
+        <div class="site">
+          <a class="logo" href="/"><h2>Erik's Code</h2></a>
+          <div class="topsearch">
+            <ul class="nav logged_out">
+              <li><a href="/about.html">About Erik</a></li>
+            </ul>
+          </div><!-- .topsearch -->
+        </div><!-- .site -->
+      </div><!-- #header -->
+    </div><!-- #header-wrapper -->
+    <div id="wrapper">
+      <div id="content" class="site">
+
+        <h1>LRU cache - map vs unordered_map</h1>
+
+<em>Date: 04 Dec 2012</em><br>
+<em>Author: Erik Dubbelboer</em>
+
+<p>Recently I needed a simple <a href="http://en.wikipedia.org/wiki/Cache_algorithms#Least_Recently_Used">LRU cache</a>. Since the standard library doesn’t provide one I decided to write one myself.</p>
+
+<p>The cache needed a simple interface to get and set items and needed to be at least logarithmic in complexity. Something like:</p>
+
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="k">template</span> <span class="o">&lt;</span><span class="k">class</span> <span class="nc">KeyType</span><span class="p">,</span> <span class="k">class</span> <span class="nc">ItemType</span><span class="o">&gt;</span>
+<span class="k">class</span> <span class="nc">LRUCache</span> <span class="p">{</span>
+  <span class="n">LRUCache</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">capacity</span><span class="p">);</span>
+
+  <span class="kt">size_t</span> <span class="nf">Capacity</span><span class="p">();</span>
+  <span class="kt">void</span> <span class="nf">Resize</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">capacity</span><span class="p">);</span>
+
+  <span class="n">ItemType</span> <span class="nf">Get</span><span class="p">(</span><span class="k">const</span> <span class="n">KeyType</span><span class="o">&amp;</span> <span class="n">key</span><span class="p">);</span>
+  <span class="kt">void</span> <span class="nf">Set</span><span class="p">(</span><span class="k">const</span> <span class="n">KeyType</span><span class="o">&amp;</span> <span class="n">key</span><span class="p">,</span> <span class="k">const</span> <span class="n">ItemType</span> <span class="n">value</span><span class="p">);</span>
+  <span class="kt">void</span> <span class="nf">Remove</span><span class="p">(</span><span class="k">const</span> <span class="n">KeyType</span><span class="o">&amp;</span> <span class="n">key</span><span class="p">);</span>
+<span class="p">};</span></code></pre></div>
+
+<p>So this is what I wrote: <a href="https://github.com/ErikDubbelboer/erik-misc-code/blob/master/lrucache/lrucache.h">lrucache.h</a></p>
+
+<p>It uses an <code>std::list</code> to keep track of the age of items. And an <code>std::map</code> to store the key-value pairs.
+This combination allows for all methods to be <code>O(log n)</code>.</p>
+
+<h2 id="c0x">C++0x</h2>
+
+<p>I have also written a version which allows you to specify the internal container to use.
+This version only works when <a href="http://en.wikipedia.org/wiki/C%2B%2B11">C++0x</a> is enabled because it requires variadic. <code>std::unordered_map</code> also requires C++0x.</p>
+
+<p>The advantage of using <code>std::unordered_map</code> is that it offers <code>O(1)</code> (average case) access methods which allows the cache to be <code>O(1)</code> (average case) as well.</p>
+
+<p><a href="https://github.com/ErikDubbelboer/erik-misc-code/blob/master/lrucache/lrucache0x.h">lrucache0x.h</a></p>
+
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="k">template</span> <span class="o">&lt;</span><span class="k">class</span> <span class="nc">KeyType</span><span class="p">,</span> <span class="k">class</span> <span class="nc">ItemType</span><span class="p">,</span> <span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="p">...</span><span class="o">&gt;</span> <span class="k">class</span> <span class="nc">MapType</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&gt;</span>
+<span class="k">class</span> <span class="nc">LRUCache</span> <span class="p">{</span>
+  <span class="c1">// ... (same as above)</span>
+<span class="p">}</span></code></pre></div>
+
+<p>This version can be used in the following way:</p>
+
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="n">LRUCache</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span> <span class="kt">int</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&gt;</span> <span class="n">cache</span><span class="p">(</span><span class="mi">64</span><span class="p">);</span></code></pre></div>
+
+<h2 id="stdmap-vs-stdunorderedmap">std::map vs std::unordered_map</h2>
+
+<p>When choosing which container to use for the C++0x version there are a two main points to look at.
+The size of your cache and the size of your keys.</p>
+
+<p><code>std::map</code> is implemented using a tree (red-black) while <code>std::unordered_map</code> uses a hash table.</p>
+
+<p>In the following graph you can see that the time it takes the <code>std::map</code> version to access a key increases logarithmically with the size of your cache, while the <code>std::unordered_map</code> version is constant. For this graph I used integers as keys.</p>
+
+<p><img src="/images/lru-cache-int-cache.png" alt="String value size" /></p>
+
+<p>For next graph I took 1024 character long strings as keys. This shows that if you have a small cache size but big keys an <code>std::map</code> will probably be faster.</p>
+
+<p><img src="/images/lru-cache-string-cache.png" alt="String cache size" /></p>
+
+<p>The last graph uses a fixed cache size of 1024 entries but plots the access time vs the key size. In this graph you see that at some point the time it takes the <code>std::unordered_map</code> to calculate the hash is much slower than the binary search <code>std::map</code> performs.</p>
+
+<p><img src="/images/lru-cache-string-keys.png" alt="String key size" /></p>
+
+<p>When choosing a container for your own program the best solution would be to run the benchmark yourself, with real data, and plot the result to pick the best one.
+The source for the benchmark can be found here, <a href="https://github.com/ErikDubbelboer/erik-misc-code/blob/master/lrucache/speed.cpp">speed.cpp</a>, together with a <a href="http://www.gnuplot.info/">gnuplot</a> script, <a href="https://github.com/ErikDubbelboer/erik-misc-code/blob/master/lrucache/speed.plot">speed.plot</a>, to plot the result.</p>
+
+<ul>
+  <li>All benchmarks perform 1,000,000 <code>Get()</code> and if the key does not exist <code>Set()</code> operations.</li>
+</ul>
+
+
+
+<div id=disqus_thread></div>
+<script>
+  var disqus_shortname = 'erikscode';
+
+  (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+
+
+
+      </div><!-- #content -->
+    </div><!-- #wrapper -->
+  </div><!-- #main -->
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-7915266-3', 'dubbelboer.com');
+    ga('send', 'pageview');
+  </script>
+</body>
+</html>

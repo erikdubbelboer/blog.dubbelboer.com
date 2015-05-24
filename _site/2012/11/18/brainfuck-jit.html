@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset=utf-8>
+
+
+
+<title>Brainfuck JIT - Erik's Code</title>
+
+<meta name=keywords content="brainfuck jit lightning compile">
+<link rel="author" href="https://plus.google.com/+ErikDubbelboer" />
+
+
+<link href="/css/common.css" media="screen" rel="stylesheet" type="text/css">
+<link href="/css/pygments.css" media="screen" rel="stylesheet" type="text/css">
+</head>  
+<body>
+  <div id="main">
+    <div id="header-wrapper">
+      <div id="header" class="basic" >
+        <div class="site">
+          <a class="logo" href="/"><h2>Erik's Code</h2></a>
+          <div class="topsearch">
+            <ul class="nav logged_out">
+              <li><a href="/about.html">About Erik</a></li>
+            </ul>
+          </div><!-- .topsearch -->
+        </div><!-- .site -->
+      </div><!-- #header -->
+    </div><!-- #header-wrapper -->
+    <div id="wrapper">
+      <div id="content" class="site">
+
+        <h1>Brainfuck JIT</h1>
+
+<em>Date: 18 Nov 2012</em><br>
+<em>Author: Erik Dubbelboer</em>
+
+<p><a href="http://en.wikipedia.org/wiki/Brainfuck">Brainfuck</a> is an esoteric programming language with a very minimal amount of instructions.
+This makes it an easy candidate to write interpreters and compilers for. As simple exercise I have written brainfuck interpreters in many languages. This time I tried a different approach. I have written a program to compile brainfuck to native instructions and then execute them.</p>
+
+<p>I’m using <a href="http://www.gnu.org/software/lightning/manual/lightning.html">GNU lightning</a> for the code generation. Lightning provides a portable, fast and easily retargetable dynamic code generation system. Lightning uses simple macro’s to generate instructions, it doesn’t do any optimizations.</p>
+
+<p>Before generating instructions the program performs some minor optimizations:</p>
+
+<ul>
+  <li>Multiple occurrences of &gt; &lt; + and - are combined into a single instruction. Also results in much cleaner assembly.</li>
+  <li>] does it’s own conditional jump instead of jumping to the [ and letting it take care of the condition.</li>
+</ul>
+
+<p>More optimizations could be performed but I’ll save this for a later time.</p>
+
+<h2 id="brainfuckchttpsgithubcomerikdubbelboerbrainfuck-jitblobmasterbrainfuckc"><a href="https://github.com/ErikDubbelboer/brainfuck-jit/blob/master/brainfuck.c">brainfuck.c</a></h2>
+
+<div class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;stdio.h&gt;   </span><span class="cm">/* printf(), fprintf() */</span><span class="cp"></span>
+<span class="cp">#include &lt;string.h&gt;  </span><span class="cm">/* memset() */</span><span class="cp"></span>
+<span class="cp">#include &lt;lightning.h&gt;</span>
+
+<span class="cm">/* Max nesting of [] */</span>
+<span class="k">static</span> <span class="k">const</span> <span class="kt">int</span> <span class="n">maxLoopDepth</span> <span class="o">=</span> <span class="mi">32</span><span class="p">;</span>
+
+<span class="cm">/* The code buffer can&#39;t be stack allocated.</span>
+<span class="cm">   I haven&#39;t checked why but I guess the stack can&#39;t</span>
+<span class="cm">   be made executable. */</span>
+<span class="k">static</span> <span class="n">jit_insn</span> <span class="n">codeBuffer</span><span class="p">[</span><span class="mi">1024</span><span class="o">*</span><span class="mi">64</span><span class="p">];</span> <span class="cm">/* This is the max number of instructions. */</span>
+<span class="k">static</span> <span class="kt">int</span>      <span class="n">dataBuffer</span><span class="p">[</span><span class="mi">30000</span><span class="p">];</span>
+
+<span class="cm">/* Return the number of times *c is repeated.</span>
+<span class="cm">   On return *c will contain the next character. */</span>
+<span class="kt">int</span> <span class="nf">opCount</span><span class="p">(</span><span class="kt">FILE</span><span class="o">*</span> <span class="n">fp</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">c</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">int</span> <span class="n">n</span>  <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>  <span class="cm">/* Seen it at least 1 time. */</span>
+  <span class="kt">int</span> <span class="n">cr</span> <span class="o">=</span> <span class="o">*</span><span class="n">c</span><span class="p">;</span>
+
+  <span class="k">while</span> <span class="p">((</span><span class="o">*</span><span class="n">c</span> <span class="o">=</span> <span class="n">fgetc</span><span class="p">(</span><span class="n">fp</span><span class="p">))</span> <span class="o">!=</span> <span class="n">EOF</span><span class="p">)</span> <span class="p">{</span>
+    <span class="cm">/* Skip invalid characters. */</span>
+    <span class="k">if</span> <span class="p">((</span><span class="o">*</span><span class="n">c</span> <span class="o">==</span> <span class="sc">&#39;&gt;&#39;</span><span class="p">)</span> <span class="o">||</span>
+        <span class="p">(</span><span class="o">*</span><span class="n">c</span> <span class="o">==</span> <span class="sc">&#39;&lt;&#39;</span><span class="p">)</span> <span class="o">||</span>
+        <span class="p">(</span><span class="o">*</span><span class="n">c</span> <span class="o">==</span> <span class="sc">&#39;+&#39;</span><span class="p">)</span> <span class="o">||</span>
+        <span class="p">(</span><span class="o">*</span><span class="n">c</span> <span class="o">==</span> <span class="sc">&#39;-&#39;</span><span class="p">)</span> <span class="o">||</span>
+        <span class="p">(</span><span class="o">*</span><span class="n">c</span> <span class="o">==</span> <span class="sc">&#39;.&#39;</span><span class="p">)</span> <span class="o">||</span>
+        <span class="p">(</span><span class="o">*</span><span class="n">c</span> <span class="o">==</span> <span class="sc">&#39;,&#39;</span><span class="p">)</span> <span class="o">||</span>
+        <span class="p">(</span><span class="o">*</span><span class="n">c</span> <span class="o">==</span> <span class="sc">&#39;[&#39;</span><span class="p">)</span> <span class="o">||</span>
+        <span class="p">(</span><span class="o">*</span><span class="n">c</span> <span class="o">==</span> <span class="sc">&#39;]&#39;</span><span class="p">))</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">*</span><span class="n">c</span> <span class="o">==</span> <span class="n">cr</span><span class="p">)</span> <span class="p">{</span>
+        <span class="o">++</span><span class="n">n</span><span class="p">;</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">n</span><span class="p">;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="n">n</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">argc</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Usage: %s [infile]</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="kt">FILE</span><span class="o">*</span> <span class="n">fp</span> <span class="o">=</span> <span class="n">fopen</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s">&quot;r&quot;</span><span class="p">);</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">fp</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;Error: could not open %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+    <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="n">memset</span><span class="p">(</span><span class="n">dataBuffer</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">dataBuffer</span><span class="p">));</span>
+
+  <span class="cm">/* We use these as a simple stack to keep track of the loops. */</span>
+  <span class="n">jit_insn</span><span class="o">*</span> <span class="n">loopStart</span><span class="p">[</span><span class="n">maxLoopDepth</span><span class="p">];</span>
+  <span class="n">jit_insn</span><span class="o">*</span> <span class="n">loopEnd</span><span class="p">[</span><span class="n">maxLoopDepth</span><span class="p">];</span>
+  <span class="kt">int</span> <span class="n">loop</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+
+  <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">code</span><span class="p">)();</span>
+  <span class="cm">/* Writing: code = (void (*)())jit_set_ip(codeBuffer).vptr;</span>
+<span class="cm">     would seem more natural, but the C99 standard leaves</span>
+<span class="cm">     casting from &quot;void *&quot; to a function pointer undefined.</span>
+<span class="cm">     The assignment used below is the POSIX.1-2003 (Technical</span>
+<span class="cm">     Corrigendum 1) workaround. */</span>
+  <span class="o">*</span><span class="p">(</span><span class="kt">void</span> <span class="o">**</span><span class="p">)(</span><span class="o">&amp;</span><span class="n">code</span><span class="p">)</span> <span class="o">=</span> <span class="n">jit_set_ip</span><span class="p">(</span><span class="n">codeBuffer</span><span class="p">).</span><span class="n">vptr</span><span class="p">;</span>
+
+  <span class="cm">/* Save the start of the code buffer. */</span>
+  <span class="kt">char</span><span class="o">*</span> <span class="n">start</span> <span class="o">=</span> <span class="n">jit_get_ip</span><span class="p">().</span><span class="n">ptr</span><span class="p">;</span>
+
+  <span class="cm">/* Set up our stack frame and set V0 to our data buffer.</span>
+<span class="cm">     Lightning guarantees that the V* registers won&#39;t be overwritten</span>
+<span class="cm">     during function calls. We will use V0 to point to the current</span>
+<span class="cm">     location in our data buffer.</span>
+<span class="cm">     R1 will be used as general purpose register to perform operations on. */</span>
+  <span class="n">jit_prolog</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+  <span class="n">jit_movi_p</span><span class="p">(</span><span class="n">JIT_V0</span><span class="p">,</span> <span class="n">dataBuffer</span><span class="p">);</span>
+
+  <span class="kt">int</span> <span class="n">n</span><span class="p">;</span>
+  <span class="kt">int</span> <span class="n">c</span> <span class="o">=</span> <span class="n">fgetc</span><span class="p">(</span><span class="n">fp</span><span class="p">);</span>
+  <span class="k">do</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">jit_get_ip</span><span class="p">().</span><span class="n">ptr</span> <span class="o">&gt;</span> <span class="p">(</span><span class="kt">char</span><span class="o">*</span><span class="p">)(</span><span class="n">codeBuffer</span> <span class="o">+</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">codeBuffer</span><span class="p">)))</span> <span class="p">{</span>
+      <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;Error: the program is to big!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+      <span class="k">return</span> <span class="mi">4</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">switch</span> <span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">case</span> <span class="sc">&#39;&gt;&#39;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="cm">/* We can&#39;t write jit_addi_i(JIT_V0, JIT_V0, opCount(fp, &amp;c))</span>
+<span class="cm">           because the jit_addi_i() macro evaluates it&#39;s arguments</span>
+<span class="cm">           multiple times. */</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">opCount</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">c</span><span class="p">);</span>
+        <span class="n">jit_addi_i</span><span class="p">(</span><span class="n">JIT_V0</span><span class="p">,</span> <span class="n">JIT_V0</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span> <span class="cm">/* V0 += n */</span>
+        <span class="k">continue</span><span class="p">;</span>
+      <span class="p">}</span>
+
+      <span class="k">case</span> <span class="sc">&#39;&lt;&#39;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">opCount</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">c</span><span class="p">);</span>
+        <span class="n">jit_subi_i</span><span class="p">(</span><span class="n">JIT_V0</span><span class="p">,</span> <span class="n">JIT_V0</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span> <span class="cm">/* V0 -= n */</span>
+        <span class="k">continue</span><span class="p">;</span>
+      <span class="p">}</span>
+
+      <span class="k">case</span> <span class="sc">&#39;+&#39;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">opCount</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">c</span><span class="p">);</span>
+
+        <span class="n">jit_ldr_c</span><span class="p">(</span><span class="n">JIT_R1</span><span class="p">,</span> <span class="n">JIT_V0</span><span class="p">);</span>     <span class="cm">/* R1   =  [V0] */</span>
+        <span class="n">jit_addi_i</span><span class="p">(</span><span class="n">JIT_R1</span><span class="p">,</span> <span class="n">JIT_R1</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span> <span class="cm">/* R1   += n    */</span>
+        <span class="n">jit_str_c</span><span class="p">(</span><span class="n">JIT_V0</span><span class="p">,</span> <span class="n">JIT_R1</span><span class="p">);</span>     <span class="cm">/* [V0] =  R1   */</span>
+        <span class="k">continue</span><span class="p">;</span>
+      <span class="p">}</span>
+
+      <span class="k">case</span> <span class="sc">&#39;-&#39;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">opCount</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">c</span><span class="p">);</span>
+
+        <span class="n">jit_ldr_c</span><span class="p">(</span><span class="n">JIT_R1</span><span class="p">,</span> <span class="n">JIT_V0</span><span class="p">);</span>     <span class="cm">/* R1   =  [V0] */</span>
+        <span class="n">jit_subi_i</span><span class="p">(</span><span class="n">JIT_R1</span><span class="p">,</span> <span class="n">JIT_R1</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span> <span class="cm">/* R1   -= n    */</span>
+        <span class="n">jit_str_c</span><span class="p">(</span><span class="n">JIT_V0</span><span class="p">,</span> <span class="n">JIT_R1</span><span class="p">);</span>     <span class="cm">/* [V0] =  R1   */</span>
+        <span class="k">continue</span><span class="p">;</span>
+      <span class="p">}</span>
+
+      <span class="k">case</span> <span class="sc">&#39;.&#39;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="n">jit_ldr_c</span><span class="p">(</span><span class="n">JIT_R1</span><span class="p">,</span> <span class="n">JIT_V0</span><span class="p">);</span> <span class="cm">/* R1 = [V0] */</span>
+        <span class="n">jit_prepare_i</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+        <span class="n">jit_pusharg_i</span><span class="p">(</span><span class="n">JIT_R1</span><span class="p">);</span>
+        <span class="n">jit_finish</span><span class="p">(</span><span class="n">putchar</span><span class="p">);</span>       <span class="cm">/* putchar(R1) */</span>
+        <span class="k">break</span><span class="p">;</span>
+      <span class="p">}</span>
+
+      <span class="k">case</span> <span class="sc">&#39;,&#39;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="n">jit_prepare</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+        <span class="n">jit_finish</span><span class="p">(</span><span class="n">getchar</span><span class="p">);</span>
+        <span class="n">jit_retval_c</span><span class="p">(</span><span class="n">JIT_R1</span><span class="p">);</span>      <span class="cm">/* R1   = getchar() */</span>
+        <span class="n">jit_str_c</span><span class="p">(</span><span class="n">JIT_V0</span><span class="p">,</span> <span class="n">JIT_R1</span><span class="p">);</span> <span class="cm">/* [V0] = R1        */</span>
+        <span class="k">break</span><span class="p">;</span>
+      <span class="p">}</span>
+
+      <span class="k">case</span> <span class="sc">&#39;[&#39;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="o">++</span><span class="n">loop</span><span class="p">;</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">loop</span> <span class="o">&gt;=</span> <span class="n">maxLoopDepth</span><span class="p">)</span> <span class="p">{</span>
+          <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;Error: nesting level to deep (max %d)!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">maxLoopDepth</span><span class="p">);</span>
+          <span class="k">return</span> <span class="mi">2</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="n">jit_ldr_c</span><span class="p">(</span><span class="n">JIT_R1</span><span class="p">,</span> <span class="n">JIT_V0</span><span class="p">);</span> <span class="cm">/* R1 = [V0] */</span>
+
+        <span class="cm">/* if (R1 == 0) jump to the ] (which is unknown at this point) </span>
+<span class="cm">           We save the instruction location to patch it when we reach the ] */</span>
+        <span class="n">loopEnd</span><span class="p">[</span><span class="n">loop</span><span class="p">]</span> <span class="o">=</span> <span class="n">jit_beqi_i</span><span class="p">(</span><span class="n">jit_forward</span><span class="p">(),</span> <span class="n">JIT_R1</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span> 
+
+        <span class="cm">/* Save this location so we can jump to it from the ] */</span>
+        <span class="n">loopStart</span><span class="p">[</span><span class="n">loop</span><span class="p">]</span> <span class="o">=</span> <span class="n">jit_get_label</span><span class="p">();</span> 
+        <span class="k">break</span><span class="p">;</span>
+      <span class="p">}</span>
+
+      <span class="k">case</span> <span class="sc">&#39;]&#39;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">loop</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+          <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;Error: invalid ] (missing [)</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+          <span class="k">return</span> <span class="mi">3</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="n">jit_ldr_c</span><span class="p">(</span><span class="n">JIT_R1</span><span class="p">,</span> <span class="n">JIT_V0</span><span class="p">);</span> <span class="cm">/* R1 = [V0] */</span>
+
+        <span class="cm">/* if (R1 != 0) jump to the instruction after the [ */</span>
+        <span class="n">jit_bnei_i</span><span class="p">(</span><span class="n">loopStart</span><span class="p">[</span><span class="n">loop</span><span class="p">],</span> <span class="n">JIT_R1</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+
+        <span class="cm">/* Patch the conditional jump in the [ */</span>
+        <span class="n">jit_patch</span><span class="p">(</span><span class="n">loopEnd</span><span class="p">[</span><span class="n">loop</span><span class="p">]);</span>
+
+        <span class="o">--</span><span class="n">loop</span><span class="p">;</span>
+        <span class="k">break</span><span class="p">;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+        
+    <span class="n">c</span> <span class="o">=</span> <span class="n">fgetc</span><span class="p">(</span><span class="n">fp</span><span class="p">);</span>
+  <span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="n">c</span> <span class="o">!=</span> <span class="n">EOF</span><span class="p">);</span>
+
+  <span class="n">fclose</span><span class="p">(</span><span class="n">fp</span><span class="p">);</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="n">loop</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;Error: %d unclosed loops!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">loop</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">5</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="cm">/* Unwind our stack frame. */</span>
+  <span class="n">jit_ret</span><span class="p">();</span>
+
+  <span class="cm">/* Make sure the CPU hasn&#39;t cached any of the generated instructions. */</span>
+  <span class="n">jit_flush_code</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">jit_get_ip</span><span class="p">().</span><span class="n">ptr</span><span class="p">);</span>
+
+
+<span class="cp">#if 0</span><span class="c"></span>
+<span class="c">  /* This code writes the generated instructions to a file</span>
+<span class="c">     so we can disassemble it using ndisasm. */</span>
+<span class="c">  int s = jit_get_ip().ptr - start;</span>
+<span class="c">  fp = fopen(&quot;code.bin&quot;, &quot;wb&quot;);</span>
+<span class="c">  int i;</span>
+<span class="c">  for (i = 0; i &lt; s; ++i) {</span>
+<span class="c">    fputc(start[i], fp);</span>
+<span class="c">  }</span>
+<span class="c">  fclose(fp);</span>
+<span class="cp">#endif</span>
+
+
+  <span class="cm">/* Execute the generated code. */</span>
+  <span class="n">code</span><span class="p">();</span>
+
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></div>
+
+<h2 id="a-simple-program">A simple program</h2>
+
+<p>The following is a simple program that will output “a\n”.</p>
+
+<div class="highlight"><pre><code class="language-brainfuck" data-lang="brainfuck"><span class="nb">++++++++++</span><span class="c">  set cell #0 to 10</span>
+<span class="k">[</span><span class="c">           loop 10 times based on cell #0</span>
+<span class="nv">&gt;</span><span class="nb">+++++++++</span><span class="c">  add 9 to cell #1</span>
+<span class="nv">&gt;</span><span class="nb">+</span><span class="c">          add 1 to cell #2</span>
+<span class="nv">&lt;&lt;</span><span class="c"></span>
+<span class="nb">-</span><span class="c">           go back to cell #0 for the loop</span>
+<span class="k">]</span><span class="c"></span>
+<span class="nv">&gt;</span><span class="c"></span>
+<span class="nb">+++++++</span><span class="c">     add 7 to cell #1 to increase it to 97</span>
+<span class="nt">.</span><span class="c">           output cell #1 (97 = ascii a)</span>
+<span class="nv">&gt;</span><span class="c"></span>
+<span class="nt">.</span><span class="c">           output cell #2 (10 = ascii newline)</span></code></pre></div>
+
+<h2 id="generated-assembly">Generated assembly</h2>
+
+<p>The above program generates the following assembly on my x86_64 Ubuntu machine.</p>
+
+<p>The output was generated using <code>ndisasm -b 64 code.bin</code>.</p>
+
+<p><code>rbx</code> is used as the <code>V0</code> register from the C code. <code>r10</code> is used as <code>R1</code>.</p>
+
+<div class="highlight"><pre><code class="language-nasm" data-lang="nasm"><span class="c1">; Set up out stack frame.</span>
+  <span class="nf">push</span> <span class="nb">rbx</span>
+  <span class="nf">push</span> <span class="nv">r12</span>
+  <span class="nf">push</span> <span class="nv">r13</span>
+  <span class="nf">push</span> <span class="nv">r14</span>
+  <span class="nf">push</span> <span class="nb">rbp</span>
+  <span class="nf">mov</span> <span class="nb">rbp</span><span class="p">,</span><span class="nb">rsp</span>
+
+  <span class="c1">; Set rbx to the location of our data array (dataBuffer in C).</span>
+  <span class="nf">mov</span> <span class="nb">rbx</span><span class="p">,</span><span class="mh">0x613100</span>
+
+  <span class="c1">; Add 10 to cell #0.</span>
+  <span class="nf">movsx</span> <span class="nv">r10</span><span class="p">,</span><span class="kt">byte</span> <span class="p">[</span><span class="nb">rbx</span><span class="p">]</span>
+  <span class="nf">add</span> <span class="nb">r10d</span><span class="p">,</span><span class="kt">byte</span> <span class="o">+</span><span class="mh">0xa</span>
+  <span class="nf">mov</span> <span class="p">[</span><span class="nb">rbx</span><span class="p">],</span><span class="nb">r10b</span>
+
+  <span class="c1">; Test if cell #0 is equal to 0.</span>
+  <span class="nf">movsx</span> <span class="nv">r10</span><span class="p">,</span><span class="kt">byte</span> <span class="p">[</span><span class="nb">rbx</span><span class="p">]</span>
+  <span class="nf">test</span> <span class="nb">r10d</span><span class="p">,</span><span class="nb">r10d</span>
+  <span class="nf">jz</span> <span class="nv">.loopEnd</span>
+<span class="nl">.loopStart:</span>
+
+  <span class="c1">; Add 1 to V0.</span>
+  <span class="nf">add</span> <span class="nb">ebx</span><span class="p">,</span><span class="kt">byte</span> <span class="o">+</span><span class="mh">0x1</span>
+
+  <span class="c1">; Add 9 to cell #1.</span>
+  <span class="nf">movsx</span> <span class="nv">r10</span><span class="p">,</span><span class="kt">byte</span> <span class="p">[</span><span class="nb">rbx</span><span class="p">]</span>
+  <span class="nf">add</span> <span class="nb">r10d</span><span class="p">,</span><span class="kt">byte</span> <span class="o">+</span><span class="mh">0x9</span>
+  <span class="nf">mov</span> <span class="p">[</span><span class="nb">rbx</span><span class="p">],</span><span class="nb">r10b</span>
+
+  <span class="c1">; Add 1 to V0.</span>
+  <span class="nf">add</span> <span class="nb">ebx</span><span class="p">,</span><span class="kt">byte</span> <span class="o">+</span><span class="mh">0x1</span>
+
+  <span class="c1">; Add 1 to cell #2.</span>
+  <span class="nf">movsx</span> <span class="nv">r10</span><span class="p">,</span><span class="kt">byte</span> <span class="p">[</span><span class="nb">rbx</span><span class="p">]</span>
+  <span class="nf">add</span> <span class="nb">r10d</span><span class="p">,</span><span class="kt">byte</span> <span class="o">+</span><span class="mh">0x1</span>
+  <span class="nf">mov</span> <span class="p">[</span><span class="nb">rbx</span><span class="p">],</span><span class="nb">r10b</span>
+
+  <span class="c1">; Subtract 2 from V0.</span>
+  <span class="nf">add</span> <span class="nb">ebx</span><span class="p">,</span><span class="kt">byte</span> <span class="o">-</span><span class="mh">0x2</span>
+
+  <span class="c1">; Subtract 1 from cell #0.</span>
+  <span class="nf">movsx</span> <span class="nv">r10</span><span class="p">,</span><span class="kt">byte</span> <span class="p">[</span><span class="nb">rbx</span><span class="p">]</span>
+  <span class="nf">add</span> <span class="nb">r10d</span><span class="p">,</span><span class="kt">byte</span> <span class="o">-</span><span class="mh">0x1</span>
+  <span class="nf">mov</span> <span class="p">[</span><span class="nb">rbx</span><span class="p">],</span><span class="nb">r10b</span>
+
+  <span class="c1">; Test if cell #0 is not equal to 0.</span>
+  <span class="nf">movsx</span> <span class="nv">r10</span><span class="p">,</span><span class="kt">byte</span> <span class="p">[</span><span class="nb">rbx</span><span class="p">]</span>
+  <span class="nf">test</span> <span class="nb">r10d</span><span class="p">,</span><span class="nb">r10d</span>
+  <span class="nf">jnz</span> <span class="nv">.loopStart</span>
+<span class="nl">.loopEnd:</span>
+
+  <span class="c1">; Add 1 to V0.</span>
+  <span class="nf">add</span> <span class="nb">ebx</span><span class="p">,</span><span class="kt">byte</span> <span class="o">+</span><span class="mh">0x1</span>
+
+  <span class="c1">; Add 7 to cell #1.</span>
+  <span class="nf">movsx</span> <span class="nv">r10</span><span class="p">,</span><span class="kt">byte</span> <span class="p">[</span><span class="nb">rbx</span><span class="p">]</span>
+  <span class="nf">add</span> <span class="nb">r10d</span><span class="p">,</span><span class="kt">byte</span> <span class="o">+</span><span class="mh">0x7</span>
+  <span class="nf">mov</span> <span class="p">[</span><span class="nb">rbx</span><span class="p">],</span><span class="nb">r10b</span>
+
+  <span class="c1">; Output cell #1.</span>
+  <span class="nf">movsx</span> <span class="nv">r10</span><span class="p">,</span><span class="kt">byte</span> <span class="p">[</span><span class="nb">rbx</span><span class="p">]</span>
+  <span class="nf">mov</span> <span class="nb">rdi</span><span class="p">,</span><span class="nv">r10</span>
+  <span class="nf">mov</span> <span class="nb">al</span><span class="p">,</span><span class="mh">0x0</span>
+  <span class="nf">mov</span> <span class="nv">r12</span><span class="p">,</span><span class="mh">0x4006e0</span> <span class="c1">; The location of the putchar() function.</span>
+  <span class="nf">call</span> <span class="nv">r12</span>
+
+  <span class="c1">; Add 1 to V0.</span>
+  <span class="nf">add</span> <span class="nb">ebx</span><span class="p">,</span><span class="kt">byte</span> <span class="o">+</span><span class="mh">0x1</span>
+
+  <span class="c1">; Output cell #2.</span>
+  <span class="nf">movsx</span> <span class="nv">r10</span><span class="p">,</span><span class="kt">byte</span> <span class="p">[</span><span class="nb">rbx</span><span class="p">]</span>
+  <span class="nf">mov</span> <span class="nb">rdi</span><span class="p">,</span><span class="nv">r10</span>
+  <span class="nf">mov</span> <span class="nb">al</span><span class="p">,</span><span class="mh">0x0</span>
+  <span class="nf">mov</span> <span class="nv">r12</span><span class="p">,</span><span class="mh">0x4006e0</span>
+  <span class="nf">call</span> <span class="nv">r12</span>
+
+  <span class="c1">; Unwind our stack frame.</span>
+  <span class="nf">leave</span>
+  <span class="nf">pop</span> <span class="nv">r14</span>
+  <span class="nf">pop</span> <span class="nv">r13</span>
+  <span class="nf">pop</span> <span class="nv">r12</span>
+  <span class="nf">pop</span> <span class="nb">rbx</span>
+  <span class="nf">ret</span></code></pre></div>
+
+
+
+<div id=disqus_thread></div>
+<script>
+  var disqus_shortname = 'erikscode';
+
+  (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+
+
+
+      </div><!-- #content -->
+    </div><!-- #wrapper -->
+  </div><!-- #main -->
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-7915266-3', 'dubbelboer.com');
+    ga('send', 'pageview');
+  </script>
+</body>
+</html>

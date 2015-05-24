@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset=utf-8>
+
+
+
+<title>PHP shell_exec with a timeout - Erik's Code</title>
+
+<meta name=keywords content="php exec timeout">
+<link rel="author" href="https://plus.google.com/+ErikDubbelboer" />
+
+
+<link href="/css/common.css" media="screen" rel="stylesheet" type="text/css">
+<link href="/css/pygments.css" media="screen" rel="stylesheet" type="text/css">
+</head>  
+<body>
+  <div id="main">
+    <div id="header-wrapper">
+      <div id="header" class="basic" >
+        <div class="site">
+          <a class="logo" href="/"><h2>Erik's Code</h2></a>
+          <div class="topsearch">
+            <ul class="nav logged_out">
+              <li><a href="/about.html">About Erik</a></li>
+            </ul>
+          </div><!-- .topsearch -->
+        </div><!-- .site -->
+      </div><!-- #header -->
+    </div><!-- #header-wrapper -->
+    <div id="wrapper">
+      <div id="content" class="site">
+
+        <h1>PHP shell_exec with a timeout</h1>
+
+<em>Date: 24 Aug 2012</em><br>
+<em>Author: Erik Dubbelboer</em>
+
+<p>This function allows you to execute another process but with a timeout on how long it’s allowed to run.</p>
+
+<h2 id="update-2012-08-28">Update <em>2012-08-28</em></h2>
+
+<p>Changed the code to use exec inside <code>proc_open</code>. This causes <code>proc_terminate</code> to work correctly. One disadvantage is that you need to use the full path of the executable you want to run.</p>
+
+<p>Also setting environment variables using VARIABLE=something before the command won’t work anymore. This can be fixed by calling <code>putenv</code> before calling the function.</p>
+
+<p>The function now throws an exception in case of an error.</p>
+
+<div class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span>
+
+<span class="sd">/**</span>
+<span class="sd"> * Execute a command and return it&#39;s output. Either wait until the command exits or the timeout has expired.</span>
+<span class="sd"> *</span>
+<span class="sd"> * @param string $cmd     Command to execute.</span>
+<span class="sd"> * @param number $timeout Timeout in seconds.</span>
+<span class="sd"> * @return string Output of the command.</span>
+<span class="sd"> * @throws \Exception</span>
+<span class="sd"> */</span>
+<span class="k">function</span> <span class="nf">exec_timeout</span><span class="p">(</span><span class="nv">$cmd</span><span class="p">,</span> <span class="nv">$timeout</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// File descriptors passed to the process.</span>
+  <span class="nv">$descriptors</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+    <span class="mi">0</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;pipe&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">),</span>  <span class="c1">// stdin</span>
+    <span class="mi">1</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;pipe&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">),</span>  <span class="c1">// stdout</span>
+    <span class="mi">2</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;pipe&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>   <span class="c1">// stderr</span>
+  <span class="p">);</span>
+
+  <span class="c1">// Start the process.</span>
+  <span class="nv">$process</span> <span class="o">=</span> <span class="nb">proc_open</span><span class="p">(</span><span class="s1">&#39;exec &#39;</span> <span class="o">.</span> <span class="nv">$cmd</span><span class="p">,</span> <span class="nv">$descriptors</span><span class="p">,</span> <span class="nv">$pipes</span><span class="p">);</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nb">is_resource</span><span class="p">(</span><span class="nv">$process</span><span class="p">))</span> <span class="p">{</span>
+    <span class="k">throw</span> <span class="k">new</span> <span class="nx">\Exception</span><span class="p">(</span><span class="s1">&#39;Could not execute process&#39;</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="c1">// Set the stdout stream to none-blocking.</span>
+  <span class="nb">stream_set_blocking</span><span class="p">(</span><span class="nv">$pipes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">0</span><span class="p">);</span>
+
+  <span class="c1">// Turn the timeout into microseconds.</span>
+  <span class="nv">$timeout</span> <span class="o">=</span> <span class="nv">$timeout</span> <span class="o">*</span> <span class="mi">1000000</span><span class="p">;</span>
+
+  <span class="c1">// Output buffer.</span>
+  <span class="nv">$buffer</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+
+  <span class="c1">// While we have time to wait.</span>
+  <span class="k">while</span> <span class="p">(</span><span class="nv">$timeout</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nv">$start</span> <span class="o">=</span> <span class="nb">microtime</span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
+
+    <span class="c1">// Wait until we have output or the timer expired.</span>
+    <span class="nv">$read</span>  <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="nv">$pipes</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+    <span class="nv">$other</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
+    <span class="nb">stream_select</span><span class="p">(</span><span class="nv">$read</span><span class="p">,</span> <span class="nv">$other</span><span class="p">,</span> <span class="nv">$other</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nv">$timeout</span><span class="p">);</span>
+
+    <span class="c1">// Get the status of the process.</span>
+    <span class="c1">// Do this before we read from the stream,</span>
+    <span class="c1">// this way we can&#39;t lose the last bit of output if the process dies between these functions.</span>
+    <span class="nv">$status</span> <span class="o">=</span> <span class="nb">proc_get_status</span><span class="p">(</span><span class="nv">$process</span><span class="p">);</span>
+
+    <span class="c1">// Read the contents from the buffer.</span>
+    <span class="c1">// This function will always return immediately as the stream is none-blocking.</span>
+    <span class="nv">$buffer</span> <span class="o">.=</span> <span class="nb">stream_get_contents</span><span class="p">(</span><span class="nv">$pipes</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nv">$status</span><span class="p">[</span><span class="s1">&#39;running&#39;</span><span class="p">])</span> <span class="p">{</span>
+      <span class="c1">// Break from this loop if the process exited before the timeout.</span>
+      <span class="k">break</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="c1">// Subtract the number of microseconds that we waited.</span>
+    <span class="nv">$timeout</span> <span class="o">-=</span> <span class="p">(</span><span class="nb">microtime</span><span class="p">(</span><span class="k">true</span><span class="p">)</span> <span class="o">-</span> <span class="nv">$start</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1000000</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="c1">// Check if there were any errors.</span>
+  <span class="nv">$errors</span> <span class="o">=</span> <span class="nb">stream_get_contents</span><span class="p">(</span><span class="nv">$pipes</span><span class="p">[</span><span class="mi">2</span><span class="p">]);</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">empty</span><span class="p">(</span><span class="nv">$errors</span><span class="p">))</span> <span class="p">{</span>
+    <span class="k">throw</span> <span class="k">new</span> <span class="nx">\Exception</span><span class="p">(</span><span class="nv">$errors</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="c1">// Kill the process in case the timeout expired and it&#39;s still running.</span>
+  <span class="c1">// If the process already exited this won&#39;t do anything.</span>
+  <span class="nb">proc_terminate</span><span class="p">(</span><span class="nv">$process</span><span class="p">,</span> <span class="mi">9</span><span class="p">);</span>
+
+  <span class="c1">// Close all streams.</span>
+  <span class="nb">fclose</span><span class="p">(</span><span class="nv">$pipes</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+  <span class="nb">fclose</span><span class="p">(</span><span class="nv">$pipes</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+  <span class="nb">fclose</span><span class="p">(</span><span class="nv">$pipes</span><span class="p">[</span><span class="mi">2</span><span class="p">]);</span>
+
+  <span class="nb">proc_close</span><span class="p">(</span><span class="nv">$process</span><span class="p">);</span>
+
+  <span class="k">return</span> <span class="nv">$buffer</span><span class="p">;</span>
+<span class="p">}</span></code></pre></div>
+
+<p>The function will not work on windows due to limitations in windows and PHP:</p>
+
+<p><code>Use of stream_select() on file descriptors returned by proc_open() will fail and return FALSE under Windows.</code></p>
+
+
+
+<div id=disqus_thread></div>
+<script>
+  var disqus_shortname = 'erikscode';
+
+  (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+
+
+
+      </div><!-- #content -->
+    </div><!-- #wrapper -->
+  </div><!-- #main -->
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-7915266-3', 'dubbelboer.com');
+    ga('send', 'pageview');
+  </script>
+</body>
+</html>

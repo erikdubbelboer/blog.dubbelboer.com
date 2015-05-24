@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset=utf-8>
+
+
+
+<title>Blowfish password encryption - Erik's Code</title>
+
+<meta name=keywords content="php blowfish password">
+<link rel="author" href="https://plus.google.com/+ErikDubbelboer" />
+
+
+<link href="/css/common.css" media="screen" rel="stylesheet" type="text/css">
+<link href="/css/pygments.css" media="screen" rel="stylesheet" type="text/css">
+</head>  
+<body>
+  <div id="main">
+    <div id="header-wrapper">
+      <div id="header" class="basic" >
+        <div class="site">
+          <a class="logo" href="/"><h2>Erik's Code</h2></a>
+          <div class="topsearch">
+            <ul class="nav logged_out">
+              <li><a href="/about.html">About Erik</a></li>
+            </ul>
+          </div><!-- .topsearch -->
+        </div><!-- .site -->
+      </div><!-- #header -->
+    </div><!-- #header-wrapper -->
+    <div id="wrapper">
+      <div id="content" class="site">
+
+        <h1>Blowfish password encryption</h1>
+
+<em>Date: 14 Mar 2012</em><br>
+<em>Author: Erik Dubbelboer</em>
+
+<p>Since 5.3 PHP supports Blowfish hashing. This is commonly seen as the most secure way to hash a password. The main advantage is that the function can be set to be really slow which makes brute forcing useless.</p>
+
+<p>Here’s an example implementation:</p>
+
+<div class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span>
+
+<span class="k">class</span> <span class="nc">BlowfishPassword</span> <span class="p">{</span>
+  <span class="k">const</span> <span class="no">strength</span> <span class="o">=</span> <span class="mi">13</span><span class="p">;</span> <span class="c1">// On our machine this makes it slow but not so slow as to annoy the user (less then 1 second).</span>
+
+  <span class="k">private</span> <span class="nv">$hash</span><span class="p">;</span>
+
+  <span class="k">public</span> <span class="k">function</span> <span class="nf">__construct</span><span class="p">(</span><span class="nv">$password</span><span class="p">,</span> <span class="nv">$hash</span> <span class="o">=</span> <span class="k">false</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nv">$hash</span> <span class="o">!==</span> <span class="k">false</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">hash</span> <span class="o">=</span> <span class="nv">$hash</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="nv">$salt</span> <span class="o">=</span> <span class="nx">str_random</span><span class="p">(</span><span class="mi">22</span><span class="p">,</span> <span class="s1">&#39;\.\/0-9A-Za-z&#39;</span><span class="p">);</span> <span class="c1">// Random per password salt.</span>
+
+      <span class="nv">$strength</span> <span class="o">=</span> <span class="nb">sprintf</span><span class="p">(</span><span class="s1">&#39;%02d&#39;</span><span class="p">,</span> <span class="nv">$this</span><span class="o">::</span><span class="na">strength</span><span class="p">);</span> <span class="c1">// Always needs to be 2 characters.</span>
+
+      <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">hash</span> <span class="o">=</span> <span class="nb">crypt</span><span class="p">(</span><span class="nv">$password</span><span class="p">,</span> <span class="s1">&#39;$2a$&#39;</span> <span class="o">.</span> <span class="nv">$strength</span> <span class="o">.</span> <span class="s1">&#39;$&#39;</span> <span class="o">.</span> <span class="nv">$salt</span> <span class="o">.</span> <span class="s1">&#39;$&#39;</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="k">public</span> <span class="k">function</span> <span class="nf">equals</span><span class="p">(</span><span class="nv">$password</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">hash</span> <span class="o">===</span> <span class="nb">crypt</span><span class="p">(</span><span class="nv">$password</span><span class="p">,</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">hash</span><span class="p">));</span>
+  <span class="p">}</span>
+
+  <span class="k">public</span> <span class="k">function</span> <span class="nf">getHash</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">hash</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></div>
+
+<p>The <code>str_random()</code> function is implemented like this:</p>
+
+<div class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span>
+<span class="k">function</span> <span class="nf">str_random</span><span class="p">(</span><span class="nv">$length</span><span class="p">,</span> <span class="nv">$range</span> <span class="o">=</span> <span class="k">true</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nv">$r</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+
+  <span class="k">while</span> <span class="p">(</span><span class="nv">$length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nv">$c</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="nb">rand</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">126</span><span class="p">));</span>
+
+    <span class="k">if</span> <span class="p">((</span><span class="nv">$range</span> <span class="o">===</span> <span class="k">true</span><span class="p">)</span> <span class="o">||</span> <span class="p">(</span><span class="nb">preg_match</span><span class="p">(</span><span class="s1">&#39;/[&#39;</span><span class="o">.</span><span class="nv">$range</span><span class="o">.</span><span class="s1">&#39;]/&#39;</span><span class="p">,</span> <span class="nv">$c</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">))</span> <span class="p">{</span>
+      <span class="nv">$r</span> <span class="o">.=</span> <span class="nv">$c</span><span class="p">;</span>
+      <span class="o">--</span><span class="nv">$length</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="nv">$r</span><span class="p">;</span>
+<span class="p">}</span></code></pre></div>
+
+
+
+<div id=disqus_thread></div>
+<script>
+  var disqus_shortname = 'erikscode';
+
+  (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+
+
+
+      </div><!-- #content -->
+    </div><!-- #wrapper -->
+  </div><!-- #main -->
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-7915266-3', 'dubbelboer.com');
+    ga('send', 'pageview');
+  </script>
+</body>
+</html>

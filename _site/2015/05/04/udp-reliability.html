@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset=utf-8>
+
+
+
+<title>Cross datacenter UDP reliability - Erik's Code</title>
+
+<meta name=keywords content="UDP datacenter linux go golang">
+<link rel="author" href="https://plus.google.com/+ErikDubbelboer" />
+
+
+<link href="/css/common.css" media="screen" rel="stylesheet" type="text/css">
+<link href="/css/pygments.css" media="screen" rel="stylesheet" type="text/css">
+</head>  
+<body>
+  <div id="main">
+    <div id="header-wrapper">
+      <div id="header" class="basic" >
+        <div class="site">
+          <a class="logo" href="/"><h2>Erik's Code</h2></a>
+          <div class="topsearch">
+            <ul class="nav logged_out">
+              <li><a href="/about.html">About Erik</a></li>
+            </ul>
+          </div><!-- .topsearch -->
+        </div><!-- .site -->
+      </div><!-- #header -->
+    </div><!-- #header-wrapper -->
+    <div id="wrapper">
+      <div id="content" class="site">
+
+        <h1>Cross datacenter UDP reliability</h1>
+
+<em>Date: 04 May 2015</em><br>
+<em>Author: Erik Dubbelboer</em>
+
+<p>For an internal project I did some research into how reliable <a href="https://en.wikipedia.org/wiki/User_Datagram_Protocol">UDP</a> really is. In our case each new packets would overwrite any old ones so missing a couple of packets would be no issue. With UDP it’s technically also possible for packets to arrive in a different order. This would easily be detected by having an incrementing version counter and only accepting the packet if it has a higher version than the last one we had seen.</p>
+
+<p>As described missing a couple of packets wouldn’t be an issue as long as we don’t miss to many. To test how reliable UDP really is I setup a test between one of our servers in London and one in Salt Lake City.</p>
+
+<p>The following <a href="https://golang.org/">Golang</a> code was run on the London side:</p>
+
+<div class="highlight"><pre><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&quot;encoding/binary&quot;</span>
+	<span class="s">&quot;log&quot;</span>
+	<span class="s">&quot;net&quot;</span>
+<span class="p">)</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">addr</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">net</span><span class="p">.</span><span class="nx">ResolveUDPAddr</span><span class="p">(</span><span class="s">&quot;udp&quot;</span><span class="p">,</span> <span class="s">&quot;0.0.0.0:9999&quot;</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">log</span><span class="p">.</span><span class="nx">Panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="nx">conn</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">net</span><span class="p">.</span><span class="nx">ListenUDP</span><span class="p">(</span><span class="s">&quot;udp&quot;</span><span class="p">,</span> <span class="nx">addr</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">log</span><span class="p">.</span><span class="nx">Panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="nx">current</span> <span class="o">:=</span> <span class="nb">int64</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+	<span class="nx">buffer</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="mi">1500</span><span class="p">)</span>
+	<span class="k">for</span> <span class="p">{</span>   
+		<span class="k">if</span> <span class="nx">n</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">conn</span><span class="p">.</span><span class="nx">Read</span><span class="p">(</span><span class="nx">buffer</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="nx">log</span><span class="p">.</span><span class="nx">Print</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="nx">n</span> <span class="o">!=</span> <span class="mi">1400</span> <span class="p">{</span>
+			<span class="nx">log</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;only received %d bytes&quot;</span><span class="p">,</span> <span class="nx">n</span><span class="p">)</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+			<span class="nx">x</span> <span class="o">:=</span> <span class="nb">int64</span><span class="p">(</span><span class="nx">binary</span><span class="p">.</span><span class="nx">LittleEndian</span><span class="p">.</span><span class="nx">Uint64</span><span class="p">(</span><span class="nx">buffer</span><span class="p">))</span>
+			<span class="nx">missed</span> <span class="o">:=</span> <span class="nx">x</span> <span class="o">-</span> <span class="nx">current</span>
+			<span class="k">if</span> <span class="nx">missed</span> <span class="o">!=</span> <span class="mi">1</span> <span class="p">{</span>
+				<span class="nx">log</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;missed %d packets&quot;</span><span class="p">,</span> <span class="nx">x</span><span class="o">-</span><span class="nx">current</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+			<span class="p">}</span>
+			<span class="nx">current</span> <span class="p">=</span> <span class="nx">x</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span></code></pre></div>
+
+<p>This Golang code was run on the Salt Lake City side:</p>
+
+<div class="highlight"><pre><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&quot;encoding/binary&quot;</span>
+	<span class="s">&quot;log&quot;</span>
+	<span class="s">&quot;net&quot;</span>
+	<span class="s">&quot;time&quot;</span>
+<span class="p">)</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">raddr</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">net</span><span class="p">.</span><span class="nx">ResolveUDPAddr</span><span class="p">(</span><span class="s">&quot;udp&quot;</span><span class="p">,</span> <span class="s">&quot;london-1:9999&quot;</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">log</span><span class="p">.</span><span class="nx">Panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="nx">laddr</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">net</span><span class="p">.</span><span class="nx">ResolveUDPAddr</span><span class="p">(</span><span class="s">&quot;udp&quot;</span><span class="p">,</span> <span class="s">&quot;0.0.0.0:0&quot;</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">log</span><span class="p">.</span><span class="nx">Panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="nx">conn</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">net</span><span class="p">.</span><span class="nx">ListenUDP</span><span class="p">(</span><span class="s">&quot;udp&quot;</span><span class="p">,</span> <span class="nx">laddr</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">log</span><span class="p">.</span><span class="nx">Panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="nx">current</span> <span class="o">:=</span> <span class="nb">int64</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+	<span class="nx">buffer</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="mi">1400</span><span class="p">)</span>
+
+	<span class="k">for</span> <span class="p">{</span>   
+		<span class="nx">binary</span><span class="p">.</span><span class="nx">LittleEndian</span><span class="p">.</span><span class="nx">PutUint64</span><span class="p">(</span><span class="nx">buffer</span><span class="p">[:</span><span class="mi">8</span><span class="p">],</span> <span class="nb">uint64</span><span class="p">(</span><span class="nx">current</span><span class="p">))</span>
+
+		<span class="k">if</span> <span class="nx">n</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">conn</span><span class="p">.</span><span class="nx">WriteToUDP</span><span class="p">(</span><span class="nx">buffer</span><span class="p">,</span> <span class="nx">raddr</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="nx">log</span><span class="p">.</span><span class="nx">Print</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="nx">n</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="nx">buffer</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">log</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;only %d bytes written&quot;</span><span class="p">,</span> <span class="nx">n</span><span class="p">)</span>
+		<span class="p">}</span>
+
+		<span class="nx">current</span><span class="o">++</span>
+
+		<span class="nx">time</span><span class="p">.</span><span class="nx">Sleep</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nx">Millisecond</span> <span class="o">*</span> <span class="mi">500</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="p">}</span></code></pre></div>
+
+<p>I ran the two programs for multiple days. At the end of this post you can see the raw output. Below is a small table showing how many packets were missed per day:</p>
+
+<pre>
+day - misses
+15  - 10
+16  - 1
+17  - 4
+18  - 0
+19  - 0
+20  - 343
+21  - 5
+</pre>
+
+<p>I did not expect the connection to be this stable. With 172.800 packets being send per day a loss of less than 10 packets (0,005%) is quite good and very usable. But what happened on the 20th shows where UDP is a problem. I did not notice on the day it self so I could not do any research, but my guess is that one or more of the networks between the servers had a higher usage than usual. This resulted in a lot of packets being dropped that day. Using TCP would probably have resulted in either the packets not being dropped or at least retried. My next test will be to run a TCP connection next to UDP to it to see if the TCP connection keeps being reliable while UDP fails.</p>
+
+<p>My conclusion from this test was that UDP was almost reliable enough. We ended up using UDP for light frequent updates while using TCP for periodic slower updates.</p>
+
+<p>Raw output:</p>
+
+<pre>
+2015/03/15 07:37:39 missed 1 packets
+2015/03/15 07:43:42 missed 1 packets
+2015/03/15 14:41:59 missed 1 packets
+2015/03/15 14:42:32 missed 1 packets
+2015/03/15 14:44:37 missed 1 packets
+2015/03/15 14:49:15 missed 1 packets
+2015/03/15 14:49:17 missed 1 packets
+2015/03/15 14:49:19 missed 1 packets
+2015/03/15 14:50:04 missed 1 packets
+2015/03/15 15:40:02 missed 1 packets
+2015/03/16 20:11:26 missed 1 packets
+2015/03/17 10:58:57 missed 3 packets
+2015/03/17 10:58:58 missed 1 packets
+2015/03/20 06:46:25 missed 169 packets
+2015/03/20 06:47:12 missed 8 packets
+2015/03/20 06:47:32 missed 10 packets
+2015/03/20 06:48:00 missed 33 packets
+2015/03/20 06:48:27 missed 7 packets
+2015/03/20 06:48:53 missed 14 packets
+2015/03/20 06:49:14 missed 16 packets
+2015/03/20 06:49:37 missed 15 packets
+2015/03/20 06:50:11 missed 3 packets
+2015/03/20 07:51:16 missed 10 packets
+2015/03/20 14:43:35 missed 7 packets
+2015/03/20 14:46:41 missed 4 packets
+2015/03/20 15:14:05 missed 9 packets
+2015/03/20 15:14:32 missed 11 packets
+2015/03/20 15:14:50 missed 11 packets
+2015/03/20 15:15:50 missed 3 packets
+2015/03/20 15:16:37 missed 8 packets
+2015/03/20 16:07:16 missed 1 packets
+2015/03/20 16:07:18 missed 1 packets
+2015/03/20 16:07:43 missed 1 packets
+2015/03/20 16:07:45 missed 2 packets
+2015/03/21 05:24:25 missed 3 packets
+2015/03/21 07:37:53 missed 1 packets
+2015/03/21 09:49:08 missed 2 packets
+</pre>
+
+
+
+<div id=disqus_thread></div>
+<script>
+  var disqus_shortname = 'erikscode';
+
+  (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+
+
+
+      </div><!-- #content -->
+    </div><!-- #wrapper -->
+  </div><!-- #main -->
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-7915266-3', 'dubbelboer.com');
+    ga('send', 'pageview');
+  </script>
+</body>
+</html>
