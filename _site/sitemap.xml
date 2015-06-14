@@ -3,6 +3,11 @@
 
 
 <url>
+<loc>http://blog.dubbelboer.com/2015/06/14/write-thread-safety.html</loc>
+<priority>0.6</priority>
+</url>
+
+<url>
 <loc>http://blog.dubbelboer.com/2015/05/24/go-intmap-marshal.html</loc>
 <priority>0.6</priority>
 </url>
