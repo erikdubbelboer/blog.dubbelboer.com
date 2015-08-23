@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset=utf-8>
+
+<title>sync.RWMutex vs atomic.Value vs unsafe.Pointer - Erik's Code</title>
+
+<meta name=keywords content="golang go sync RWMutex atomic Value unsafe Pointer">
+<link rel="author" href="https://plus.google.com/+ErikDubbelboer" />
+
+
+<link href="/css/common.css" media="screen" rel="stylesheet" type="text/css">
+<link href="/css/pygments.css" media="screen" rel="stylesheet" type="text/css">
+</head>  
+<body>
+  <div id="main">
+    <div id="header-wrapper">
+      <div id="header" class="basic" >
+        <div class="site">
+          <a class="logo" href="/"><h2>Erik's Code</h2></a>
+          <div class="topsearch">
+            <ul class="nav logged_out">
+              <li><a href="/about.html">About Erik</a></li>
+            </ul>
+          </div><!-- .topsearch -->
+        </div><!-- .site -->
+      </div><!-- #header -->
+    </div><!-- #header-wrapper -->
+    <div id="wrapper">
+      <div id="content" class="site">
+
+        <h1>sync.RWMutex vs atomic.Value vs unsafe.Pointer</h1>
+
+<em>Date: 23 Aug 2015</em><br>
+<em>Author: Erik Dubbelboer</em>
+
+<p>When using multiple goroutines you often want to have shared access of some read only resource. There are multiple ways to implements this. Three of them are; sync.RWMutex, atomic.Value and unsafe.Pointer.</p>
+
+<p>sync.RWMutex is a whole mutex so I would expect that to be the slowest.</p>
+
+<p>atomic.Value basically stores an interface{} value and makes sure that once assigned the type is never allowed to change.</p>
+
+<p>And unsafe.Pointer is just a simple pointer on which we use the atomic.StorePointer and atomic.LoadPointer methods to get atomic access.</p>
+
+<p>So when your code is simple and you know you are only storing one type using unsafe.Pointer instead of atomic.Value can be much faster.
+Here are the benchmark results on my mac-book:</p>
+
+<pre>
+$ go test -bench .
+BenchmarkPointer 200000000         7.76 ns/op
+BenchmarkValue__  50000000          25.7 ns/op
+BenchmarkRWMutex  100000000         22.6 ns/op
+$ GOMAXPROCS=6 go test -bench .
+BenchmarkPointer-6  100000000         11.9 ns/op
+BenchmarkValue__-6  30000000          39.9 ns/op
+BenchmarkRWMutex-6  5000000       302 ns/op
+</pre>
+
+<p>The code:</p>
+
+<div class="highlight"><pre><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+        <span class="s">&quot;runtime&quot;</span>
+        <span class="s">&quot;sync&quot;</span>
+        <span class="s">&quot;sync/atomic&quot;</span>
+        <span class="s">&quot;testing&quot;</span>
+        <span class="s">&quot;unsafe&quot;</span>
+<span class="p">)</span>
+
+
+<span class="kd">func</span> <span class="nx">BenchmarkPointer</span><span class="p">(</span><span class="nx">b</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">B</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">ptr</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span>
+
+        <span class="nx">m</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">int</span><span class="p">]</span><span class="kt">int</span><span class="p">)</span>
+        <span class="nx">m</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">=</span> <span class="mi">2</span>
+
+        <span class="nx">atomic</span><span class="p">.</span><span class="nx">StorePointer</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">ptr</span><span class="p">,</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">m</span><span class="p">))</span>
+
+        <span class="kd">var</span> <span class="nx">wg</span> <span class="nx">sync</span><span class="p">.</span><span class="nx">WaitGroup</span>
+
+        <span class="k">for</span> <span class="nx">g</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">g</span> <span class="p">&lt;</span> <span class="nx">runtime</span><span class="p">.</span><span class="nx">GOMAXPROCS</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span> <span class="nx">g</span><span class="o">++</span> <span class="p">{</span>
+                <span class="nx">wg</span><span class="p">.</span><span class="nx">Add</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+                <span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+                        <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">b</span><span class="p">.</span><span class="nx">N</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+                                <span class="nx">m</span> <span class="o">:=</span> <span class="p">(</span><span class="o">*</span><span class="kd">map</span><span class="p">[</span><span class="kt">int</span><span class="p">]</span><span class="kt">int</span><span class="p">)(</span><span class="nx">atomic</span><span class="p">.</span><span class="nx">LoadPointer</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">ptr</span><span class="p">))</span>
+                                <span class="nx">_</span> <span class="p">=</span> <span class="p">(</span><span class="o">*</span><span class="nx">m</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+                        <span class="p">}</span>
+
+                        <span class="nx">wg</span><span class="p">.</span><span class="nx">Done</span><span class="p">()</span>
+                <span class="p">}()</span>
+        <span class="p">}</span>
+
+        <span class="nx">wg</span><span class="p">.</span><span class="nx">Wait</span><span class="p">()</span>
+<span class="p">}</span>
+
+
+<span class="kd">func</span> <span class="nx">BenchmarkValue__</span><span class="p">(</span><span class="nx">b</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">B</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">ptr</span> <span class="nx">atomic</span><span class="p">.</span><span class="nx">Value</span>
+
+        <span class="nx">m</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">int</span><span class="p">]</span><span class="kt">int</span><span class="p">)</span>
+        <span class="nx">m</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">=</span> <span class="mi">2</span>
+
+        <span class="nx">ptr</span><span class="p">.</span><span class="nx">Store</span><span class="p">(</span><span class="nx">m</span><span class="p">)</span>
+
+        <span class="kd">var</span> <span class="nx">wg</span> <span class="nx">sync</span><span class="p">.</span><span class="nx">WaitGroup</span>
+
+        <span class="k">for</span> <span class="nx">g</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">g</span> <span class="p">&lt;</span> <span class="nx">runtime</span><span class="p">.</span><span class="nx">GOMAXPROCS</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span> <span class="nx">g</span><span class="o">++</span> <span class="p">{</span>
+                <span class="nx">wg</span><span class="p">.</span><span class="nx">Add</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+                <span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+                        <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">b</span><span class="p">.</span><span class="nx">N</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+                                <span class="nx">m</span> <span class="o">:=</span> <span class="nx">ptr</span><span class="p">.</span><span class="nx">Load</span><span class="p">().(</span><span class="kd">map</span><span class="p">[</span><span class="kt">int</span><span class="p">]</span><span class="kt">int</span><span class="p">)</span>
+                                <span class="nx">_</span> <span class="p">=</span> <span class="nx">m</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+                        <span class="p">}</span>
+
+                        <span class="nx">wg</span><span class="p">.</span><span class="nx">Done</span><span class="p">()</span>
+                <span class="p">}()</span>
+        <span class="p">}</span>
+
+        <span class="nx">wg</span><span class="p">.</span><span class="nx">Wait</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">BenchmarkRWMutex</span><span class="p">(</span><span class="nx">b</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">B</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">l</span> <span class="nx">sync</span><span class="p">.</span><span class="nx">RWMutex</span>
+
+        <span class="nx">m</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">int</span><span class="p">]</span><span class="kt">int</span><span class="p">)</span>
+        <span class="nx">m</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">=</span> <span class="mi">2</span>
+
+        <span class="kd">var</span> <span class="nx">wg</span> <span class="nx">sync</span><span class="p">.</span><span class="nx">WaitGroup</span>
+
+        <span class="k">for</span> <span class="nx">g</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">g</span> <span class="p">&lt;</span> <span class="nx">runtime</span><span class="p">.</span><span class="nx">GOMAXPROCS</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span> <span class="nx">g</span><span class="o">++</span> <span class="p">{</span>
+                <span class="nx">wg</span><span class="p">.</span><span class="nx">Add</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+                <span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+                        <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">b</span><span class="p">.</span><span class="nx">N</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+                                <span class="nx">l</span><span class="p">.</span><span class="nx">RLock</span><span class="p">()</span>
+                                <span class="nx">_</span> <span class="p">=</span> <span class="nx">m</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                                <span class="nx">l</span><span class="p">.</span><span class="nx">RUnlock</span><span class="p">()</span>
+                        <span class="p">}</span>
+
+                        <span class="nx">wg</span><span class="p">.</span><span class="nx">Done</span><span class="p">()</span>
+                <span class="p">}()</span>
+        <span class="p">}</span>
+
+        <span class="nx">wg</span><span class="p">.</span><span class="nx">Wait</span><span class="p">()</span>
+<span class="p">}</span></code></pre></div>
+
+<p>The <a href="https://github.com/golang/go/blob/8ca785621e7239b2f11ae2e02f00ef961241712f/src/sync/atomic/value.go#L20">source of atomic.Value</a> nicely shows how interface{} is implemented:</p>
+
+<div class="highlight"><pre><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">ifaceWords</span> <span class="kd">struct</span> <span class="p">{</span>
+        <span class="nx">typ</span>  <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span>
+        <span class="nx">data</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span>
+<span class="p">}</span></code></pre></div>
+
+
+
+<div id=disqus_thread></div>
+<script>
+  var disqus_shortname = 'erikscode';
+
+  (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+
+
+
+      </div><!-- #content -->
+    </div><!-- #wrapper -->
+  </div><!-- #main -->
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-7915266-3', 'dubbelboer.com');
+    ga('send', 'pageview');
+  </script>
+</body>
+</html>
