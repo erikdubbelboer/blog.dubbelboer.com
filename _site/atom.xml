@@ -3,13 +3,27 @@
   <title>Erik's Code</title>
   <link href="http://blog.dubbelboer.com/atom.xml" rel="self" />
   <link href="http://blog.dubbelboer.com/" />
-  <updated>2015-08-23T08:08:18+00:00</updated>
+  <updated>2015-11-08T10:02:50+00:00</updated>
   <id>http://blog.dubbelboer.com/</id>
   <author>
     <name>Erik Dubbelboer</name>
     <email>erik@dubbelboer.com</email>
   </author>
  
+  
+  <entry>
+    <title>KL time lapse</title>
+    <link href="http://blog.dubbelboer.com/2015/11/08/kl-time-lapse.html"/>
+    <updated>2015-11-08T00:00:00+00:00</updated>
+    <id>http://blog.dubbelboer.com/2015/11/08/kl-time-lapse</id>
+    <content type="html">&lt;p&gt;Just a nice &lt;a href=&quot;https://en.wikipedia.org/wiki/Time_Lapse_%28film%29&quot; target=&quot;_blank&quot;&gt;time lapse&lt;/a&gt; of the view from my condo in &lt;a href=&quot;https://en.wikipedia.org/wiki/Kuala_Lumpur&quot; target=&quot;_blank&quot;&gt;KL&lt;/a&gt;.&lt;/p&gt;
+
+&lt;video width=&quot;920&quot; controls=&quot;&quot;&gt;
+  &lt;source src=&quot;/videos/kltimelapse.mp4&quot; type=&quot;video/mp4&quot; /&gt;
+&lt;/video&gt;
+
+</content>
+  </entry>
   
   <entry>
     <title>sync.RWMutex vs atomic.Value vs unsafe.Pointer</title>
