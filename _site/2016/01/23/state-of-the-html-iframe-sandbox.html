@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset=utf-8>
+
+<title>State of the html iframe standbox - Erik's Code</title>
+
+<meta name=keywords content="html html5 iframe sandbox allow-popups allow-popups-to-escape-sandbox allow-modals">
+<link rel="author" href="https://plus.google.com/+ErikDubbelboer" />
+
+
+<link href="/css/common.css" media="screen" rel="stylesheet" type="text/css">
+<link href="/css/pygments.css" media="screen" rel="stylesheet" type="text/css">
+</head>  
+<body>
+  <div id="main">
+    <div id="header-wrapper">
+      <div id="header" class="basic" >
+        <div class="site">
+          <a class="logo" href="/"><h2>Erik's Code</h2></a>
+          <div class="topsearch">
+            <ul class="nav logged_out">
+              <li><a href="/about.html">About Erik</a></li>
+            </ul>
+          </div><!-- .topsearch -->
+        </div><!-- .site -->
+      </div><!-- #header -->
+    </div><!-- #header-wrapper -->
+    <div id="wrapper">
+      <div id="content" class="site">
+
+        <h1>State of the html iframe standbox</h1>
+
+<em>Date: 23 Jan 2016</em><br>
+<em>Author: Erik Dubbelboer</em>
+
+<p>Most browsers support the iframe sandbox attribute in some form:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Browser</th>
+      <th>Version</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>IE</td>
+      <td>10+ (<a href="https://msdn.microsoft.com/en-us/library/hh673561%28v=vs.85%29.aspx" target="_blank">msdn</a>)</td>
+    </tr>
+    <tr>
+      <td>Chrome</td>
+      <td>5+ (<a href="http://blog.chromium.org/2010/05/security-in-depth-html5s-sandbox.html" target="_blank">blog</a>)</td>
+    </tr>
+    <tr>
+      <td>Firefox</td>
+      <td>17+ (<a href="https://developer.mozilla.org/en-US/Firefox/Releases/17" target="_blank">mdn</a>)</td>
+    </tr>
+    <tr>
+      <td>Opera</td>
+      <td>15+ (<a href="https://developer.mozilla.org/en/docs/Web/HTML/Element/iframe" target="_blank">msdn</a>)</td>
+    </tr>
+    <tr>
+      <td>Safari</td>
+      <td>5+</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="propagation">Propagation</h2>
+
+<p>When an iframe opens a new window through <code>target=_blank</code> or <code>window.open()</code>, some browsers will propagate the sandbox attributes to this new window.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Browser</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>IE</td>
+      <td>Always propagates</td>
+    </tr>
+    <tr>
+      <td>Firefox</td>
+      <td>Always propagates</td>
+    </tr>
+    <tr>
+      <td>Chrome</td>
+      <td>Propagates until 46, see below</td>
+    </tr>
+    <tr>
+      <td>Opera</td>
+      <td>30-34 and Next seem to propagate</td>
+    </tr>
+    <tr>
+      <td>Safari</td>
+      <td><a href="https://bugs.webkit.org/show_bug.cgi?id=21288" target="_blank">?</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="attributes">Attributes</h2>
+
+<p>The following attributes are supported by all browsers that implement the sandbox attribute: allow-scripts, allow-forms, allow-same-origin, allow-top-navigation</p>
+
+<p>Attributes that are not always supported:</p>
+
+<h2 id="allow-popups">allow-popups</h2>
+
+<p>Firefox 27 before this version popups were always disallowed.</p>
+
+<p>Other browsers: always supported.</p>
+
+<h2 id="allow-popups-to-escape-sandbox">allow-popups-to-escape-sandbox</h2>
+
+<p>Chrome 46+ (<a href="http://dubbelboer.com/allow-popups-to-escape-sandbox/" target="_blank">test</a>)</p>
+
+<p>Before chrome always propagated the sandbox attributes to popups.</p>
+
+<p>Firefox: currently not supported, work has started: <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1190641">Bugzilla #1190641</a></p>
+
+<h2 id="allow-modals">allow-modals</h2>
+
+<p>Chrome 46+ (<a href="https://googlechrome.github.io/samples/block-modal-dialogs-sandboxed-iframe/" target="_blank">test</a>)</p>
+
+<p>Before 46 Chrome always allowed modals. All other browsers always allow modals.</p>
+
+<p>Other browsers: not supported.</p>
+
+
+
+<div id=disqus_thread></div>
+<script>
+  var disqus_shortname = 'erikscode';
+
+  (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+
+
+
+      </div><!-- #content -->
+    </div><!-- #wrapper -->
+  </div><!-- #main -->
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-7915266-3', 'dubbelboer.com');
+    ga('send', 'pageview');
+  </script>
+</body>
+</html>
