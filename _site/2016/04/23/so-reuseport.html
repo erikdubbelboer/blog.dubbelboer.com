@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset=utf-8>
+
+<title>SO_REUSEPORT support - Erik's Code</title>
+
+<meta name=keywords content="SO_REUSEPORT linux kernel tcp">
+<link rel="author" href="https://plus.google.com/+ErikDubbelboer" />
+
+
+<link href="/css/common.css" media="screen" rel="stylesheet" type="text/css">
+<link href="/css/pygments.css" media="screen" rel="stylesheet" type="text/css">
+</head>  
+<body>
+  <div id="main">
+    <div id="header-wrapper">
+      <div id="header" class="basic" >
+        <div class="site">
+          <a class="logo" href="/"><h2>Erik's Code</h2></a>
+          <div class="topsearch">
+            <ul class="nav logged_out">
+              <li><a href="/about.html">About Erik</a></li>
+            </ul>
+          </div><!-- .topsearch -->
+        </div><!-- .site -->
+      </div><!-- #header -->
+    </div><!-- #header-wrapper -->
+    <div id="wrapper">
+      <div id="content" class="site">
+
+        <h1>SO_REUSEPORT support</h1>
+
+<em>Date: 23 Apr 2016</em><br>
+<em>Author: Erik Dubbelboer</em>
+
+<p>SO_REUSEPORT is a relatively new kernel feature which allows multiple processes to bind to the same socket:port combination.
+Before SO_REUSEPORT this was only possible either by forking the original process and inheriting the file descriptors or sending the file descriptors over a unix domain socket using send2.</p>
+
+<p>Having multiple processes listen on the same port can be very useful in high throughput environments.
+It is also very useful for graceful upgrades of high availability processes.</p>
+
+<p>The program below can be used to test if SO_REUSEPORT is available on your system.</p>
+
+<p>To read more about SO_REUSEPORT please see: <a href="https://lwn.net/Articles/542629/" target="_blank">https://lwn.net/Articles/542629/</a></p>
+
+<div class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &lt;errno.h&gt;</span>
+<span class="cp">#include &lt;sys/socket.h&gt;</span>
+<span class="cp">#include &lt;unistd.h&gt;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+<span class="cp">#ifdef SO_REUSEPORT</span>
+  <span class="kt">int</span> <span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="p">(</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">SOCK_STREAM</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+  <span class="kt">int</span> <span class="n">reuse</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">SO_REUSEPORT</span><span class="p">,</span> <span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">reuse</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">reuse</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">errno</span> <span class="o">==</span> <span class="n">EINVAL</span> <span class="o">||</span> <span class="n">errno</span> <span class="o">==</span> <span class="n">ENOPROTOOPT</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">printf</span><span class="p">(</span><span class="s">&quot;SO_REUSEPORT is not supported by your kernel</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="n">printf</span><span class="p">(</span><span class="s">&quot;unknown error</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;SO_REUSEPORT is supported</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="n">close</span><span class="p">(</span><span class="n">sock</span><span class="p">);</span>
+<span class="cp">#else</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">&quot;SO_REUSEPORT is not supported by your include files</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="cp">#endif</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></div>
+
+
+
+<div id=disqus_thread></div>
+<script>
+  var disqus_shortname = 'erikscode';
+
+  (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+
+
+
+      </div><!-- #content -->
+    </div><!-- #wrapper -->
+  </div><!-- #main -->
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-7915266-3', 'dubbelboer.com');
+    ga('send', 'pageview');
+  </script>
+</body>
+</html>

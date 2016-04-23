@@ -3,6 +3,11 @@
 
 
 <url>
+<loc>http://blog.dubbelboer.com/2016/04/23/so-reuseport.html</loc>
+<priority>0.6</priority>
+</url>
+
+<url>
 <loc>http://blog.dubbelboer.com/2016/01/23/state-of-the-html-iframe-sandbox.html</loc>
 <priority>0.6</priority>
 </url>
