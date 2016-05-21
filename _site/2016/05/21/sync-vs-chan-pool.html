@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset=utf-8>
+
+<title>sync.Pool vs chan pool - Erik's Code</title>
+
+<meta name=keywords content="go golang sync Pool chan benchmark">
+<link rel="author" href="https://plus.google.com/+ErikDubbelboer" />
+
+
+<link href="/css/common.css" media="screen" rel="stylesheet" type="text/css">
+<link href="/css/pygments.css" media="screen" rel="stylesheet" type="text/css">
+</head>  
+<body>
+  <div id="main">
+    <div id="header-wrapper">
+      <div id="header" class="basic" >
+        <div class="site">
+          <a class="logo" href="/"><h2>Erik's Code</h2></a>
+          <div class="topsearch">
+            <ul class="nav logged_out">
+              <li><a href="/about.html">About Erik</a></li>
+            </ul>
+          </div><!-- .topsearch -->
+        </div><!-- .site -->
+      </div><!-- #header -->
+    </div><!-- #header-wrapper -->
+    <div id="wrapper">
+      <div id="content" class="site">
+
+        <h1>sync.Pool vs chan pool</h1>
+
+<em>Date: 21 May 2016</em><br>
+<em>Author: Erik Dubbelboer</em>
+
+<p>For anyone like me wanting to relieve some stress on the garbage collector and wondering if they should use <a href="https://golang.org/pkg/sync/#Pool" target="_blank">sync.Pool</a> or use a buffered chan. Wonder no more, here is a simple benchmark to show the difference:</p>
+
+<pre>
+BenchmarkNoPool-4   3000000000          21.4 ns/op         8 B/op        1 allocs/op
+BenchmarkSyncPool-4 3000000000          25.9 ns/op         0 B/op        0 allocs/op
+BenchmarkChanPool-4 300000000           266  ns/op         0 B/op        0 allocs/op
+</pre>
+
+<p>As you can see sync.Pool is clearly the winner and is only a little bit slower than no pool.</p>
+
+<p>And here is the code:</p>
+
+<div class="highlight"><pre><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">test</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&quot;sync&quot;</span>
+	<span class="s">&quot;testing&quot;</span>
+<span class="p">)</span>
+
+<span class="kd">type</span> <span class="nx">somestruct</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">x</span> <span class="kt">int</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">g</span> <span class="o">*</span><span class="nx">somestruct</span>
+
+<span class="c1">// No pool</span>
+
+<span class="kd">func</span> <span class="nx">BenchmarkNoPool</span><span class="p">(</span><span class="nx">b</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">B</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">b</span><span class="p">.</span><span class="nx">RunParallel</span><span class="p">(</span><span class="kd">func</span><span class="p">(</span><span class="nx">pb</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">PB</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">for</span> <span class="nx">pb</span><span class="p">.</span><span class="nx">Next</span><span class="p">()</span> <span class="p">{</span>
+			<span class="nx">x</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">somestruct</span><span class="p">{}</span>
+			<span class="nx">g</span> <span class="p">=</span> <span class="nx">x</span>
+		<span class="p">}</span>
+	<span class="p">})</span>
+<span class="p">}</span>
+
+<span class="c1">// sync.Pool</span>
+
+<span class="kd">func</span> <span class="nx">BenchmarkSyncPool</span><span class="p">(</span><span class="nx">b</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">B</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">p</span> <span class="o">:=</span> <span class="nx">sync</span><span class="p">.</span><span class="nx">Pool</span><span class="p">{</span>
+		<span class="nx">New</span><span class="p">:</span> <span class="kd">func</span><span class="p">()</span> <span class="kd">interface</span><span class="p">{}</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="o">&amp;</span><span class="nx">somestruct</span><span class="p">{}</span>
+		<span class="p">},</span>
+	<span class="p">}</span>
+
+	<span class="nx">b</span><span class="p">.</span><span class="nx">RunParallel</span><span class="p">(</span><span class="kd">func</span><span class="p">(</span><span class="nx">pb</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">PB</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">for</span> <span class="nx">pb</span><span class="p">.</span><span class="nx">Next</span><span class="p">()</span> <span class="p">{</span>
+			<span class="nx">x</span> <span class="o">:=</span> <span class="nx">p</span><span class="p">.</span><span class="nx">Get</span><span class="p">().(</span><span class="o">*</span><span class="nx">somestruct</span><span class="p">)</span>
+			<span class="nx">g</span> <span class="p">=</span> <span class="nx">x</span>
+			<span class="nx">p</span><span class="p">.</span><span class="nx">Put</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span>
+		<span class="p">}</span>
+	<span class="p">})</span>
+<span class="p">}</span>
+
+<span class="c1">// Channel pool</span>
+
+<span class="kd">type</span> <span class="nx">Pool</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">New</span> <span class="kd">func</span><span class="p">()</span> <span class="kd">interface</span><span class="p">{}</span>
+
+	<span class="nx">pool</span> <span class="kd">chan</span> <span class="kd">interface</span><span class="p">{}</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">NewPool</span><span class="p">(</span><span class="nx">n</span> <span class="kd">func</span><span class="p">()</span> <span class="kd">interface</span><span class="p">{})</span> <span class="nx">Pool</span> <span class="p">{</span>
+	<span class="nx">p</span> <span class="o">:=</span> <span class="nx">Pool</span><span class="p">{</span>
+		<span class="nx">New</span><span class="p">:</span> <span class="nx">n</span><span class="p">,</span>
+		<span class="nx">pool</span><span class="p">:</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kd">interface</span><span class="p">{},</span> <span class="mi">1024</span><span class="p">),</span>
+	<span class="p">}</span>
+
+	<span class="k">return</span> <span class="nx">p</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="nx">Pool</span><span class="p">)</span> <span class="nx">Get</span><span class="p">()</span> <span class="kd">interface</span><span class="p">{}</span> <span class="p">{</span>
+	<span class="k">select</span> <span class="p">{</span>
+	<span class="k">case</span> <span class="nx">o</span> <span class="o">:=</span> <span class="o">&lt;-</span><span class="nx">p</span><span class="p">.</span><span class="nx">pool</span><span class="p">:</span>
+		<span class="k">return</span> <span class="nx">o</span>
+	<span class="k">default</span><span class="p">:</span>
+		<span class="k">return</span> <span class="nx">p</span><span class="p">.</span><span class="nx">New</span><span class="p">()</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="nx">Pool</span><span class="p">)</span> <span class="nx">Put</span><span class="p">(</span><span class="nx">o</span> <span class="kd">interface</span><span class="p">{})</span> <span class="p">{</span>
+	<span class="k">select</span> <span class="p">{</span>
+	<span class="k">case</span> <span class="nx">p</span><span class="p">.</span><span class="nx">pool</span> <span class="o">&lt;-</span> <span class="nx">o</span><span class="p">:</span>
+	<span class="k">default</span><span class="p">:</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">BenchmarkChanPool</span><span class="p">(</span><span class="nx">b</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">B</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">p</span> <span class="o">:=</span> <span class="nx">NewPool</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="kd">interface</span><span class="p">{}</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="o">&amp;</span><span class="nx">somestruct</span><span class="p">{}</span>
+	<span class="p">})</span>
+
+	<span class="nx">b</span><span class="p">.</span><span class="nx">RunParallel</span><span class="p">(</span><span class="kd">func</span><span class="p">(</span><span class="nx">pb</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">PB</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">for</span> <span class="nx">pb</span><span class="p">.</span><span class="nx">Next</span><span class="p">()</span> <span class="p">{</span>
+			<span class="nx">x</span> <span class="o">:=</span> <span class="nx">p</span><span class="p">.</span><span class="nx">Get</span><span class="p">().(</span><span class="o">*</span><span class="nx">somestruct</span><span class="p">)</span>
+			<span class="nx">g</span> <span class="p">=</span> <span class="nx">x</span>
+			<span class="nx">p</span><span class="p">.</span><span class="nx">Put</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span>
+		<span class="p">}</span>
+	<span class="p">})</span>
+<span class="p">}</span></code></pre></div>
+
+
+
+<div id=disqus_thread></div>
+<script>
+  var disqus_shortname = 'erikscode';
+
+  (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+
+
+
+      </div><!-- #content -->
+    </div><!-- #wrapper -->
+  </div><!-- #main -->
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-7915266-3', 'dubbelboer.com');
+    ga('send', 'pageview');
+  </script>
+</body>
+</html>
