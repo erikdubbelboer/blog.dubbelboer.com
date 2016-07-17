@@ -3,7 +3,7 @@
   <title>Erik's Code</title>
   <link href="http://blog.dubbelboer.com/atom.xml" rel="self" />
   <link href="http://blog.dubbelboer.com/" />
-  <updated>2016-06-10T15:12:36+00:00</updated>
+  <updated>2016-07-17T10:46:10+00:00</updated>
   <id>http://blog.dubbelboer.com/</id>
   <author>
     <name>Erik Dubbelboer</name>
@@ -190,7 +190,7 @@ It is also very useful for graceful upgrades of high availability processes.&lt;
   </entry>
   
   <entry>
-    <title>State of the html iframe standbox</title>
+    <title>State of the html iframe standbox (updated 2016-07-17)</title>
     <link href="http://blog.dubbelboer.com/2016/01/23/state-of-the-html-iframe-sandbox.html"/>
     <updated>2016-01-23T00:00:00+00:00</updated>
     <id>http://blog.dubbelboer.com/2016/01/23/state-of-the-html-iframe-sandbox</id>
@@ -227,6 +227,36 @@ It is also very useful for graceful upgrades of high availability processes.&lt;
   &lt;/tbody&gt;
 &lt;/table&gt;
 
+&lt;p&gt;Commonly supported tokens are:&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Token&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;allow-forms&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;allow-orientation-lock&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;allow-pointer-lock&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;allow-same-origin&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;allow-scripts&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;allow-top-navigation&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
 &lt;h2 id=&quot;propagation&quot;&gt;Propagation&lt;/h2&gt;
 
 &lt;p&gt;When an iframe opens a new window through &lt;code&gt;target=_blank&lt;/code&gt; or &lt;code&gt;window.open()&lt;/code&gt;, some browsers will propagate the sandbox attributes to this new window.&lt;/p&gt;
@@ -245,7 +275,7 @@ It is also very useful for graceful upgrades of high availability processes.&lt;
     &lt;/tr&gt;
     &lt;tr&gt;
       &lt;td&gt;Firefox&lt;/td&gt;
-      &lt;td&gt;Always propagates&lt;/td&gt;
+      &lt;td&gt;Propagates until 49, see below&lt;/td&gt;
     &lt;/tr&gt;
     &lt;tr&gt;
       &lt;td&gt;Chrome&lt;/td&gt;
@@ -280,13 +310,15 @@ It is also very useful for graceful upgrades of high availability processes.&lt;
 
 &lt;p&gt;Before chrome always propagated the sandbox attributes to popups.&lt;/p&gt;
 
-&lt;p&gt;Firefox: currently not supported, work has started: &lt;a href=&quot;https://bugzilla.mozilla.org/show_bug.cgi?id=1190641&quot;&gt;Bugzilla #1190641&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Firefox: currently not supported, work has finished in &lt;a href=&quot;https://bugzilla.mozilla.org/show_bug.cgi?id=1190641&quot;&gt;Bugzilla #1190641&lt;/a&gt; and will be released with Firefox 49 in September 2016.&lt;/p&gt;
 
 &lt;h2 id=&quot;allow-modals&quot;&gt;allow-modals&lt;/h2&gt;
 
 &lt;p&gt;Chrome 46+ (&lt;a href=&quot;https://googlechrome.github.io/samples/block-modal-dialogs-sandboxed-iframe/&quot; target=&quot;_blank&quot;&gt;test&lt;/a&gt;)&lt;/p&gt;
 
 &lt;p&gt;Before 46 Chrome always allowed modals. All other browsers always allow modals.&lt;/p&gt;
+
+&lt;p&gt;Firefox: will be added in Firefox 49 which will be released in September 2016.&lt;/p&gt;
 
 &lt;p&gt;Other browsers: not supported.&lt;/p&gt;
 

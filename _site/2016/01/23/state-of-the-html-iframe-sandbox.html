@@ -3,9 +3,9 @@
 <head>
 <meta charset=utf-8>
 
-<title>State of the html iframe standbox - Erik's Code</title>
+<title>State of the html iframe standbox (updated 2016-07-17) - Erik's Code</title>
 
-<meta name=keywords content="html html5 iframe sandbox allow-popups allow-popups-to-escape-sandbox allow-modals">
+<meta name=keywords content="html html5 iframe sandbox allow-popups allow-popups-to-escape-sandbox allow-modals chrome firefox">
 <link rel="author" href="https://plus.google.com/+ErikDubbelboer" />
 
 
@@ -29,7 +29,7 @@
     <div id="wrapper">
       <div id="content" class="site">
 
-        <h1>State of the html iframe standbox</h1>
+        <h1>State of the html iframe standbox (updated 2016-07-17)</h1>
 
 <em>Date: 23 Jan 2016</em><br>
 <em>Author: Erik Dubbelboer</em>
@@ -67,6 +67,36 @@
   </tbody>
 </table>
 
+<p>Commonly supported tokens are:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Token</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>allow-forms</td>
+    </tr>
+    <tr>
+      <td>allow-orientation-lock</td>
+    </tr>
+    <tr>
+      <td>allow-pointer-lock</td>
+    </tr>
+    <tr>
+      <td>allow-same-origin</td>
+    </tr>
+    <tr>
+      <td>allow-scripts</td>
+    </tr>
+    <tr>
+      <td>allow-top-navigation</td>
+    </tr>
+  </tbody>
+</table>
+
 <h2 id="propagation">Propagation</h2>
 
 <p>When an iframe opens a new window through <code>target=_blank</code> or <code>window.open()</code>, some browsers will propagate the sandbox attributes to this new window.</p>
@@ -85,7 +115,7 @@
     </tr>
     <tr>
       <td>Firefox</td>
-      <td>Always propagates</td>
+      <td>Propagates until 49, see below</td>
     </tr>
     <tr>
       <td>Chrome</td>
@@ -120,13 +150,15 @@
 
 <p>Before chrome always propagated the sandbox attributes to popups.</p>
 
-<p>Firefox: currently not supported, work has started: <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1190641">Bugzilla #1190641</a></p>
+<p>Firefox: currently not supported, work has finished in <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1190641">Bugzilla #1190641</a> and will be released with Firefox 49 in September 2016.</p>
 
 <h2 id="allow-modals">allow-modals</h2>
 
 <p>Chrome 46+ (<a href="https://googlechrome.github.io/samples/block-modal-dialogs-sandboxed-iframe/" target="_blank">test</a>)</p>
 
 <p>Before 46 Chrome always allowed modals. All other browsers always allow modals.</p>
+
+<p>Firefox: will be added in Firefox 49 which will be released in September 2016.</p>
 
 <p>Other browsers: not supported.</p>
 
