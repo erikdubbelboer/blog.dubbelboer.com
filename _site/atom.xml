@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title>Erik's Code</title>
-  <link href="http://blog.dubbelboer.com/atom.xml" rel="self" />
-  <link href="http://blog.dubbelboer.com/" />
-  <updated>2018-10-14T09:07:53+00:00</updated>
-  <id>http://blog.dubbelboer.com/</id>
+  <link href="https://blog.dubbelboer.com/atom.xml" rel="self" />
+  <link href="https://blog.dubbelboer.com/" />
+  <updated>2018-10-14T09:16:27+00:00</updated>
+  <id>https://blog.dubbelboer.com/</id>
   <author>
     <name>Erik Dubbelboer</name>
     <email>erik@dubbelboer.com</email>
@@ -13,9 +13,9 @@
   
   <entry>
     <title>UE4 DistributionVectorUniformParam Particle Distribution</title>
-    <link href="http://blog.dubbelboer.com/2018/10/14/unreal-distributionvectoruniformparam.html"/>
+    <link href="https://blog.dubbelboer.com/2018/10/14/unreal-distributionvectoruniformparam.html"/>
     <updated>2018-10-14T00:00:00+00:00</updated>
-    <id>http://blog.dubbelboer.com/2018/10/14/unreal-distributionvectoruniformparam</id>
+    <id>https://blog.dubbelboer.com/2018/10/14/unreal-distributionvectoruniformparam</id>
     <content type="html">&lt;p&gt;While creating weapon effects for our game I needed quite dynamic particle effects that look random but still depend on the range and splash range of the weapons.
 Using Distribution Vector Param and dynamically setting the range of the particle effects works for some cases but doesn’t work if you have multiple particles that need to have random values.
 To fix this I created the missing Distribution Vector Uniform Param.&lt;/p&gt;
@@ -117,9 +117,9 @@ To fix this I created the missing Distribution Vector Uniform Param.&lt;/p&gt;
   
   <entry>
     <title>Embed any HTML into tpc.googlesyndication.com</title>
-    <link href="http://blog.dubbelboer.com/2016/06/10/embed-into-tpc-googlesyndication-com.html"/>
+    <link href="https://blog.dubbelboer.com/2016/06/10/embed-into-tpc-googlesyndication-com.html"/>
     <updated>2016-06-10T00:00:00+00:00</updated>
-    <id>http://blog.dubbelboer.com/2016/06/10/embed-into-tpc-googlesyndication-com</id>
+    <id>https://blog.dubbelboer.com/2016/06/10/embed-into-tpc-googlesyndication-com</id>
     <content type="html">&lt;p&gt;Google uses &lt;a href=&quot;http://tpc.googlesyndication.com&quot; target=&quot;_blank&quot; rel=&quot;nofollow&quot;&gt;tpc.googlesyndication.com&lt;/a&gt; for its adserving. They basically allow anything to run on this domain. There is a container html file hosted on this domain which reads the name of the iframe and injects the name content into the page. We can use this to run anything we want on this google domain.&lt;/p&gt;
 
 &lt;p&gt;Example php code:&lt;/p&gt;
@@ -143,9 +143,9 @@ To fix this I created the missing Distribution Vector Uniform Param.&lt;/p&gt;
   
   <entry>
     <title>sync.Pool vs chan pool</title>
-    <link href="http://blog.dubbelboer.com/2016/05/21/sync-vs-chan-pool.html"/>
+    <link href="https://blog.dubbelboer.com/2016/05/21/sync-vs-chan-pool.html"/>
     <updated>2016-05-21T00:00:00+00:00</updated>
-    <id>http://blog.dubbelboer.com/2016/05/21/sync-vs-chan-pool</id>
+    <id>https://blog.dubbelboer.com/2016/05/21/sync-vs-chan-pool</id>
     <content type="html">&lt;p&gt;For anyone like me wanting to relieve some stress on the garbage collector and wondering if they should use &lt;a href=&quot;https://golang.org/pkg/sync/#Pool&quot; target=&quot;_blank&quot;&gt;sync.Pool&lt;/a&gt; or use a buffered chan. Wonder no more, here is a simple benchmark to show the difference:&lt;/p&gt;
 
 &lt;pre&gt;
@@ -252,9 +252,9 @@ BenchmarkChanPool-4 300000000           266  ns/op         0 B/op        0 alloc
   
   <entry>
     <title>SO_REUSEPORT support</title>
-    <link href="http://blog.dubbelboer.com/2016/04/23/so-reuseport.html"/>
+    <link href="https://blog.dubbelboer.com/2016/04/23/so-reuseport.html"/>
     <updated>2016-04-23T00:00:00+00:00</updated>
-    <id>http://blog.dubbelboer.com/2016/04/23/so-reuseport</id>
+    <id>https://blog.dubbelboer.com/2016/04/23/so-reuseport</id>
     <content type="html">&lt;p&gt;SO_REUSEPORT is a relatively new kernel feature which allows multiple processes to bind to the same socket:port combination.
 Before SO_REUSEPORT this was only possible either by forking the original process and inheriting the file descriptors or sending the file descriptors over a unix domain socket using send2.&lt;/p&gt;
 
@@ -295,9 +295,9 @@ It is also very useful for graceful upgrades of high availability processes.&lt;
   
   <entry>
     <title>State of the html iframe standbox (updated 2016-07-17)</title>
-    <link href="http://blog.dubbelboer.com/2016/01/23/state-of-the-html-iframe-sandbox.html"/>
+    <link href="https://blog.dubbelboer.com/2016/01/23/state-of-the-html-iframe-sandbox.html"/>
     <updated>2016-01-23T00:00:00+00:00</updated>
-    <id>http://blog.dubbelboer.com/2016/01/23/state-of-the-html-iframe-sandbox</id>
+    <id>https://blog.dubbelboer.com/2016/01/23/state-of-the-html-iframe-sandbox</id>
     <content type="html">&lt;p&gt;Most browsers support the iframe sandbox attribute in some form:&lt;/p&gt;
 
 &lt;table&gt;
@@ -431,9 +431,9 @@ It is also very useful for graceful upgrades of high availability processes.&lt;
   
   <entry>
     <title>KL time lapse</title>
-    <link href="http://blog.dubbelboer.com/2015/11/08/kl-time-lapse.html"/>
+    <link href="https://blog.dubbelboer.com/2015/11/08/kl-time-lapse.html"/>
     <updated>2015-11-08T00:00:00+00:00</updated>
-    <id>http://blog.dubbelboer.com/2015/11/08/kl-time-lapse</id>
+    <id>https://blog.dubbelboer.com/2015/11/08/kl-time-lapse</id>
     <content type="html">&lt;p&gt;Just a nice &lt;a href=&quot;https://en.wikipedia.org/wiki/Time_Lapse_%28film%29&quot; target=&quot;_blank&quot;&gt;time lapse&lt;/a&gt; of the view from my condo in &lt;a href=&quot;https://en.wikipedia.org/wiki/Kuala_Lumpur&quot; target=&quot;_blank&quot;&gt;KL&lt;/a&gt;.&lt;/p&gt;
 
 &lt;video width=&quot;920&quot; controls=&quot;&quot;&gt;
@@ -445,9 +445,9 @@ It is also very useful for graceful upgrades of high availability processes.&lt;
   
   <entry>
     <title>sync.RWMutex vs atomic.Value vs unsafe.Pointer</title>
-    <link href="http://blog.dubbelboer.com/2015/08/23/rwmutex-vs-atomicvalue-vs-unsafepointer.html"/>
+    <link href="https://blog.dubbelboer.com/2015/08/23/rwmutex-vs-atomicvalue-vs-unsafepointer.html"/>
     <updated>2015-08-23T00:00:00+00:00</updated>
-    <id>http://blog.dubbelboer.com/2015/08/23/rwmutex-vs-atomicvalue-vs-unsafepointer</id>
+    <id>https://blog.dubbelboer.com/2015/08/23/rwmutex-vs-atomicvalue-vs-unsafepointer</id>
     <content type="html">&lt;p&gt;When using multiple goroutines you often want to have shared access of some read only resource. There are multiple ways to implements this. Three of them are; sync.RWMutex, atomic.Value and unsafe.Pointer.&lt;/p&gt;
 
 &lt;p&gt;sync.RWMutex is a whole mutex so I would expect that to be the slowest.&lt;/p&gt;
@@ -574,9 +574,9 @@ BenchmarkRWMutex-6  5000000       302 ns/op
   
   <entry>
     <title>Slice vs map for set in golang</title>
-    <link href="http://blog.dubbelboer.com/2015/08/15/slice-vs-map.html"/>
+    <link href="https://blog.dubbelboer.com/2015/08/15/slice-vs-map.html"/>
     <updated>2015-08-15T00:00:00+00:00</updated>
-    <id>http://blog.dubbelboer.com/2015/08/15/slice-vs-map</id>
+    <id>https://blog.dubbelboer.com/2015/08/15/slice-vs-map</id>
     <content type="html">&lt;p&gt;Ever wonder if it’s faster to use a slice or map to represent a set in go? I wrote the following program to find out:&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-go&quot; data-lang=&quot;go&quot;&gt;&lt;span class=&quot;kn&quot;&gt;package&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;main&lt;/span&gt;
@@ -693,9 +693,9 @@ $ ./bench.sh
   
   <entry>
     <title>Is the write() syscall thread safe?</title>
-    <link href="http://blog.dubbelboer.com/2015/06/14/write-thread-safety.html"/>
+    <link href="https://blog.dubbelboer.com/2015/06/14/write-thread-safety.html"/>
     <updated>2015-06-14T00:00:00+00:00</updated>
-    <id>http://blog.dubbelboer.com/2015/06/14/write-thread-safety</id>
+    <id>https://blog.dubbelboer.com/2015/06/14/write-thread-safety</id>
     <content type="html">&lt;p&gt;Well of course it’s thread safe. All syscalls are thread safe. My real question is if calls to write() from multiple threads would interleave the data or write it one after the other. To test this I wrote a simple program:&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c&quot; data-lang=&quot;c&quot;&gt;&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;unistd.h&amp;gt;&lt;/span&gt;
@@ -808,9 +808,9 @@ $ sed &#39;s/\(...\).*/\1/&#39; test.txt | uniq  -c
   
   <entry>
     <title>Marshal map[int]int in Golang</title>
-    <link href="http://blog.dubbelboer.com/2015/05/24/go-intmap-marshal.html"/>
+    <link href="https://blog.dubbelboer.com/2015/05/24/go-intmap-marshal.html"/>
     <updated>2015-05-24T00:00:00+00:00</updated>
-    <id>http://blog.dubbelboer.com/2015/05/24/go-intmap-marshal</id>
+    <id>https://blog.dubbelboer.com/2015/05/24/go-intmap-marshal</id>
     <content type="html">&lt;p&gt;The Golang JSON module doesn’t support marshaling maps with keys that are anything else than a string. I needed to serialize a map with integers as keys, so I wrote one. I’m just posting this here in case it’s useful for anyone else:&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-go&quot; data-lang=&quot;go&quot;&gt;&lt;span class=&quot;kd&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Intmap&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;
@@ -846,9 +846,9 @@ $ sed &#39;s/\(...\).*/\1/&#39; test.txt | uniq  -c
   
   <entry>
     <title>Unicode domain support in browsers</title>
-    <link href="http://blog.dubbelboer.com/2015/05/10/unicode-domain-support.html"/>
+    <link href="https://blog.dubbelboer.com/2015/05/10/unicode-domain-support.html"/>
     <updated>2015-05-10T00:00:00+00:00</updated>
-    <id>http://blog.dubbelboer.com/2015/05/10/unicode-domain-support</id>
+    <id>https://blog.dubbelboer.com/2015/05/10/unicode-domain-support</id>
     <content type="html">&lt;p&gt;According to &lt;a href=&quot;http://tools.ietf.org/html/rfc3492&quot;&gt;RFC 3492&lt;/a&gt; Unicode domains are encoded using &lt;a href=&quot;http://en.wikipedia.org/wiki/Punycode&quot;&gt;Punycode&lt;/a&gt;. So &lt;a href=&quot;http://日本語.jp&quot;&gt;http://日本語.jp&lt;/a&gt; is actually &lt;a href=&quot;http://xn--wgv71a119e.jp&quot;&gt;http://xn–wgv71a119e.jp&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;I was interested in when browsers would use Unicode and when they would use Punycode. Here are the results of my tests:&lt;/p&gt;
@@ -921,9 +921,9 @@ $ sed &#39;s/\(...\).*/\1/&#39; test.txt | uniq  -c
   
   <entry>
     <title>Cross datacenter UDP reliability</title>
-    <link href="http://blog.dubbelboer.com/2015/05/04/udp-reliability.html"/>
+    <link href="https://blog.dubbelboer.com/2015/05/04/udp-reliability.html"/>
     <updated>2015-05-04T00:00:00+00:00</updated>
-    <id>http://blog.dubbelboer.com/2015/05/04/udp-reliability</id>
+    <id>https://blog.dubbelboer.com/2015/05/04/udp-reliability</id>
     <content type="html">&lt;p&gt;For an internal project I did some research into how reliable &lt;a href=&quot;https://en.wikipedia.org/wiki/User_Datagram_Protocol&quot;&gt;UDP&lt;/a&gt; really is. In our case each new packets would overwrite any old ones so missing a couple of packets would be no issue. With UDP it’s technically also possible for packets to arrive in a different order. This would easily be detected by having an incrementing version counter and only accepting the packet if it has a higher version than the last one we had seen.&lt;/p&gt;
 
 &lt;p&gt;As described missing a couple of packets wouldn’t be an issue as long as we don’t miss to many. To test how reliable UDP really is I setup a test between one of our servers in London and one in Salt Lake City.&lt;/p&gt;
@@ -1077,9 +1077,9 @@ day - misses
   
   <entry>
     <title>Faster queues in Go</title>
-    <link href="http://blog.dubbelboer.com/2015/04/25/go-faster-queue.html"/>
+    <link href="https://blog.dubbelboer.com/2015/04/25/go-faster-queue.html"/>
     <updated>2015-04-25T00:00:00+00:00</updated>
-    <id>http://blog.dubbelboer.com/2015/04/25/go-faster-queue</id>
+    <id>https://blog.dubbelboer.com/2015/04/25/go-faster-queue</id>
     <content type="html">&lt;p&gt;In my &lt;a href=&quot;/2015/04/06/go-queue.html&quot;&gt;previous post&lt;/a&gt; I tested the implementation of a queue in Go.
 As I noted in the post I was a bit surprised at how in Go you don’t need a ring buffer to implement a queue.
 Today for comparison I also implemented the same queue using a ring buffer in Go.
@@ -1099,9 +1099,9 @@ BenchmarkRingRemove     20000000                37.6 ns/op             0 B/op   
   
   <entry>
     <title>Queues in Go</title>
-    <link href="http://blog.dubbelboer.com/2015/04/06/go-queue.html"/>
+    <link href="https://blog.dubbelboer.com/2015/04/06/go-queue.html"/>
     <updated>2015-04-06T00:00:00+00:00</updated>
-    <id>http://blog.dubbelboer.com/2015/04/06/go-queue</id>
+    <id>https://blog.dubbelboer.com/2015/04/06/go-queue</id>
     <content type="html">&lt;p&gt;Coming from a C background looking at the following &lt;a href=&quot;http://golang.org/&quot;&gt;Go&lt;/a&gt; implementation of a queue immediately raised a big question for me.&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-go&quot; data-lang=&quot;go&quot;&gt;&lt;span class=&quot;kd&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Intqueue&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;
@@ -1185,9 +1185,9 @@ cap: 17, len: 10, used: 214920
   
   <entry>
     <title>phpMyAdmin session duration</title>
-    <link href="http://blog.dubbelboer.com/2014/06/28/phpmyadmin-session-duration.html"/>
+    <link href="https://blog.dubbelboer.com/2014/06/28/phpmyadmin-session-duration.html"/>
     <updated>2014-06-28T00:00:00+00:00</updated>
-    <id>http://blog.dubbelboer.com/2014/06/28/phpmyadmin-session-duration</id>
+    <id>https://blog.dubbelboer.com/2014/06/28/phpmyadmin-session-duration</id>
     <content type="html">&lt;p&gt;To increase the session duration in &lt;a href=&quot;http://www.phpmyadmin.net/&quot;&gt;phpMyAdmin&lt;/a&gt; you have to change 2 different settings. I’m mostly writing this post for myself because I always forget which two.&lt;/p&gt;
 
 &lt;p&gt;In &lt;code&gt;phpmyadmin/config.inc.php&lt;/code&gt; you have to add:&lt;/p&gt;
@@ -1207,9 +1207,9 @@ cap: 17, len: 10, used: 214920
   
   <entry>
     <title>204 No Content and cookies</title>
-    <link href="http://blog.dubbelboer.com/2014/06/01/204-cookie.html"/>
+    <link href="https://blog.dubbelboer.com/2014/06/01/204-cookie.html"/>
     <updated>2014-06-01T00:00:00+00:00</updated>
-    <id>http://blog.dubbelboer.com/2014/06/01/204-cookie</id>
+    <id>https://blog.dubbelboer.com/2014/06/01/204-cookie</id>
     <content type="html">&lt;p&gt;When working on a project I was wondering if all browsers would accept cookies set in 204 No Content http responses.&lt;/p&gt;
 
 &lt;p&gt;I wrote a small test page: &lt;a href=&quot;http://dubbelboer.com/204cookie.php&quot;&gt;dubbelboer.com/204cookie.php&lt;/a&gt;&lt;/p&gt;
@@ -1271,9 +1271,9 @@ cap: 17, len: 10, used: 214920
   
   <entry>
     <title>Ports to avoid</title>
-    <link href="http://blog.dubbelboer.com/2013/08/25/ports-to-avoid.html"/>
+    <link href="https://blog.dubbelboer.com/2013/08/25/ports-to-avoid.html"/>
     <updated>2013-08-25T00:00:00+00:00</updated>
-    <id>http://blog.dubbelboer.com/2013/08/25/ports-to-avoid</id>
+    <id>https://blog.dubbelboer.com/2013/08/25/ports-to-avoid</id>
     <content type="html">&lt;p&gt;When developing web applications I very often use ports different than 80. Mostly because port 80 is already taken.&lt;/p&gt;
 
 &lt;p&gt;When using Chrome there are actually some ports you want to avoid because they are blocked by default. Here is a list of those ports and what runs on them normally:&lt;/p&gt;
@@ -1350,9 +1350,9 @@ cap: 17, len: 10, used: 214920
   
   <entry>
     <title>getParameterByName() and getCookieByName()</title>
-    <link href="http://blog.dubbelboer.com/2012/12/21/getParameterByName-getCookieByName.html"/>
+    <link href="https://blog.dubbelboer.com/2012/12/21/getParameterByName-getCookieByName.html"/>
     <updated>2012-12-21T00:00:00+00:00</updated>
-    <id>http://blog.dubbelboer.com/2012/12/21/getParameterByName-getCookieByName</id>
+    <id>https://blog.dubbelboer.com/2012/12/21/getParameterByName-getCookieByName</id>
     <content type="html">&lt;p&gt;When writing some code that should be as small as possible you don’t want to include jQuery, MooTools or any other library.
 These two functions are the functions that I miss most in this case, and I actually think these should implemented natively by the browsers.&lt;/p&gt;
 
@@ -1405,9 +1405,9 @@ These two functions are the functions that I miss most in this case, and I actua
   
   <entry>
     <title>How many redirects do browsers follow (updated 2015-04-07)</title>
-    <link href="http://blog.dubbelboer.com/2012/12/16/redirects.html"/>
+    <link href="https://blog.dubbelboer.com/2012/12/16/redirects.html"/>
     <updated>2012-12-16T00:00:00+00:00</updated>
-    <id>http://blog.dubbelboer.com/2012/12/16/redirects</id>
+    <id>https://blog.dubbelboer.com/2012/12/16/redirects</id>
     <content type="html">&lt;p&gt;Today I was wondering how many 302 redirects browsers would follow before stopping.
 There are some posts about this but I couldn’t find a source which was up to date and included all browsers. So I decided to make my own:&lt;/p&gt;
 
@@ -1453,9 +1453,9 @@ There are some posts about this but I couldn’t find a source which was up to d
   
   <entry>
     <title>Blurring images in PHP</title>
-    <link href="http://blog.dubbelboer.com/2012/12/09/php-image-blur.html"/>
+    <link href="https://blog.dubbelboer.com/2012/12/09/php-image-blur.html"/>
     <updated>2012-12-09T00:00:00+00:00</updated>
-    <id>http://blog.dubbelboer.com/2012/12/09/php-image-blur</id>
+    <id>https://blog.dubbelboer.com/2012/12/09/php-image-blur</id>
     <content type="html">&lt;p&gt;For my work I needed to blur parts of an image. PHP has several methods to do this which all yield different results. This post shows the output of most of these methods.&lt;/p&gt;
 
 &lt;h2 id=&quot;normal-image&quot;&gt;Normal image&lt;/h2&gt;
@@ -1553,9 +1553,9 @@ There are some posts about this but I couldn’t find a source which was up to d
   
   <entry>
     <title>LRU cache - map vs unordered_map</title>
-    <link href="http://blog.dubbelboer.com/2012/12/04/lru-cache.html"/>
+    <link href="https://blog.dubbelboer.com/2012/12/04/lru-cache.html"/>
     <updated>2012-12-04T00:00:00+00:00</updated>
-    <id>http://blog.dubbelboer.com/2012/12/04/lru-cache</id>
+    <id>https://blog.dubbelboer.com/2012/12/04/lru-cache</id>
     <content type="html">&lt;p&gt;Recently I needed a simple &lt;a href=&quot;http://en.wikipedia.org/wiki/Cache_algorithms#Least_Recently_Used&quot;&gt;LRU cache&lt;/a&gt;. Since the standard library doesn’t provide one I decided to write one myself.&lt;/p&gt;
 
 &lt;p&gt;The cache needed a simple interface to get and set items and needed to be at least logarithmic in complexity. Something like:&lt;/p&gt;
@@ -1626,9 +1626,9 @@ The source for the benchmark can be found here, &lt;a href=&quot;https://github.
   
   <entry>
     <title>302 redirects and cookies</title>
-    <link href="http://blog.dubbelboer.com/2012/11/25/302-cookie.html"/>
+    <link href="https://blog.dubbelboer.com/2012/11/25/302-cookie.html"/>
     <updated>2012-11-25T00:00:00+00:00</updated>
-    <id>http://blog.dubbelboer.com/2012/11/25/302-cookie</id>
+    <id>https://blog.dubbelboer.com/2012/11/25/302-cookie</id>
     <content type="html">&lt;p&gt;When working on a project I was wondering if all browsers would accept cookies set in http redirects. After searching for a bit I found some contradicting articles and &lt;a href=&quot;http://code.google.com/p/chromium/issues/detail?id=150066&quot;&gt;bug&lt;/a&gt; &lt;a href=&quot;https://bugs.webkit.org/show_bug.cgi?id=3512&quot;&gt;reports&lt;/a&gt; indicating that this might not always be the case. So I decided to test this in a lot of browsers and post the results online for others to find.&lt;/p&gt;
 
 &lt;p&gt;I wrote a small test page: &lt;a href=&quot;http://dubbelboer.com/302cookie.php&quot;&gt;dubbelboer.com/302cookie.php&lt;/a&gt;&lt;/p&gt;
@@ -1665,9 +1665,9 @@ The source for the benchmark can be found here, &lt;a href=&quot;https://github.
   
   <entry>
     <title>Brainfuck JIT</title>
-    <link href="http://blog.dubbelboer.com/2012/11/18/brainfuck-jit.html"/>
+    <link href="https://blog.dubbelboer.com/2012/11/18/brainfuck-jit.html"/>
     <updated>2012-11-18T00:00:00+00:00</updated>
-    <id>http://blog.dubbelboer.com/2012/11/18/brainfuck-jit</id>
+    <id>https://blog.dubbelboer.com/2012/11/18/brainfuck-jit</id>
     <content type="html">&lt;p&gt;&lt;a href=&quot;http://en.wikipedia.org/wiki/Brainfuck&quot;&gt;Brainfuck&lt;/a&gt; is an esoteric programming language with a very minimal amount of instructions.
 This makes it an easy candidate to write interpreters and compilers for. As simple exercise I have written brainfuck interpreters in many languages. This time I tried a different approach. I have written a program to compile brainfuck to native instructions and then execute them.&lt;/p&gt;
 
@@ -2010,9 +2010,9 @@ This makes it an easy candidate to write interpreters and compilers for. As simp
   
   <entry>
     <title>PHP shell_exec with a timeout</title>
-    <link href="http://blog.dubbelboer.com/2012/08/24/execute-with-timeout.html"/>
+    <link href="https://blog.dubbelboer.com/2012/08/24/execute-with-timeout.html"/>
     <updated>2012-08-24T00:00:00+00:00</updated>
-    <id>http://blog.dubbelboer.com/2012/08/24/execute-with-timeout</id>
+    <id>https://blog.dubbelboer.com/2012/08/24/execute-with-timeout</id>
     <content type="html">&lt;p&gt;This function allows you to execute another process but with a timeout on how long it’s allowed to run.&lt;/p&gt;
 
 &lt;h2 id=&quot;update-2012-08-28&quot;&gt;Update &lt;em&gt;2012-08-28&lt;/em&gt;&lt;/h2&gt;
@@ -2114,9 +2114,9 @@ This makes it an easy candidate to write interpreters and compilers for. As simp
   
   <entry>
     <title>Weirdness in php getters/setters</title>
-    <link href="http://blog.dubbelboer.com/2012/07/06/getter-in-getter.html"/>
+    <link href="https://blog.dubbelboer.com/2012/07/06/getter-in-getter.html"/>
     <updated>2012-07-06T00:00:00+00:00</updated>
-    <id>http://blog.dubbelboer.com/2012/07/06/getter-in-getter</id>
+    <id>https://blog.dubbelboer.com/2012/07/06/getter-in-getter</id>
     <content type="html">&lt;p&gt;While writing some PHP I ran into the following undocumented behaviour. When calling a getter for a property recursively PHP will always return NULL on the recursive calls.&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-php&quot; data-lang=&quot;php&quot;&gt;&lt;span class=&quot;cp&quot;&gt;&amp;lt;?&lt;/span&gt;
@@ -2169,9 +2169,9 @@ This makes it an easy candidate to write interpreters and compilers for. As simp
   
   <entry>
     <title>Binding functions in javascript</title>
-    <link href="http://blog.dubbelboer.com/2012/06/19/js-bind.html"/>
+    <link href="https://blog.dubbelboer.com/2012/06/19/js-bind.html"/>
     <updated>2012-06-19T00:00:00+00:00</updated>
-    <id>http://blog.dubbelboer.com/2012/06/19/js-bind</id>
+    <id>https://blog.dubbelboer.com/2012/06/19/js-bind</id>
     <content type="html">&lt;p&gt;A very useful javascript function that not many people seem to know is &lt;a href=&quot;https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Function/bind&quot;&gt;bind()&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;code&gt;bind()&lt;/code&gt; allows you to set the &lt;code&gt;this&lt;/code&gt; variable a function is executed in. When using a more object oriented approach this can be very useful.&lt;/p&gt;
@@ -2195,9 +2195,9 @@ This makes it an easy candidate to write interpreters and compilers for. As simp
   
   <entry>
     <title>AJAX file upload problem</title>
-    <link href="http://blog.dubbelboer.com/2012/05/30/ajax-file-upload.html"/>
+    <link href="https://blog.dubbelboer.com/2012/05/30/ajax-file-upload.html"/>
     <updated>2012-05-30T00:00:00+00:00</updated>
-    <id>http://blog.dubbelboer.com/2012/05/30/ajax-file-upload</id>
+    <id>https://blog.dubbelboer.com/2012/05/30/ajax-file-upload</id>
     <content type="html">&lt;p&gt;For one of our company websites we have an HTML file upload utility.&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-html&quot; data-lang=&quot;html&quot;&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;input&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;type=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;file&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;id=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;input&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;onchange=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;handleFiles(this.files)&amp;quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
@@ -2233,9 +2233,9 @@ This makes it an easy candidate to write interpreters and compilers for. As simp
   
   <entry>
     <title>V8 performance inside try/catch</title>
-    <link href="http://blog.dubbelboer.com/2012/04/16/node-try-catch.html"/>
+    <link href="https://blog.dubbelboer.com/2012/04/16/node-try-catch.html"/>
     <updated>2012-04-16T00:00:00+00:00</updated>
-    <id>http://blog.dubbelboer.com/2012/04/16/node-try-catch</id>
+    <id>https://blog.dubbelboer.com/2012/04/16/node-try-catch</id>
     <content type="html">&lt;p&gt;I have learned recently that V8, the javascript engine behind nodejs can’t optimize inside a try/catch block. Just look at the running times of the next two examples:&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;test&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
@@ -2288,9 +2288,9 @@ This makes it an easy candidate to write interpreters and compilers for. As simp
   
   <entry>
     <title>All you need to know about SYN floods</title>
-    <link href="http://blog.dubbelboer.com/2012/04/09/syn-cookies.html"/>
+    <link href="https://blog.dubbelboer.com/2012/04/09/syn-cookies.html"/>
     <updated>2012-04-09T00:00:00+00:00</updated>
-    <id>http://blog.dubbelboer.com/2012/04/09/syn-cookies</id>
+    <id>https://blog.dubbelboer.com/2012/04/09/syn-cookies</id>
     <content type="html">&lt;h2 id=&quot;syn-cookies&quot;&gt;SYN cookies&lt;/h2&gt;
 
 &lt;p&gt;So one day I noticed &lt;code&gt;/var/log/syslog&lt;/code&gt; on one of our servers was filled with the following message:&lt;/p&gt;
@@ -2500,9 +2500,9 @@ This is the reason that software like &lt;a href=&quot;https://github.com/git-mi
   
   <entry>
     <title>The PHP use keyword</title>
-    <link href="http://blog.dubbelboer.com/2012/04/07/php-use-keyword.html"/>
+    <link href="https://blog.dubbelboer.com/2012/04/07/php-use-keyword.html"/>
     <updated>2012-04-07T00:00:00+00:00</updated>
-    <id>http://blog.dubbelboer.com/2012/04/07/php-use-keyword</id>
+    <id>https://blog.dubbelboer.com/2012/04/07/php-use-keyword</id>
     <content type="html">&lt;h2 id=&quot;anonymous-functions&quot;&gt;Anonymous functions&lt;/h2&gt;
 
 &lt;p&gt;As of 5.3.0 PHP has support for anonymous functions. There are two well known and one lesser known way to pass variables to your anonymous functions.&lt;/p&gt;
@@ -2581,9 +2581,9 @@ array(4) {
   
   <entry>
     <title>Premature C optimizations</title>
-    <link href="http://blog.dubbelboer.com/2012/03/17/premature-c-optimizations.html"/>
+    <link href="https://blog.dubbelboer.com/2012/03/17/premature-c-optimizations.html"/>
     <updated>2012-03-17T00:00:00+00:00</updated>
-    <id>http://blog.dubbelboer.com/2012/03/17/premature-c-optimizations</id>
+    <id>https://blog.dubbelboer.com/2012/03/17/premature-c-optimizations</id>
     <content type="html">&lt;p&gt;If you are writing some really high performance C code. Or if you just like to do some premature C optimizations. Here’s a gcc compiler buildin you can use:&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c&quot; data-lang=&quot;c&quot;&gt;&lt;span class=&quot;n&quot;&gt;integer&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;__builtin_expect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;integer&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;variable&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;expected&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
@@ -2636,9 +2636,9 @@ array(4) {
   
   <entry>
     <title>High performance favicons (updated 2012-04-16)</title>
-    <link href="http://blog.dubbelboer.com/2012/03/15/favicon.html"/>
+    <link href="https://blog.dubbelboer.com/2012/03/15/favicon.html"/>
     <updated>2012-03-15T00:00:00+00:00</updated>
-    <id>http://blog.dubbelboer.com/2012/03/15/favicon</id>
+    <id>https://blog.dubbelboer.com/2012/03/15/favicon</id>
     <content type="html">&lt;p&gt;For my company we have an ad-server which handles hundreds of connections per second. Many of those are HTML iframes for ads. It doesn’t really make sense for those pages to have a favicon but we noticed that many browses still request favicon.ico. This only ads load to our already busy server so we place the following code in our iframe HTML:&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-html&quot; data-lang=&quot;html&quot;&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;link&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;rel=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;shortcut icon&amp;quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;href=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==&amp;quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
@@ -2684,9 +2684,9 @@ array(4) {
   
   <entry>
     <title>Blowfish password encryption</title>
-    <link href="http://blog.dubbelboer.com/2012/03/14/blowfish.html"/>
+    <link href="https://blog.dubbelboer.com/2012/03/14/blowfish.html"/>
     <updated>2012-03-14T00:00:00+00:00</updated>
-    <id>http://blog.dubbelboer.com/2012/03/14/blowfish</id>
+    <id>https://blog.dubbelboer.com/2012/03/14/blowfish</id>
     <content type="html">&lt;p&gt;Since 5.3 PHP supports Blowfish hashing. This is commonly seen as the most secure way to hash a password. The main advantage is that the function can be set to be really slow which makes brute forcing useless.&lt;/p&gt;
 
 &lt;p&gt;Here’s an example implementation:&lt;/p&gt;
@@ -2742,9 +2742,9 @@ array(4) {
   
   <entry>
     <title>PHP .user.ini</title>
-    <link href="http://blog.dubbelboer.com/2012/02/20/php-user-ini.html"/>
+    <link href="https://blog.dubbelboer.com/2012/02/20/php-user-ini.html"/>
     <updated>2012-02-20T00:00:00+00:00</updated>
-    <id>http://blog.dubbelboer.com/2012/02/20/php-user-ini</id>
+    <id>https://blog.dubbelboer.com/2012/02/20/php-user-ini</id>
     <content type="html">&lt;p&gt;A feature of PHP that many people don’t seem to be aware of is the &lt;a href=&quot;http://php.net/manual/en/configuration.file.per-user.php&quot;&gt;.user.ini&lt;/a&gt; file.&lt;/p&gt;
 
 &lt;p&gt;This per directory configuration file can be very useful in combination with the following settings&lt;/p&gt;
@@ -2766,9 +2766,9 @@ array(4) {
   
   <entry>
     <title>The multipart/x-mixed-replace content type</title>
-    <link href="http://blog.dubbelboer.com/2012/01/08/x-mixed-replace.html"/>
+    <link href="https://blog.dubbelboer.com/2012/01/08/x-mixed-replace.html"/>
     <updated>2012-01-08T00:00:00+00:00</updated>
-    <id>http://blog.dubbelboer.com/2012/01/08/x-mixed-replace</id>
+    <id>https://blog.dubbelboer.com/2012/01/08/x-mixed-replace</id>
     <content type="html">&lt;p&gt;Looking at the new Google Analytics live view I noticed they use the &lt;a href=&quot;http://en.wikipedia.org/wiki/MIME#Mixed-Replace_.28experimental.29&quot;&gt;multipart/x-mixed-replace&lt;/a&gt; content type to push live updates to the webbrowser.&lt;/p&gt;
 
 &lt;p&gt;Using this special Content-type you can replace the contents of a page. You can find this example here: &lt;a href=&quot;http://dubbelboer.com/multipart.php&quot;&gt;dubbelboer.com/multipart.php&lt;/a&gt;.&lt;/p&gt;
@@ -2823,9 +2823,9 @@ array(4) {
   
   <entry>
     <title>PHP autoloader exception weirdness</title>
-    <link href="http://blog.dubbelboer.com/2012/01/05/php-autoload.html"/>
+    <link href="https://blog.dubbelboer.com/2012/01/05/php-autoload.html"/>
     <updated>2012-01-05T00:00:00+00:00</updated>
-    <id>http://blog.dubbelboer.com/2012/01/05/php-autoload</id>
+    <id>https://blog.dubbelboer.com/2012/01/05/php-autoload</id>
     <content type="html">&lt;p&gt;While writing some object oriented php at my job we ran into the following strange php behaviour.&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-php&quot; data-lang=&quot;php&quot;&gt;&lt;span class=&quot;cp&quot;&gt;&amp;lt;?&lt;/span&gt;
