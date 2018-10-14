@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset=utf-8>
+
+<title>UE4 DistributionVectorUniformParam Particle Distribution - Erik's Code</title>
+
+<meta name=keywords content="unreal engine ue4 distribution vector particle uniform param">
+<link rel="author" href="https://plus.google.com/+ErikDubbelboer" />
+
+
+<link href="/css/common.css" media="screen" rel="stylesheet" type="text/css">
+<link href="/css/pygments.css" media="screen" rel="stylesheet" type="text/css">
+</head>  
+<body>
+  <div id="main">
+    <div id="header-wrapper">
+      <div id="header" class="basic" >
+        <div class="site">
+          <a class="logo" href="/"><h2>Erik's Code</h2></a>
+          <div class="topsearch">
+            <ul class="nav logged_out">
+              <li><a href="/about.html">About Erik</a></li>
+            </ul>
+          </div><!-- .topsearch -->
+        </div><!-- .site -->
+      </div><!-- #header -->
+    </div><!-- #header-wrapper -->
+    <div id="wrapper">
+      <div id="content" class="site">
+
+        <h1>UE4 DistributionVectorUniformParam Particle Distribution</h1>
+
+<em>Date: 14 Oct 2018</em><br>
+<em>Author: Erik Dubbelboer</em>
+
+<p>While creating weapon effects for our game I needed quite dynamic particle effects that look random but still depend on the range and splash range of the weapons.
+Using Distribution Vector Param and dynamically setting the range of the particle effects works for some cases but doesn’t work if you have multiple particles that need to have random values.
+To fix this I created the missing Distribution Vector Uniform Param.</p>
+
+<p><img src="/images/2018-10-14-example-distribution.png" alt="Example parameters" /></p>
+
+<p><a href="https://gist.github.com/erikdubbelboer/cd674cd29399bc9bddb9c9c8a6bd7886#file-distributionvectoruniformparam-h">DistributionVectorUniformParam.h</a></p>
+
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="cp">#pragma once</span>
+
+<span class="cp">#include &quot;CoreMinimal.h&quot;</span>
+<span class="cp">#include &quot;Distributions/DistributionVector.h&quot;</span>
+
+<span class="cp">#include &quot;DistributionVectorUniformParam.generated.h&quot;</span>
+
+
+<span class="n">UCLASS</span><span class="p">(</span><span class="n">collapsecategories</span><span class="p">,</span> <span class="n">hidecategories</span> <span class="o">=</span> <span class="n">Object</span><span class="p">,</span> <span class="n">editinlinenew</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">PROJECT_API</span> <span class="nl">UDistributionVectorUniformParam</span> <span class="p">:</span> <span class="k">public</span> <span class="n">UDistributionVector</span>
+<span class="p">{</span>
+  <span class="n">GENERATED_UCLASS_BODY</span><span class="p">()</span>
+
+
+  <span class="n">UPROPERTY</span><span class="p">(</span><span class="n">EditAnywhere</span><span class="p">)</span>
+  <span class="n">FName</span> <span class="n">MaxParameterName</span><span class="p">;</span>
+
+  <span class="n">UPROPERTY</span><span class="p">(</span><span class="n">EditAnywhere</span><span class="p">)</span>
+  <span class="n">FName</span> <span class="n">MinParameterName</span><span class="p">;</span>
+
+  <span class="n">UPROPERTY</span><span class="p">(</span><span class="n">EditAnywhere</span><span class="p">)</span>
+  <span class="n">FVector</span> <span class="n">DefaultMax</span><span class="p">;</span>
+
+  <span class="n">UPROPERTY</span><span class="p">(</span><span class="n">EditAnywhere</span><span class="p">)</span>
+  <span class="n">FVector</span> <span class="n">DefaultMin</span><span class="p">;</span>
+
+  <span class="k">virtual</span> <span class="n">FVector</span> <span class="n">GetValue</span><span class="p">(</span><span class="kt">float</span> <span class="n">F</span> <span class="o">=</span> <span class="mf">0.f</span><span class="p">,</span> <span class="n">UObject</span><span class="o">*</span> <span class="n">Data</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">int32</span> <span class="n">LastExtreme</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="k">struct</span> <span class="n">FRandomStream</span><span class="o">*</span> <span class="n">InRandomStream</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">)</span> <span class="k">const</span> <span class="k">override</span><span class="p">;</span>
+
+  <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">CanBeBaked</span><span class="p">()</span> <span class="k">const</span> <span class="k">override</span> <span class="p">{</span> <span class="k">return</span> <span class="nb">false</span><span class="p">;</span> <span class="p">}</span>
+  <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">IsPostLoadThreadSafe</span><span class="p">()</span> <span class="k">const</span> <span class="k">override</span> <span class="p">{</span> <span class="k">return</span> <span class="nb">true</span><span class="p">;</span> <span class="p">};</span>
+
+<span class="k">public</span><span class="o">:</span>
+  <span class="n">UDistributionVectorUniformParam</span><span class="p">();</span>
+
+<span class="k">private</span><span class="o">:</span>
+  <span class="kt">bool</span> <span class="n">GetParamValue</span><span class="p">(</span><span class="n">UObject</span><span class="o">*</span> <span class="n">Data</span><span class="p">,</span> <span class="n">FName</span> <span class="n">ParamName</span><span class="p">,</span> <span class="n">FVector</span><span class="o">&amp;</span> <span class="n">OutVector</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+<span class="p">};</span></code></pre></div>
+
+<p><a href="https://gist.github.com/erikdubbelboer/cd674cd29399bc9bddb9c9c8a6bd7886#file-distributionvectoruniformparam-cpp">DistributionVectorUniformParam.cpp</a></p>
+
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="cp">#include &quot;DistributionVectorUniformParam.h&quot;</span>
+
+<span class="cp">#include &quot;Particles/ParticleSystemComponent.h&quot;</span>
+
+
+<span class="n">UDistributionVectorUniformParam</span><span class="o">::</span><span class="n">UDistributionVectorUniformParam</span><span class="p">(</span><span class="k">const</span> <span class="n">FObjectInitializer</span><span class="o">&amp;</span> <span class="n">ObjectInitializer</span><span class="p">)</span>
+  <span class="o">:</span> <span class="n">Super</span><span class="p">(</span><span class="n">ObjectInitializer</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="p">}</span>
+
+<span class="n">FVector</span> <span class="n">UDistributionVectorUniformParam</span><span class="o">::</span><span class="n">GetValue</span><span class="p">(</span><span class="kt">float</span> <span class="n">F</span><span class="p">,</span> <span class="n">UObject</span><span class="o">*</span> <span class="n">Data</span><span class="p">,</span> <span class="n">int32</span> <span class="n">Extreme</span><span class="p">,</span> <span class="k">struct</span> <span class="n">FRandomStream</span><span class="o">*</span> <span class="n">InRandomStream</span><span class="p">)</span> <span class="k">const</span>
+<span class="p">{</span>
+  <span class="n">FVector</span> <span class="n">LocalMax</span> <span class="o">=</span> <span class="n">DefaultMax</span><span class="p">;</span>
+  <span class="n">FVector</span> <span class="n">LocalMin</span> <span class="o">=</span> <span class="n">DefaultMin</span><span class="p">;</span>
+
+  <span class="n">FVector</span> <span class="n">ParamMax</span><span class="p">;</span>
+  <span class="kt">bool</span> <span class="n">bFoundParam</span> <span class="o">=</span> <span class="n">GetParamValue</span><span class="p">(</span><span class="n">Data</span><span class="p">,</span> <span class="n">MaxParameterName</span><span class="p">,</span> <span class="n">ParamMax</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">bFoundParam</span><span class="p">)</span>
+  <span class="p">{</span>
+    <span class="n">LocalMax</span> <span class="o">=</span> <span class="n">ParamMax</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="n">FVector</span> <span class="n">ParamMin</span><span class="p">;</span>
+  <span class="n">bFoundParam</span> <span class="o">=</span> <span class="n">GetParamValue</span><span class="p">(</span><span class="n">Data</span><span class="p">,</span> <span class="n">MinParameterName</span><span class="p">,</span> <span class="n">ParamMin</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">bFoundParam</span><span class="p">)</span>
+  <span class="p">{</span>
+    <span class="n">LocalMin</span> <span class="o">=</span> <span class="n">ParamMin</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="kt">float</span> <span class="n">fX</span> <span class="o">=</span> <span class="n">LocalMin</span><span class="p">.</span><span class="n">X</span> <span class="o">+</span> <span class="p">(</span><span class="n">LocalMax</span><span class="p">.</span><span class="n">X</span> <span class="o">-</span> <span class="n">LocalMin</span><span class="p">.</span><span class="n">X</span><span class="p">)</span> <span class="o">*</span> <span class="n">DIST_GET_RANDOM_VALUE</span><span class="p">(</span><span class="n">InRandomStream</span><span class="p">);</span>
+  <span class="kt">float</span> <span class="n">fY</span> <span class="o">=</span> <span class="n">LocalMin</span><span class="p">.</span><span class="n">Y</span> <span class="o">+</span> <span class="p">(</span><span class="n">LocalMax</span><span class="p">.</span><span class="n">Y</span> <span class="o">-</span> <span class="n">LocalMin</span><span class="p">.</span><span class="n">Y</span><span class="p">)</span> <span class="o">*</span> <span class="n">DIST_GET_RANDOM_VALUE</span><span class="p">(</span><span class="n">InRandomStream</span><span class="p">);</span>
+  <span class="kt">float</span> <span class="n">fZ</span> <span class="o">=</span> <span class="n">LocalMin</span><span class="p">.</span><span class="n">Z</span> <span class="o">+</span> <span class="p">(</span><span class="n">LocalMax</span><span class="p">.</span><span class="n">Z</span> <span class="o">-</span> <span class="n">LocalMin</span><span class="p">.</span><span class="n">Z</span><span class="p">)</span> <span class="o">*</span> <span class="n">DIST_GET_RANDOM_VALUE</span><span class="p">(</span><span class="n">InRandomStream</span><span class="p">);</span>
+
+  <span class="k">return</span> <span class="nf">FVector</span><span class="p">(</span><span class="n">fX</span><span class="p">,</span> <span class="n">fY</span><span class="p">,</span> <span class="n">fZ</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">bool</span> <span class="n">UDistributionVectorUniformParam</span><span class="o">::</span><span class="n">GetParamValue</span><span class="p">(</span><span class="n">UObject</span><span class="o">*</span> <span class="n">Data</span><span class="p">,</span> <span class="n">FName</span> <span class="n">ParamName</span><span class="p">,</span> <span class="n">FVector</span><span class="o">&amp;</span> <span class="n">OutVector</span><span class="p">)</span> <span class="k">const</span>
+<span class="p">{</span>
+  <span class="kt">bool</span> <span class="n">bFoundParam</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+
+  <span class="n">UParticleSystemComponent</span><span class="o">*</span> <span class="n">ParticleComp</span> <span class="o">=</span> <span class="n">Cast</span><span class="o">&lt;</span><span class="n">UParticleSystemComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">Data</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">ParticleComp</span><span class="p">)</span>
+  <span class="p">{</span>
+    <span class="n">bFoundParam</span> <span class="o">=</span> <span class="n">ParticleComp</span><span class="o">-&gt;</span><span class="n">GetAnyVectorParameter</span><span class="p">(</span><span class="n">ParamName</span><span class="p">,</span> <span class="n">OutVector</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="n">bFoundParam</span><span class="p">;</span>
+<span class="p">}</span></code></pre></div>
+
+
+
+<div id=disqus_thread></div>
+<script>
+  var disqus_shortname = 'erikscode';
+
+  (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+
+
+
+      </div><!-- #content -->
+    </div><!-- #wrapper -->
+  </div><!-- #main -->
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-7915266-3', 'dubbelboer.com');
+    ga('send', 'pageview');
+  </script>
+</body>
+</html>
