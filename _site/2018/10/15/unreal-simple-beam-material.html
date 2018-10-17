@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset=utf-8>
+
+<title>UE4 Simple Programmatic Materials - Erik's Code</title>
+
+<meta name=keywords content="unreal engine ue4 material beam ring texture">
+<link rel="author" href="https://plus.google.com/+ErikDubbelboer" />
+
+
+<link href="/css/common.css" media="screen" rel="stylesheet" type="text/css">
+<link href="/css/pygments.css" media="screen" rel="stylesheet" type="text/css">
+</head>  
+<body>
+  <div id="main">
+    <div id="header-wrapper">
+      <div id="header" class="basic" >
+        <div class="site">
+          <a class="logo" href="/"><h2>Erik's Code</h2></a>
+          <div class="topsearch">
+            <ul class="nav logged_out">
+              <li><a href="/about.html">About Erik</a></li>
+            </ul>
+          </div><!-- .topsearch -->
+        </div><!-- .site -->
+      </div><!-- #header -->
+    </div><!-- #header-wrapper -->
+    <div id="wrapper">
+      <div id="content" class="site">
+
+        <h1>UE4 Simple Programmatic Materials</h1>
+
+<em>Date: 15 Oct 2018</em><br>
+<em>Author: Erik Dubbelboer</em>
+
+<p>As a programmer working on an Unreal game I sometimes need simple textures to design effects. Seeing as I’m really bad with photoshop and other image editing software I always prefer to generate the textures programatically. In the following screenshot you can see a simple material that generates a beam texture. You can make the beam wider or narrower by playing with the exponent in the Power function. You can turn the bean by 90 degrees by using the R instead of the G component of the BreakOut node.</p>
+
+<p><a href="/images/2018-10-15-beam-material.png"><img src="/images/2018-10-15-beam-material.png" alt="Simple Beam Material" /></a></p>
+
+<p>Another example is a simple translucent sphere material where again we use the texture coordinates to build the look of the material.</p>
+
+<p><a href="/images/2018-10-15-sphere-material.png"><img src="/images/2018-10-15-sphere-material.png" alt="Simple Translucent Sphere Material" /></a></p>
+
+<p>Or pulsating rings using the Sin of a Time node.</p>
+
+<p><a href="/images/2018-10-15-pulsating-rings-material.png"><img src="/images/2018-10-15-pulsating-rings-material.png" alt="Pulsating Rings Material" /></a></p>
+
+<p>Or rotating ring segments using a combination of the techniques above.</p>
+
+<p><a href="/images/2018-10-15-rotating-ring-segments-material.png"><img src="/images/2018-10-15-rotating-ring-segments-material.png" alt="Rotating Ring Segments Material" /></a></p>
+
+
+
+<div id=disqus_thread></div>
+<script>
+  var disqus_shortname = 'erikscode';
+
+  (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+
+
+
+      </div><!-- #content -->
+    </div><!-- #wrapper -->
+  </div><!-- #main -->
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-7915266-3', 'dubbelboer.com');
+    ga('send', 'pageview');
+  </script>
+</body>
+</html>

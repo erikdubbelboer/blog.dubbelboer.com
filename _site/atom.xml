@@ -3,13 +3,37 @@
   <title>Erik's Code</title>
   <link href="https://blog.dubbelboer.com/atom.xml" rel="self" />
   <link href="https://blog.dubbelboer.com/" />
-  <updated>2018-10-14T09:16:27+00:00</updated>
+  <updated>2018-10-17T18:38:35+00:00</updated>
   <id>https://blog.dubbelboer.com/</id>
   <author>
     <name>Erik Dubbelboer</name>
     <email>erik@dubbelboer.com</email>
   </author>
  
+  
+  <entry>
+    <title>UE4 Simple Programmatic Materials</title>
+    <link href="https://blog.dubbelboer.com/2018/10/15/unreal-simple-beam-material.html"/>
+    <updated>2018-10-15T00:00:00+00:00</updated>
+    <id>https://blog.dubbelboer.com/2018/10/15/unreal-simple-beam-material</id>
+    <content type="html">&lt;p&gt;As a programmer working on an Unreal game I sometimes need simple textures to design effects. Seeing as I’m really bad with photoshop and other image editing software I always prefer to generate the textures programatically. In the following screenshot you can see a simple material that generates a beam texture. You can make the beam wider or narrower by playing with the exponent in the Power function. You can turn the bean by 90 degrees by using the R instead of the G component of the BreakOut node.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;/images/2018-10-15-beam-material.png&quot;&gt;&lt;img src=&quot;/images/2018-10-15-beam-material.png&quot; alt=&quot;Simple Beam Material&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Another example is a simple translucent sphere material where again we use the texture coordinates to build the look of the material.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;/images/2018-10-15-sphere-material.png&quot;&gt;&lt;img src=&quot;/images/2018-10-15-sphere-material.png&quot; alt=&quot;Simple Translucent Sphere Material&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Or pulsating rings using the Sin of a Time node.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;/images/2018-10-15-pulsating-rings-material.png&quot;&gt;&lt;img src=&quot;/images/2018-10-15-pulsating-rings-material.png&quot; alt=&quot;Pulsating Rings Material&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Or rotating ring segments using a combination of the techniques above.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;/images/2018-10-15-rotating-ring-segments-material.png&quot;&gt;&lt;img src=&quot;/images/2018-10-15-rotating-ring-segments-material.png&quot; alt=&quot;Rotating Ring Segments Material&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+</content>
+  </entry>
   
   <entry>
     <title>UE4 DistributionVectorUniformParam Particle Distribution</title>
