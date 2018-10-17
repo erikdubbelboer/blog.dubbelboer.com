@@ -179,7 +179,7 @@ float: right;
   border-radius: 3px;
 }
 
-#content img {
+#content .resizeimg {
   width: 100%;
   max-width: 900px;
 }
