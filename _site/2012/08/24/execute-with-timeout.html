@@ -36,6 +36,10 @@
 
 <p>This function allows you to execute another process but with a timeout on how long it’s allowed to run.</p>
 
+<h2 id="update-2018-01-15">Update <em>2018-01-15</em></h2>
+
+<p>Made the function actually work by changing stderr to non-blocking as well. Before it never worked :) Thanks to danny23 for pointing this out.</p>
+
 <h2 id="update-2012-08-28">Update <em>2012-08-28</em></h2>
 
 <p>Changed the code to use exec inside <code>proc_open</code>. This causes <code>proc_terminate</code> to work correctly. One disadvantage is that you need to use the full path of the executable you want to run.</p>
@@ -69,8 +73,11 @@
     <span class="k">throw</span> <span class="k">new</span> <span class="nx">\Exception</span><span class="p">(</span><span class="s1">&#39;Could not execute process&#39;</span><span class="p">);</span>
   <span class="p">}</span>
 
-  <span class="c1">// Set the stdout stream to none-blocking.</span>
+  <span class="c1">// Set the stdout stream to non-blocking.</span>
   <span class="nb">stream_set_blocking</span><span class="p">(</span><span class="nv">$pipes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">0</span><span class="p">);</span>
+
+  <span class="c1">// Set the stderr stream to non-blocking.</span>
+  <span class="nb">stream_set_blocking</span><span class="p">(</span><span class="nv">$pipes</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="mi">0</span><span class="p">);</span>
 
   <span class="c1">// Turn the timeout into microseconds.</span>
   <span class="nv">$timeout</span> <span class="o">=</span> <span class="nv">$timeout</span> <span class="o">*</span> <span class="mi">1000000</span><span class="p">;</span>
@@ -93,7 +100,7 @@
     <span class="nv">$status</span> <span class="o">=</span> <span class="nb">proc_get_status</span><span class="p">(</span><span class="nv">$process</span><span class="p">);</span>
 
     <span class="c1">// Read the contents from the buffer.</span>
-    <span class="c1">// This function will always return immediately as the stream is none-blocking.</span>
+    <span class="c1">// This function will always return immediately as the stream is non-blocking.</span>
     <span class="nv">$buffer</span> <span class="o">.=</span> <span class="nb">stream_get_contents</span><span class="p">(</span><span class="nv">$pipes</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
 
     <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nv">$status</span><span class="p">[</span><span class="s1">&#39;running&#39;</span><span class="p">])</span> <span class="p">{</span>

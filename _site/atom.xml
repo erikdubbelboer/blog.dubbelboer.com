@@ -3,7 +3,7 @@
   <title>Erik's Code</title>
   <link href="https://blog.dubbelboer.com/atom.xml" rel="self" />
   <link href="https://blog.dubbelboer.com/" />
-  <updated>2018-10-17T18:44:54+00:00</updated>
+  <updated>2019-01-15T20:05:53+00:00</updated>
   <id>https://blog.dubbelboer.com/</id>
   <author>
     <name>Erik Dubbelboer</name>
@@ -2039,6 +2039,10 @@ This makes it an easy candidate to write interpreters and compilers for. As simp
     <id>https://blog.dubbelboer.com/2012/08/24/execute-with-timeout</id>
     <content type="html">&lt;p&gt;This function allows you to execute another process but with a timeout on how long it’s allowed to run.&lt;/p&gt;
 
+&lt;h2 id=&quot;update-2018-01-15&quot;&gt;Update &lt;em&gt;2018-01-15&lt;/em&gt;&lt;/h2&gt;
+
+&lt;p&gt;Made the function actually work by changing stderr to non-blocking as well. Before it never worked :) Thanks to danny23 for pointing this out.&lt;/p&gt;
+
 &lt;h2 id=&quot;update-2012-08-28&quot;&gt;Update &lt;em&gt;2012-08-28&lt;/em&gt;&lt;/h2&gt;
 
 &lt;p&gt;Changed the code to use exec inside &lt;code&gt;proc_open&lt;/code&gt;. This causes &lt;code&gt;proc_terminate&lt;/code&gt; to work correctly. One disadvantage is that you need to use the full path of the executable you want to run.&lt;/p&gt;
@@ -2072,8 +2076,11 @@ This makes it an easy candidate to write interpreters and compilers for. As simp
     &lt;span class=&quot;k&quot;&gt;throw&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;\Exception&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;Could not execute process&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
   &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 
-  &lt;span class=&quot;c1&quot;&gt;// Set the stdout stream to none-blocking.&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;// Set the stdout stream to non-blocking.&lt;/span&gt;
   &lt;span class=&quot;nb&quot;&gt;stream_set_blocking&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$pipes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+  &lt;span class=&quot;c1&quot;&gt;// Set the stderr stream to non-blocking.&lt;/span&gt;
+  &lt;span class=&quot;nb&quot;&gt;stream_set_blocking&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$pipes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
 
   &lt;span class=&quot;c1&quot;&gt;// Turn the timeout into microseconds.&lt;/span&gt;
   &lt;span class=&quot;nv&quot;&gt;$timeout&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$timeout&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1000000&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
@@ -2096,7 +2103,7 @@ This makes it an easy candidate to write interpreters and compilers for. As simp
     &lt;span class=&quot;nv&quot;&gt;$status&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;proc_get_status&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$process&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
 
     &lt;span class=&quot;c1&quot;&gt;// Read the contents from the buffer.&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;// This function will always return immediately as the stream is none-blocking.&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// This function will always return immediately as the stream is non-blocking.&lt;/span&gt;
     &lt;span class=&quot;nv&quot;&gt;$buffer&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;.=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;stream_get_contents&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$pipes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]);&lt;/span&gt;
 
     &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$status&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;running&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;

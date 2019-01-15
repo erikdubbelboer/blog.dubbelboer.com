@@ -7,6 +7,11 @@ keywords: php exec timeout
 
 This function allows you to execute another process but with a timeout on how long it's allowed to run.
 
+Update *2018-01-15*
+-------------------
+
+Made the function actually work by changing stderr to non-blocking as well. Before it never worked :) Thanks to danny23 for pointing this out.
+
 Update *2012-08-28* 
 -------------------
 
@@ -43,8 +48,11 @@ function exec_timeout($cmd, $timeout) {
     throw new \Exception('Could not execute process');
   }
 
-  // Set the stdout stream to none-blocking.
+  // Set the stdout stream to non-blocking.
   stream_set_blocking($pipes[1], 0);
+
+  // Set the stderr stream to non-blocking.
+  stream_set_blocking($pipes[2], 0);
 
   // Turn the timeout into microseconds.
   $timeout = $timeout * 1000000;
@@ -67,7 +75,7 @@ function exec_timeout($cmd, $timeout) {
     $status = proc_get_status($process);
 
     // Read the contents from the buffer.
-    // This function will always return immediately as the stream is none-blocking.
+    // This function will always return immediately as the stream is non-blocking.
     $buffer .= stream_get_contents($pipes[1]);
 
     if (!$status['running']) {
