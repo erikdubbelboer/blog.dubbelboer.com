@@ -6,7 +6,6 @@
 <title>Marshal map[int]int in Golang - Erik's Code</title>
 
 <meta name=keywords content="golang go map json marshal">
-<link rel="author" href="https://plus.google.com/+ErikDubbelboer" />
 
 
 <link href="/css/common.css" media="screen" rel="stylesheet" type="text/css">
@@ -36,31 +35,31 @@
 
 <p>The Golang JSON module doesn’t support marshaling maps with keys that are anything else than a string. I needed to serialize a map with integers as keys, so I wrote one. I’m just posting this here in case it’s useful for anyone else:</p>
 
-<div class="highlight"><pre><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Intmap</span> <span class="kd">map</span><span class="p">[</span><span class="kt">int</span><span class="p">]</span><span class="kt">int</span>
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="k">type</span> <span class="n">Intmap</span> <span class="k">map</span><span class="p">[</span><span class="kt">int</span><span class="p">]</span><span class="kt">int</span>
 
-<span class="kd">func</span> <span class="p">(</span><span class="nx">i</span> <span class="nx">Intmap</span><span class="p">)</span> <span class="nx">MarshalJSON</span><span class="p">()</span> <span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
-  <span class="nx">x</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">int</span><span class="p">)</span>
-  <span class="k">for</span> <span class="nx">k</span><span class="p">,</span> <span class="nx">v</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">i</span> <span class="p">{</span>
-    <span class="nx">x</span><span class="p">[</span><span class="nx">strconv</span><span class="p">.</span><span class="nx">FormatInt</span><span class="p">(</span><span class="nb">int64</span><span class="p">(</span><span class="nx">k</span><span class="p">),</span> <span class="mi">10</span><span class="p">)]</span> <span class="p">=</span> <span class="nx">v</span>
+<span class="k">func</span> <span class="p">(</span><span class="n">i</span> <span class="n">Intmap</span><span class="p">)</span> <span class="n">MarshalJSON</span><span class="p">()</span> <span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">x</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">int</span><span class="p">)</span>
+  <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="o">:=</span> <span class="k">range</span> <span class="n">i</span> <span class="p">{</span>
+    <span class="n">x</span><span class="p">[</span><span class="n">strconv</span><span class="o">.</span><span class="n">FormatInt</span><span class="p">(</span><span class="kt">int64</span><span class="p">(</span><span class="n">k</span><span class="p">),</span> <span class="m">10</span><span class="p">)]</span> <span class="o">=</span> <span class="n">v</span>
   <span class="p">}</span>
-  <span class="k">return</span> <span class="nx">json</span><span class="p">.</span><span class="nx">Marshal</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 <span class="p">}</span>
 
-<span class="kd">func</span> <span class="p">(</span><span class="nx">i</span> <span class="o">*</span><span class="nx">Intmap</span><span class="p">)</span> <span class="nx">UnmarshalJSON</span><span class="p">(</span><span class="nx">b</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
-  <span class="nx">x</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">int</span><span class="p">)</span>
-  <span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nx">Unmarshal</span><span class="p">(</span><span class="nx">b</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">x</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="nx">err</span>
+<span class="k">func</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span><span class="n">Intmap</span><span class="p">)</span> <span class="n">UnmarshalJSON</span><span class="p">(</span><span class="n">b</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+  <span class="n">x</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">int</span><span class="p">)</span>
+  <span class="k">if</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">json</span><span class="o">.</span><span class="n">Unmarshal</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">x</span><span class="p">);</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">err</span>
   <span class="p">}</span>
-  <span class="o">*</span><span class="nx">i</span> <span class="p">=</span> <span class="nb">make</span><span class="p">(</span><span class="nx">Intmap</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nx">x</span><span class="p">))</span>
-  <span class="k">for</span> <span class="nx">k</span><span class="p">,</span> <span class="nx">v</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">x</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="nx">ki</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">strconv</span><span class="p">.</span><span class="nx">ParseInt</span><span class="p">(</span><span class="nx">k</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">32</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-      <span class="k">return</span> <span class="nx">err</span>
+  <span class="o">*</span><span class="n">i</span> <span class="o">=</span> <span class="nb">make</span><span class="p">(</span><span class="n">Intmap</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+  <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="o">:=</span> <span class="k">range</span> <span class="n">x</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="n">ki</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">strconv</span><span class="o">.</span><span class="n">ParseInt</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="m">10</span><span class="p">,</span> <span class="m">32</span><span class="p">);</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="n">err</span>
     <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-      <span class="p">(</span><span class="o">*</span><span class="nx">i</span><span class="p">)[</span><span class="nb">int</span><span class="p">(</span><span class="nx">ki</span><span class="p">)]</span> <span class="p">=</span> <span class="nx">v</span>
+      <span class="p">(</span><span class="o">*</span><span class="n">i</span><span class="p">)[</span><span class="kt">int</span><span class="p">(</span><span class="n">ki</span><span class="p">)]</span> <span class="o">=</span> <span class="n">v</span>
     <span class="p">}</span>
   <span class="p">}</span>
-  <span class="k">return</span> <span class="kc">nil</span>
-<span class="p">}</span></code></pre></div>
+  <span class="k">return</span> <span class="no">nil</span>
+<span class="p">}</span></code></pre></figure>
 
 <p>It still serializes the keys to strings seeing as only strings are supported by the JSON standard. But it correctly handles the unserializing from the string keys back to integers.</p>
 

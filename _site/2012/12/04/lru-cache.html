@@ -6,7 +6,6 @@
 <title>LRU cache - map vs unordered_map - Erik's Code</title>
 
 <meta name=keywords content="LRU cache map unordered_map">
-<link rel="author" href="https://plus.google.com/+ErikDubbelboer" />
 
 
 <link href="/css/common.css" media="screen" rel="stylesheet" type="text/css">
@@ -38,57 +37,57 @@
 
 <p>The cache needed a simple interface to get and set items and needed to be at least logarithmic in complexity. Something like:</p>
 
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="k">template</span> <span class="o">&lt;</span><span class="k">class</span> <span class="nc">KeyType</span><span class="p">,</span> <span class="k">class</span> <span class="nc">ItemType</span><span class="o">&gt;</span>
+<figure class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="k">template</span> <span class="o">&lt;</span><span class="k">class</span> <span class="nc">KeyType</span><span class="p">,</span> <span class="k">class</span> <span class="nc">ItemType</span><span class="p">&gt;</span>
 <span class="k">class</span> <span class="nc">LRUCache</span> <span class="p">{</span>
   <span class="n">LRUCache</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">capacity</span><span class="p">);</span>
 
-  <span class="kt">size_t</span> <span class="nf">Capacity</span><span class="p">();</span>
-  <span class="kt">void</span> <span class="nf">Resize</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">capacity</span><span class="p">);</span>
+  <span class="kt">size_t</span> <span class="n">Capacity</span><span class="p">();</span>
+  <span class="kt">void</span> <span class="n">Resize</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">capacity</span><span class="p">);</span>
 
-  <span class="n">ItemType</span> <span class="nf">Get</span><span class="p">(</span><span class="k">const</span> <span class="n">KeyType</span><span class="o">&amp;</span> <span class="n">key</span><span class="p">);</span>
-  <span class="kt">void</span> <span class="nf">Set</span><span class="p">(</span><span class="k">const</span> <span class="n">KeyType</span><span class="o">&amp;</span> <span class="n">key</span><span class="p">,</span> <span class="k">const</span> <span class="n">ItemType</span> <span class="n">value</span><span class="p">);</span>
-  <span class="kt">void</span> <span class="nf">Remove</span><span class="p">(</span><span class="k">const</span> <span class="n">KeyType</span><span class="o">&amp;</span> <span class="n">key</span><span class="p">);</span>
-<span class="p">};</span></code></pre></div>
+  <span class="n">ItemType</span> <span class="n">Get</span><span class="p">(</span><span class="k">const</span> <span class="n">KeyType</span><span class="o">&amp;</span> <span class="n">key</span><span class="p">);</span>
+  <span class="kt">void</span> <span class="n">Set</span><span class="p">(</span><span class="k">const</span> <span class="n">KeyType</span><span class="o">&amp;</span> <span class="n">key</span><span class="p">,</span> <span class="k">const</span> <span class="n">ItemType</span> <span class="n">value</span><span class="p">);</span>
+  <span class="kt">void</span> <span class="n">Remove</span><span class="p">(</span><span class="k">const</span> <span class="n">KeyType</span><span class="o">&amp;</span> <span class="n">key</span><span class="p">);</span>
+<span class="p">};</span></code></pre></figure>
 
 <p>So this is what I wrote: <a href="https://github.com/ErikDubbelboer/erik-misc-code/blob/master/lrucache/lrucache.h">lrucache.h</a></p>
 
-<p>It uses an <code>std::list</code> to keep track of the age of items. And an <code>std::map</code> to store the key-value pairs.
-This combination allows for all methods to be <code>O(log n)</code>.</p>
+<p>It uses an <code class="language-plaintext highlighter-rouge">std::list</code> to keep track of the age of items. And an <code class="language-plaintext highlighter-rouge">std::map</code> to store the key-value pairs.
+This combination allows for all methods to be <code class="language-plaintext highlighter-rouge">O(log n)</code>.</p>
 
 <h2 id="c0x">C++0x</h2>
 
 <p>I have also written a version which allows you to specify the internal container to use.
-This version only works when <a href="http://en.wikipedia.org/wiki/C%2B%2B11">C++0x</a> is enabled because it requires variadic. <code>std::unordered_map</code> also requires C++0x.</p>
+This version only works when <a href="http://en.wikipedia.org/wiki/C%2B%2B11">C++0x</a> is enabled because it requires variadic. <code class="language-plaintext highlighter-rouge">std::unordered_map</code> also requires C++0x.</p>
 
-<p>The advantage of using <code>std::unordered_map</code> is that it offers <code>O(1)</code> (average case) access methods which allows the cache to be <code>O(1)</code> (average case) as well.</p>
+<p>The advantage of using <code class="language-plaintext highlighter-rouge">std::unordered_map</code> is that it offers <code class="language-plaintext highlighter-rouge">O(1)</code> (average case) access methods which allows the cache to be <code class="language-plaintext highlighter-rouge">O(1)</code> (average case) as well.</p>
 
 <p><a href="https://github.com/ErikDubbelboer/erik-misc-code/blob/master/lrucache/lrucache0x.h">lrucache0x.h</a></p>
 
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="k">template</span> <span class="o">&lt;</span><span class="k">class</span> <span class="nc">KeyType</span><span class="p">,</span> <span class="k">class</span> <span class="nc">ItemType</span><span class="p">,</span> <span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="p">...</span><span class="o">&gt;</span> <span class="k">class</span> <span class="nc">MapType</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&gt;</span>
+<figure class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="k">template</span> <span class="o">&lt;</span><span class="k">class</span> <span class="nc">KeyType</span><span class="p">,</span> <span class="k">class</span> <span class="nc">ItemType</span><span class="p">,</span> <span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="o">...</span><span class="p">&gt;</span> <span class="k">class</span> <span class="nc">MapType</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="p">&gt;</span>
 <span class="k">class</span> <span class="nc">LRUCache</span> <span class="p">{</span>
   <span class="c1">// ... (same as above)</span>
-<span class="p">}</span></code></pre></div>
+<span class="p">}</span></code></pre></figure>
 
 <p>This version can be used in the following way:</p>
 
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="n">LRUCache</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span> <span class="kt">int</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&gt;</span> <span class="n">cache</span><span class="p">(</span><span class="mi">64</span><span class="p">);</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="n">LRUCache</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span> <span class="kt">int</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&gt;</span> <span class="n">cache</span><span class="p">(</span><span class="mi">64</span><span class="p">);</span></code></pre></figure>
 
-<h2 id="stdmap-vs-stdunorderedmap">std::map vs std::unordered_map</h2>
+<h2 id="stdmap-vs-stdunordered_map">std::map vs std::unordered_map</h2>
 
 <p>When choosing which container to use for the C++0x version there are a two main points to look at.
 The size of your cache and the size of your keys.</p>
 
-<p><code>std::map</code> is implemented using a tree (red-black) while <code>std::unordered_map</code> uses a hash table.</p>
+<p><code class="language-plaintext highlighter-rouge">std::map</code> is implemented using a tree (red-black) while <code class="language-plaintext highlighter-rouge">std::unordered_map</code> uses a hash table.</p>
 
-<p>In the following graph you can see that the time it takes the <code>std::map</code> version to access a key increases logarithmically with the size of your cache, while the <code>std::unordered_map</code> version is constant. For this graph I used integers as keys.</p>
+<p>In the following graph you can see that the time it takes the <code class="language-plaintext highlighter-rouge">std::map</code> version to access a key increases logarithmically with the size of your cache, while the <code class="language-plaintext highlighter-rouge">std::unordered_map</code> version is constant. For this graph I used integers as keys.</p>
 
 <p><img src="/images/lru-cache-int-cache.png" alt="String value size" /></p>
 
-<p>For next graph I took 1024 character long strings as keys. This shows that if you have a small cache size but big keys an <code>std::map</code> will probably be faster.</p>
+<p>For next graph I took 1024 character long strings as keys. This shows that if you have a small cache size but big keys an <code class="language-plaintext highlighter-rouge">std::map</code> will probably be faster.</p>
 
 <p><img src="/images/lru-cache-string-cache.png" alt="String cache size" /></p>
 
-<p>The last graph uses a fixed cache size of 1024 entries but plots the access time vs the key size. In this graph you see that at some point the time it takes the <code>std::unordered_map</code> to calculate the hash is much slower than the binary search <code>std::map</code> performs.</p>
+<p>The last graph uses a fixed cache size of 1024 entries but plots the access time vs the key size. In this graph you see that at some point the time it takes the <code class="language-plaintext highlighter-rouge">std::unordered_map</code> to calculate the hash is much slower than the binary search <code class="language-plaintext highlighter-rouge">std::map</code> performs.</p>
 
 <p><img src="/images/lru-cache-string-keys.png" alt="String key size" /></p>
 
@@ -96,7 +95,7 @@ The size of your cache and the size of your keys.</p>
 The source for the benchmark can be found here, <a href="https://github.com/ErikDubbelboer/erik-misc-code/blob/master/lrucache/speed.cpp">speed.cpp</a>, together with a <a href="http://www.gnuplot.info/">gnuplot</a> script, <a href="https://github.com/ErikDubbelboer/erik-misc-code/blob/master/lrucache/speed.plot">speed.plot</a>, to plot the result.</p>
 
 <ul>
-  <li>All benchmarks perform 1,000,000 <code>Get()</code> and if the key does not exist <code>Set()</code> operations.</li>
+  <li>All benchmarks perform 1,000,000 <code class="language-plaintext highlighter-rouge">Get()</code> and if the key does not exist <code class="language-plaintext highlighter-rouge">Set()</code> operations.</li>
 </ul>
 
 

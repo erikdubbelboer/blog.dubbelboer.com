@@ -6,7 +6,6 @@
 <title>PHP autoloader exception weirdness - Erik's Code</title>
 
 <meta name=keywords content="php class autoloader exception">
-<link rel="author" href="https://plus.google.com/+ErikDubbelboer" />
 
 
 <link href="/css/common.css" media="screen" rel="stylesheet" type="text/css">
@@ -36,36 +35,36 @@
 
 <p>While writing some object oriented php at my job we ran into the following strange php behaviour.</p>
 
-<div class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span>
+<figure class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span>
 
 <span class="c1">// We want to use exceptions to catch non existing class errors.</span>
 <span class="nb">spl_autoload_register</span><span class="p">(</span><span class="k">function</span><span class="p">(</span><span class="nv">$classname</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">throw</span> <span class="k">new</span> <span class="nx">Exception</span><span class="p">();</span>
-<span class="p">});</span></code></pre></div>
+  <span class="k">throw</span> <span class="k">new</span> <span class="nc">Exception</span><span class="p">();</span>
+<span class="p">});</span></code></pre></figure>
 
 <p>Now we can try to instantiate some class that doesn’t exist.</p>
 
-<div class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span>
+<figure class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span>
 
 <span class="k">try</span> <span class="p">{</span>
-  <span class="k">new</span> <span class="nx">UnknownClass</span><span class="p">();</span>
-<span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">Exception</span> <span class="nv">$err</span><span class="p">)</span> <span class="p">{</span>
-<span class="p">}</span></code></pre></div>
+  <span class="k">new</span> <span class="nc">UnknownClass</span><span class="p">();</span>
+<span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nc">Exception</span> <span class="nv">$err</span><span class="p">)</span> <span class="p">{</span>
+<span class="p">}</span></code></pre></figure>
 
 <p>This works as it should. It will throw the Exception and the script continues to execute allowing us to recover from the error and do things in other ways.</p>
 
 <p>But now we need the following construct:</p>
 
-<div class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span>
+<figure class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span>
 
 <span class="k">try</span> <span class="p">{</span>
-  <span class="nx">UnknownClass</span><span class="o">::</span><span class="na">unknown</span><span class="p">();</span> <span class="c1">// PHP will ignore the Exception thrown and throws it&#39;s own error.</span>
-<span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">Exception</span> <span class="nv">$err</span><span class="p">)</span> <span class="p">{</span>
-<span class="p">}</span></code></pre></div>
+  <span class="nc">UnknownClass</span><span class="o">::</span><span class="nf">unknown</span><span class="p">();</span> <span class="c1">// PHP will ignore the Exception thrown and throws it's own error.</span>
+<span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nc">Exception</span> <span class="nv">$err</span><span class="p">)</span> <span class="p">{</span>
+<span class="p">}</span></code></pre></figure>
 
 <p>In this case PHP will ignore the Exception thrown and will continue to handle it as a Fatal error stopping the execution of the script.</p>
 
-<p>What we learned is that you shouldn’t rely on exceptions from the autoloader and just use <code>class_exists()</code> when you aren’t sure if a class will exists or not.</p>
+<p>What we learned is that you shouldn’t rely on exceptions from the autoloader and just use <code class="language-plaintext highlighter-rouge">class_exists()</code> when you aren’t sure if a class will exists or not.</p>
 
 <h2 id="update-18-nov-2012">Update 18 Nov 2012</h2>
 

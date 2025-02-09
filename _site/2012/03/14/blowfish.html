@@ -6,7 +6,6 @@
 <title>Blowfish password encryption - Erik's Code</title>
 
 <meta name=keywords content="php blowfish password">
-<link rel="author" href="https://plus.google.com/+ErikDubbelboer" />
 
 
 <link href="/css/common.css" media="screen" rel="stylesheet" type="text/css">
@@ -38,51 +37,51 @@
 
 <p>Here’s an example implementation:</p>
 
-<div class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span>
+<figure class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span>
 
-<span class="k">class</span> <span class="nc">BlowfishPassword</span> <span class="p">{</span>
+<span class="kd">class</span> <span class="nc">BlowfishPassword</span> <span class="p">{</span>
   <span class="k">const</span> <span class="no">strength</span> <span class="o">=</span> <span class="mi">13</span><span class="p">;</span> <span class="c1">// On our machine this makes it slow but not so slow as to annoy the user (less then 1 second).</span>
 
   <span class="k">private</span> <span class="nv">$hash</span><span class="p">;</span>
 
-  <span class="k">public</span> <span class="k">function</span> <span class="nf">__construct</span><span class="p">(</span><span class="nv">$password</span><span class="p">,</span> <span class="nv">$hash</span> <span class="o">=</span> <span class="k">false</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="p">(</span><span class="nv">$hash</span> <span class="o">!==</span> <span class="k">false</span><span class="p">)</span> <span class="p">{</span>
-      <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">hash</span> <span class="o">=</span> <span class="nv">$hash</span><span class="p">;</span>
+  <span class="k">public</span> <span class="k">function</span> <span class="n">__construct</span><span class="p">(</span><span class="nv">$password</span><span class="p">,</span> <span class="nv">$hash</span> <span class="o">=</span> <span class="kc">false</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nv">$hash</span> <span class="o">!==</span> <span class="kc">false</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nv">$this</span><span class="o">-&gt;</span><span class="n">hash</span> <span class="o">=</span> <span class="nv">$hash</span><span class="p">;</span>
     <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-      <span class="nv">$salt</span> <span class="o">=</span> <span class="nx">str_random</span><span class="p">(</span><span class="mi">22</span><span class="p">,</span> <span class="s1">&#39;\.\/0-9A-Za-z&#39;</span><span class="p">);</span> <span class="c1">// Random per password salt.</span>
+      <span class="nv">$salt</span> <span class="o">=</span> <span class="nf">str_random</span><span class="p">(</span><span class="mi">22</span><span class="p">,</span> <span class="s1">'\.\/0-9A-Za-z'</span><span class="p">);</span> <span class="c1">// Random per password salt.</span>
 
-      <span class="nv">$strength</span> <span class="o">=</span> <span class="nb">sprintf</span><span class="p">(</span><span class="s1">&#39;%02d&#39;</span><span class="p">,</span> <span class="nv">$this</span><span class="o">::</span><span class="na">strength</span><span class="p">);</span> <span class="c1">// Always needs to be 2 characters.</span>
+      <span class="nv">$strength</span> <span class="o">=</span> <span class="nb">sprintf</span><span class="p">(</span><span class="s1">'%02d'</span><span class="p">,</span> <span class="nv">$this</span><span class="o">::</span><span class="n">strength</span><span class="p">);</span> <span class="c1">// Always needs to be 2 characters.</span>
 
-      <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">hash</span> <span class="o">=</span> <span class="nb">crypt</span><span class="p">(</span><span class="nv">$password</span><span class="p">,</span> <span class="s1">&#39;$2a$&#39;</span> <span class="o">.</span> <span class="nv">$strength</span> <span class="o">.</span> <span class="s1">&#39;$&#39;</span> <span class="o">.</span> <span class="nv">$salt</span> <span class="o">.</span> <span class="s1">&#39;$&#39;</span><span class="p">);</span>
+      <span class="nv">$this</span><span class="o">-&gt;</span><span class="n">hash</span> <span class="o">=</span> <span class="nb">crypt</span><span class="p">(</span><span class="nv">$password</span><span class="p">,</span> <span class="s1">'$2a$'</span> <span class="mf">.</span> <span class="nv">$strength</span> <span class="mf">.</span> <span class="s1">'$'</span> <span class="mf">.</span> <span class="nv">$salt</span> <span class="mf">.</span> <span class="s1">'$'</span><span class="p">);</span>
     <span class="p">}</span>
   <span class="p">}</span>
 
-  <span class="k">public</span> <span class="k">function</span> <span class="nf">equals</span><span class="p">(</span><span class="nv">$password</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">hash</span> <span class="o">===</span> <span class="nb">crypt</span><span class="p">(</span><span class="nv">$password</span><span class="p">,</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">hash</span><span class="p">));</span>
+  <span class="k">public</span> <span class="k">function</span> <span class="n">equals</span><span class="p">(</span><span class="nv">$password</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="n">hash</span> <span class="o">===</span> <span class="nb">crypt</span><span class="p">(</span><span class="nv">$password</span><span class="p">,</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="n">hash</span><span class="p">));</span>
   <span class="p">}</span>
 
-  <span class="k">public</span> <span class="k">function</span> <span class="nf">getHash</span><span class="p">()</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">hash</span><span class="p">;</span>
+  <span class="k">public</span> <span class="k">function</span> <span class="n">getHash</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="n">hash</span><span class="p">;</span>
   <span class="p">}</span>
-<span class="p">}</span></code></pre></div>
+<span class="p">}</span></code></pre></figure>
 
-<p>The <code>str_random()</code> function is implemented like this:</p>
+<p>The <code class="language-plaintext highlighter-rouge">str_random()</code> function is implemented like this:</p>
 
-<div class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span>
-<span class="k">function</span> <span class="nf">str_random</span><span class="p">(</span><span class="nv">$length</span><span class="p">,</span> <span class="nv">$range</span> <span class="o">=</span> <span class="k">true</span><span class="p">)</span> <span class="p">{</span>
-  <span class="nv">$r</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+<figure class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span>
+<span class="k">function</span> <span class="n">str_random</span><span class="p">(</span><span class="nv">$length</span><span class="p">,</span> <span class="nv">$range</span> <span class="o">=</span> <span class="kc">true</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nv">$r</span> <span class="o">=</span> <span class="s1">''</span><span class="p">;</span>
 
   <span class="k">while</span> <span class="p">(</span><span class="nv">$length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
     <span class="nv">$c</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="nb">rand</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">126</span><span class="p">));</span>
 
-    <span class="k">if</span> <span class="p">((</span><span class="nv">$range</span> <span class="o">===</span> <span class="k">true</span><span class="p">)</span> <span class="o">||</span> <span class="p">(</span><span class="nb">preg_match</span><span class="p">(</span><span class="s1">&#39;/[&#39;</span><span class="o">.</span><span class="nv">$range</span><span class="o">.</span><span class="s1">&#39;]/&#39;</span><span class="p">,</span> <span class="nv">$c</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">))</span> <span class="p">{</span>
-      <span class="nv">$r</span> <span class="o">.=</span> <span class="nv">$c</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">((</span><span class="nv">$range</span> <span class="o">===</span> <span class="kc">true</span><span class="p">)</span> <span class="o">||</span> <span class="p">(</span><span class="nb">preg_match</span><span class="p">(</span><span class="s1">'/['</span><span class="mf">.</span><span class="nv">$range</span><span class="mf">.</span><span class="s1">']/'</span><span class="p">,</span> <span class="nv">$c</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">))</span> <span class="p">{</span>
+      <span class="nv">$r</span> <span class="mf">.</span><span class="o">=</span> <span class="nv">$c</span><span class="p">;</span>
       <span class="o">--</span><span class="nv">$length</span><span class="p">;</span>
     <span class="p">}</span>
   <span class="p">}</span>
 
   <span class="k">return</span> <span class="nv">$r</span><span class="p">;</span>
-<span class="p">}</span></code></pre></div>
+<span class="p">}</span></code></pre></figure>
 
 
 

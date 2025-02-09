@@ -6,7 +6,6 @@
 <title>phpMyAdmin session duration - Erik's Code</title>
 
 <meta name=keywords content="phpmyadmin session cookie timeout duration">
-<link rel="author" href="https://plus.google.com/+ErikDubbelboer" />
 
 
 <link href="/css/common.css" media="screen" rel="stylesheet" type="text/css">
@@ -36,15 +35,15 @@
 
 <p>To increase the session duration in <a href="http://www.phpmyadmin.net/">phpMyAdmin</a> you have to change 2 different settings. I’m mostly writing this post for myself because I always forget which two.</p>
 
-<p>In <code>phpmyadmin/config.inc.php</code> you have to add:</p>
+<p>In <code class="language-plaintext highlighter-rouge">phpmyadmin/config.inc.php</code> you have to add:</p>
 
-<div class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span>
+<figure class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span>
 
-<span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;LoginCookieValidity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">60</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">24</span><span class="p">;</span> <span class="c1">// 1 day.</span></code></pre></div>
+<span class="nv">$cfg</span><span class="p">[</span><span class="s1">'LoginCookieValidity'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">60</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">24</span><span class="p">;</span> <span class="c1">// 1 day.</span></code></pre></figure>
 
-<p>And in <code>/etc/php5/fpm/php.ini</code> you have to change:</p>
+<p>And in <code class="language-plaintext highlighter-rouge">/etc/php5/fpm/php.ini</code> you have to change:</p>
 
-<div class="highlight"><pre><code class="language-ini" data-lang="ini"><span class="na">session.gc_maxlifetime</span> <span class="o">=</span> <span class="s">86400</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-ini" data-lang="ini"><span class="py">session.gc_maxlifetime</span> <span class="p">=</span> <span class="s">86400</span></code></pre></figure>
 
 <p>If you don’t change this setting it will be 1440 seconds by default and your phpMyAdmin session won’t be able to last longer.</p>
 

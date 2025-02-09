@@ -6,7 +6,6 @@
 <title>Cross datacenter UDP reliability - Erik's Code</title>
 
 <meta name=keywords content="UDP datacenter linux go golang">
-<link rel="author" href="https://plus.google.com/+ErikDubbelboer" />
 
 
 <link href="/css/common.css" media="screen" rel="stylesheet" type="text/css">
@@ -40,88 +39,88 @@
 
 <p>The following <a href="https://golang.org/">Golang</a> code was run on the London side:</p>
 
-<div class="highlight"><pre><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="k">package</span> <span class="n">main</span>
 
-<span class="kn">import</span> <span class="p">(</span>
-	<span class="s">&quot;encoding/binary&quot;</span>
-	<span class="s">&quot;log&quot;</span>
-	<span class="s">&quot;net&quot;</span>
+<span class="k">import</span> <span class="p">(</span>
+	<span class="s">"encoding/binary"</span>
+	<span class="s">"log"</span>
+	<span class="s">"net"</span>
 <span class="p">)</span>
 
-<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
-	<span class="nx">addr</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">net</span><span class="p">.</span><span class="nx">ResolveUDPAddr</span><span class="p">(</span><span class="s">&quot;udp&quot;</span><span class="p">,</span> <span class="s">&quot;0.0.0.0:9999&quot;</span><span class="p">)</span>
-	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-		<span class="nx">log</span><span class="p">.</span><span class="nx">Panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">addr</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">net</span><span class="o">.</span><span class="n">ResolveUDPAddr</span><span class="p">(</span><span class="s">"udp"</span><span class="p">,</span> <span class="s">"0.0.0.0:9999"</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+		<span class="n">log</span><span class="o">.</span><span class="n">Panic</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
 	<span class="p">}</span>
 
-	<span class="nx">conn</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">net</span><span class="p">.</span><span class="nx">ListenUDP</span><span class="p">(</span><span class="s">&quot;udp&quot;</span><span class="p">,</span> <span class="nx">addr</span><span class="p">)</span>
-	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-		<span class="nx">log</span><span class="p">.</span><span class="nx">Panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="n">conn</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">net</span><span class="o">.</span><span class="n">ListenUDP</span><span class="p">(</span><span class="s">"udp"</span><span class="p">,</span> <span class="n">addr</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+		<span class="n">log</span><span class="o">.</span><span class="n">Panic</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
 	<span class="p">}</span>
 
-	<span class="nx">current</span> <span class="o">:=</span> <span class="nb">int64</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+	<span class="n">current</span> <span class="o">:=</span> <span class="kt">int64</span><span class="p">(</span><span class="m">0</span><span class="p">)</span>
 
-	<span class="nx">buffer</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="mi">1500</span><span class="p">)</span>
+	<span class="n">buffer</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="m">1500</span><span class="p">)</span>
 	<span class="k">for</span> <span class="p">{</span>   
-		<span class="k">if</span> <span class="nx">n</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">conn</span><span class="p">.</span><span class="nx">Read</span><span class="p">(</span><span class="nx">buffer</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-			<span class="nx">log</span><span class="p">.</span><span class="nx">Print</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
-		<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="nx">n</span> <span class="o">!=</span> <span class="mi">1400</span> <span class="p">{</span>
-			<span class="nx">log</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;only received %d bytes&quot;</span><span class="p">,</span> <span class="nx">n</span><span class="p">)</span>
+		<span class="k">if</span> <span class="n">n</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">conn</span><span class="o">.</span><span class="n">Read</span><span class="p">(</span><span class="n">buffer</span><span class="p">);</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+			<span class="n">log</span><span class="o">.</span><span class="n">Print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="n">n</span> <span class="o">!=</span> <span class="m">1400</span> <span class="p">{</span>
+			<span class="n">log</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"only received %d bytes"</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
 		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-			<span class="nx">x</span> <span class="o">:=</span> <span class="nb">int64</span><span class="p">(</span><span class="nx">binary</span><span class="p">.</span><span class="nx">LittleEndian</span><span class="p">.</span><span class="nx">Uint64</span><span class="p">(</span><span class="nx">buffer</span><span class="p">))</span>
-			<span class="nx">missed</span> <span class="o">:=</span> <span class="nx">x</span> <span class="o">-</span> <span class="nx">current</span>
-			<span class="k">if</span> <span class="nx">missed</span> <span class="o">!=</span> <span class="mi">1</span> <span class="p">{</span>
-				<span class="nx">log</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;missed %d packets&quot;</span><span class="p">,</span> <span class="nx">x</span><span class="o">-</span><span class="nx">current</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+			<span class="n">x</span> <span class="o">:=</span> <span class="kt">int64</span><span class="p">(</span><span class="n">binary</span><span class="o">.</span><span class="n">LittleEndian</span><span class="o">.</span><span class="n">Uint64</span><span class="p">(</span><span class="n">buffer</span><span class="p">))</span>
+			<span class="n">missed</span> <span class="o">:=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">current</span>
+			<span class="k">if</span> <span class="n">missed</span> <span class="o">!=</span> <span class="m">1</span> <span class="p">{</span>
+				<span class="n">log</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"missed %d packets"</span><span class="p">,</span> <span class="n">x</span><span class="o">-</span><span class="n">current</span><span class="o">-</span><span class="m">1</span><span class="p">)</span>
 			<span class="p">}</span>
-			<span class="nx">current</span> <span class="p">=</span> <span class="nx">x</span>
+			<span class="n">current</span> <span class="o">=</span> <span class="n">x</span>
 		<span class="p">}</span>
 	<span class="p">}</span>
-<span class="p">}</span></code></pre></div>
+<span class="p">}</span></code></pre></figure>
 
 <p>This Golang code was run on the Salt Lake City side:</p>
 
-<div class="highlight"><pre><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="k">package</span> <span class="n">main</span>
 
-<span class="kn">import</span> <span class="p">(</span>
-	<span class="s">&quot;encoding/binary&quot;</span>
-	<span class="s">&quot;log&quot;</span>
-	<span class="s">&quot;net&quot;</span>
-	<span class="s">&quot;time&quot;</span>
+<span class="k">import</span> <span class="p">(</span>
+	<span class="s">"encoding/binary"</span>
+	<span class="s">"log"</span>
+	<span class="s">"net"</span>
+	<span class="s">"time"</span>
 <span class="p">)</span>
 
-<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
-	<span class="nx">raddr</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">net</span><span class="p">.</span><span class="nx">ResolveUDPAddr</span><span class="p">(</span><span class="s">&quot;udp&quot;</span><span class="p">,</span> <span class="s">&quot;london-1:9999&quot;</span><span class="p">)</span>
-	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-		<span class="nx">log</span><span class="p">.</span><span class="nx">Panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">raddr</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">net</span><span class="o">.</span><span class="n">ResolveUDPAddr</span><span class="p">(</span><span class="s">"udp"</span><span class="p">,</span> <span class="s">"london-1:9999"</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+		<span class="n">log</span><span class="o">.</span><span class="n">Panic</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
 	<span class="p">}</span>
 
-	<span class="nx">laddr</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">net</span><span class="p">.</span><span class="nx">ResolveUDPAddr</span><span class="p">(</span><span class="s">&quot;udp&quot;</span><span class="p">,</span> <span class="s">&quot;0.0.0.0:0&quot;</span><span class="p">)</span>
-	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-		<span class="nx">log</span><span class="p">.</span><span class="nx">Panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="n">laddr</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">net</span><span class="o">.</span><span class="n">ResolveUDPAddr</span><span class="p">(</span><span class="s">"udp"</span><span class="p">,</span> <span class="s">"0.0.0.0:0"</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+		<span class="n">log</span><span class="o">.</span><span class="n">Panic</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
 	<span class="p">}</span>
 
-	<span class="nx">conn</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">net</span><span class="p">.</span><span class="nx">ListenUDP</span><span class="p">(</span><span class="s">&quot;udp&quot;</span><span class="p">,</span> <span class="nx">laddr</span><span class="p">)</span>
-	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-		<span class="nx">log</span><span class="p">.</span><span class="nx">Panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="n">conn</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">net</span><span class="o">.</span><span class="n">ListenUDP</span><span class="p">(</span><span class="s">"udp"</span><span class="p">,</span> <span class="n">laddr</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+		<span class="n">log</span><span class="o">.</span><span class="n">Panic</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
 	<span class="p">}</span>
 
-	<span class="nx">current</span> <span class="o">:=</span> <span class="nb">int64</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-	<span class="nx">buffer</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="mi">1400</span><span class="p">)</span>
+	<span class="n">current</span> <span class="o">:=</span> <span class="kt">int64</span><span class="p">(</span><span class="m">1</span><span class="p">)</span>
+	<span class="n">buffer</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="m">1400</span><span class="p">)</span>
 
 	<span class="k">for</span> <span class="p">{</span>   
-		<span class="nx">binary</span><span class="p">.</span><span class="nx">LittleEndian</span><span class="p">.</span><span class="nx">PutUint64</span><span class="p">(</span><span class="nx">buffer</span><span class="p">[:</span><span class="mi">8</span><span class="p">],</span> <span class="nb">uint64</span><span class="p">(</span><span class="nx">current</span><span class="p">))</span>
+		<span class="n">binary</span><span class="o">.</span><span class="n">LittleEndian</span><span class="o">.</span><span class="n">PutUint64</span><span class="p">(</span><span class="n">buffer</span><span class="p">[</span><span class="o">:</span><span class="m">8</span><span class="p">],</span> <span class="kt">uint64</span><span class="p">(</span><span class="n">current</span><span class="p">))</span>
 
-		<span class="k">if</span> <span class="nx">n</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">conn</span><span class="p">.</span><span class="nx">WriteToUDP</span><span class="p">(</span><span class="nx">buffer</span><span class="p">,</span> <span class="nx">raddr</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-			<span class="nx">log</span><span class="p">.</span><span class="nx">Print</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
-		<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="nx">n</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="nx">buffer</span><span class="p">)</span> <span class="p">{</span>
-			<span class="nx">log</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;only %d bytes written&quot;</span><span class="p">,</span> <span class="nx">n</span><span class="p">)</span>
+		<span class="k">if</span> <span class="n">n</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">conn</span><span class="o">.</span><span class="n">WriteToUDP</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">raddr</span><span class="p">);</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+			<span class="n">log</span><span class="o">.</span><span class="n">Print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="n">n</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">buffer</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">log</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"only %d bytes written"</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
 		<span class="p">}</span>
 
-		<span class="nx">current</span><span class="o">++</span>
+		<span class="n">current</span><span class="o">++</span>
 
-		<span class="nx">time</span><span class="p">.</span><span class="nx">Sleep</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nx">Millisecond</span> <span class="o">*</span> <span class="mi">500</span><span class="p">)</span>
+		<span class="n">time</span><span class="o">.</span><span class="n">Sleep</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">Millisecond</span> <span class="o">*</span> <span class="m">500</span><span class="p">)</span>
 	<span class="p">}</span>
-<span class="p">}</span></code></pre></div>
+<span class="p">}</span></code></pre></figure>
 
 <p>I ran the two programs for multiple days. At the end of this post you can see the raw output. Below is a small table showing how many packets were missed per day:</p>
 

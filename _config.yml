@@ -1,3 +1,3 @@
 safe:        true
 exclude:     ['Makefile']
-highlighter: 'pygments'
+highlighter: rouge

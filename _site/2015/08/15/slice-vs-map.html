@@ -6,7 +6,6 @@
 <title>Slice vs map for set in golang - Erik's Code</title>
 
 <meta name=keywords content="golang slice array map set struct">
-<link rel="author" href="https://plus.google.com/+ErikDubbelboer" />
 
 
 <link href="/css/common.css" media="screen" rel="stylesheet" type="text/css">
@@ -36,75 +35,75 @@
 
 <p>Ever wonder if it’s faster to use a slice or map to represent a set in go? I wrote the following program to find out:</p>
 
-<div class="highlight"><pre><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="k">package</span> <span class="n">main</span>
 
-<span class="kn">import</span> <span class="p">(</span>
-  <span class="s">&quot;fmt&quot;</span>
-  <span class="s">&quot;math/rand&quot;</span>
-  <span class="s">&quot;time&quot;</span>
+<span class="k">import</span> <span class="p">(</span>
+  <span class="s">"fmt"</span>
+  <span class="s">"math/rand"</span>
+  <span class="s">"time"</span>
 <span class="p">)</span>
 
-<span class="kd">const</span> <span class="nx">maxSize</span> <span class="p">=</span> <span class="mi">26</span>
-<span class="kd">const</span> <span class="nx">tests</span> <span class="p">=</span> <span class="mi">20000000</span>
-<span class="kd">const</span> <span class="nx">findMult</span> <span class="p">=</span> <span class="mi">9999999999</span> <span class="c1">// 100 = 1% hit rate, 1 = 100% hit rate.</span>
+<span class="k">const</span> <span class="n">maxSize</span> <span class="o">=</span> <span class="m">26</span>
+<span class="k">const</span> <span class="n">tests</span> <span class="o">=</span> <span class="m">20000000</span>
+<span class="k">const</span> <span class="n">findMult</span> <span class="o">=</span> <span class="m">9999999999</span> <span class="c">// 100 = 1% hit rate, 1 = 100% hit rate.</span>
 
-<span class="kd">type</span> <span class="nx">lst</span> <span class="p">[]</span><span class="kt">int</span>
+<span class="k">type</span> <span class="n">lst</span> <span class="p">[]</span><span class="kt">int</span>
 
-<span class="kd">func</span> <span class="p">(</span><span class="nx">l</span> <span class="nx">lst</span><span class="p">)</span> <span class="nx">has</span><span class="p">(</span><span class="nx">xxxx</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">bool</span> <span class="p">{</span>
-  <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">i</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">l</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="nx">i</span> <span class="o">==</span> <span class="nx">xxxx</span> <span class="p">{</span>
-      <span class="k">return</span> <span class="kc">true</span>
+<span class="k">func</span> <span class="p">(</span><span class="n">l</span> <span class="n">lst</span><span class="p">)</span> <span class="n">has</span><span class="p">(</span><span class="n">xxxx</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">bool</span> <span class="p">{</span>
+  <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">i</span> <span class="o">:=</span> <span class="k">range</span> <span class="n">l</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">xxxx</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="no">true</span>
     <span class="p">}</span>
   <span class="p">}</span>
-  <span class="k">return</span> <span class="kc">false</span>
+  <span class="k">return</span> <span class="no">false</span>
 <span class="p">}</span>
 
-<span class="kd">type</span> <span class="nx">mp</span> <span class="kd">map</span><span class="p">[</span><span class="kt">int</span><span class="p">]</span><span class="kd">struct</span><span class="p">{}</span>
+<span class="k">type</span> <span class="n">mp</span> <span class="k">map</span><span class="p">[</span><span class="kt">int</span><span class="p">]</span><span class="k">struct</span><span class="p">{}</span>
 
-<span class="kd">func</span> <span class="p">(</span><span class="nx">m</span> <span class="nx">mp</span><span class="p">)</span> <span class="nx">has</span><span class="p">(</span><span class="nx">xxxx</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">bool</span> <span class="p">{</span>
-  <span class="nx">_</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">m</span><span class="p">[</span><span class="nx">xxxx</span><span class="p">]</span>
-  <span class="k">return</span> <span class="nx">ok</span>
+<span class="k">func</span> <span class="p">(</span><span class="n">m</span> <span class="n">mp</span><span class="p">)</span> <span class="n">has</span><span class="p">(</span><span class="n">xxxx</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">bool</span> <span class="p">{</span>
+  <span class="n">_</span><span class="p">,</span> <span class="n">ok</span> <span class="o">:=</span> <span class="n">m</span><span class="p">[</span><span class="n">xxxx</span><span class="p">]</span>
+  <span class="k">return</span> <span class="n">ok</span>
 <span class="p">}</span>
 
-<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
-  <span class="nx">rand</span><span class="p">.</span><span class="nx">Seed</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nx">Now</span><span class="p">().</span><span class="nx">UnixNano</span><span class="p">())</span>
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">rand</span><span class="o">.</span><span class="n">Seed</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">Now</span><span class="p">()</span><span class="o">.</span><span class="n">UnixNano</span><span class="p">())</span>
 
-  <span class="k">for</span> <span class="nx">size</span> <span class="o">:=</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">size</span> <span class="p">&lt;</span> <span class="nx">maxSize</span><span class="p">;</span> <span class="nx">size</span><span class="o">++</span> <span class="p">{</span>
-    <span class="nx">l</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="nx">lst</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">size</span><span class="p">)</span>
-    <span class="nx">m</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="nx">mp</span><span class="p">,</span> <span class="nx">size</span><span class="p">)</span>
-    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">size</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
-      <span class="nx">e</span> <span class="o">:=</span> <span class="nx">rand</span><span class="p">.</span><span class="nx">Int</span><span class="p">()</span>
-      <span class="nx">l</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">l</span><span class="p">,</span> <span class="nx">e</span><span class="p">)</span>
-      <span class="nx">m</span><span class="p">[</span><span class="nx">e</span><span class="p">]</span> <span class="p">=</span> <span class="kd">struct</span><span class="p">{}{}</span>
+  <span class="k">for</span> <span class="n">size</span> <span class="o">:=</span> <span class="m">1</span><span class="p">;</span> <span class="n">size</span> <span class="o">&lt;</span> <span class="n">maxSize</span><span class="p">;</span> <span class="n">size</span><span class="o">++</span> <span class="p">{</span>
+    <span class="n">l</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+    <span class="n">m</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="n">mp</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">size</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+      <span class="n">e</span> <span class="o">:=</span> <span class="n">rand</span><span class="o">.</span><span class="n">Int</span><span class="p">()</span>
+      <span class="n">l</span> <span class="o">=</span> <span class="nb">append</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+      <span class="n">m</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="k">struct</span><span class="p">{}{}</span>
     <span class="p">}</span>
 
-    <span class="nx">found</span> <span class="o">:=</span> <span class="mi">0</span>
-    <span class="nx">start</span> <span class="o">:=</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Now</span><span class="p">()</span>
-    <span class="k">for</span> <span class="nx">x</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">x</span> <span class="p">&lt;</span> <span class="nx">tests</span><span class="p">;</span> <span class="nx">x</span><span class="o">++</span> <span class="p">{</span>
-      <span class="nx">xxxx</span> <span class="o">:=</span> <span class="nx">rand</span><span class="p">.</span><span class="nx">Intn</span><span class="p">(</span><span class="nx">size</span> <span class="o">*</span> <span class="nx">findMult</span><span class="p">)</span>
-      <span class="k">if</span> <span class="nx">l</span><span class="p">.</span><span class="nx">has</span><span class="p">(</span><span class="nx">xxxx</span><span class="p">)</span> <span class="p">{</span>
-        <span class="nx">found</span><span class="o">++</span>
+    <span class="n">found</span> <span class="o">:=</span> <span class="m">0</span>
+    <span class="n">start</span> <span class="o">:=</span> <span class="n">time</span><span class="o">.</span><span class="n">Now</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">tests</span><span class="p">;</span> <span class="n">x</span><span class="o">++</span> <span class="p">{</span>
+      <span class="n">xxxx</span> <span class="o">:=</span> <span class="n">rand</span><span class="o">.</span><span class="n">Intn</span><span class="p">(</span><span class="n">size</span> <span class="o">*</span> <span class="n">findMult</span><span class="p">)</span>
+      <span class="k">if</span> <span class="n">l</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">xxxx</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">found</span><span class="o">++</span>
       <span class="p">}</span>
     <span class="p">}</span>
-    <span class="nx">sliceDuration</span> <span class="o">:=</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Now</span><span class="p">().</span><span class="nx">Sub</span><span class="p">(</span><span class="nx">start</span><span class="p">)</span>
+    <span class="n">sliceDuration</span> <span class="o">:=</span> <span class="n">time</span><span class="o">.</span><span class="n">Now</span><span class="p">()</span><span class="o">.</span><span class="n">Sub</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
 
-    <span class="nx">start</span> <span class="p">=</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Now</span><span class="p">()</span>
-    <span class="k">for</span> <span class="nx">x</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">x</span> <span class="p">&lt;</span> <span class="nx">tests</span><span class="p">;</span> <span class="nx">x</span><span class="o">++</span> <span class="p">{</span>
-      <span class="nx">xxxx</span> <span class="o">:=</span> <span class="nx">rand</span><span class="p">.</span><span class="nx">Intn</span><span class="p">(</span><span class="nx">size</span> <span class="o">*</span> <span class="nx">findMult</span><span class="p">)</span>
-      <span class="k">if</span> <span class="nx">m</span><span class="p">.</span><span class="nx">has</span><span class="p">(</span><span class="nx">xxxx</span><span class="p">)</span> <span class="p">{</span>
-        <span class="nx">found</span><span class="o">++</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">Now</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">tests</span><span class="p">;</span> <span class="n">x</span><span class="o">++</span> <span class="p">{</span>
+      <span class="n">xxxx</span> <span class="o">:=</span> <span class="n">rand</span><span class="o">.</span><span class="n">Intn</span><span class="p">(</span><span class="n">size</span> <span class="o">*</span> <span class="n">findMult</span><span class="p">)</span>
+      <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">xxxx</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">found</span><span class="o">++</span>
       <span class="p">}</span>
     <span class="p">}</span>
-    <span class="nx">mapDuration</span> <span class="o">:=</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Now</span><span class="p">().</span><span class="nx">Sub</span><span class="p">(</span><span class="nx">start</span><span class="p">)</span>
+    <span class="n">mapDuration</span> <span class="o">:=</span> <span class="n">time</span><span class="o">.</span><span class="n">Now</span><span class="p">()</span><span class="o">.</span><span class="n">Sub</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
 
-    <span class="c1">// Do something with found so it doesn&#39;t get optimized away.</span>
-    <span class="k">if</span> <span class="nx">found</span> <span class="p">&gt;</span> <span class="mi">0</span> <span class="p">{</span>
-      <span class="nx">rand</span><span class="p">.</span><span class="nx">Int</span><span class="p">()</span>
+    <span class="c">// Do something with found so it doesn't get optimized away.</span>
+    <span class="k">if</span> <span class="n">found</span> <span class="o">&gt;</span> <span class="m">0</span> <span class="p">{</span>
+      <span class="n">rand</span><span class="o">.</span><span class="n">Int</span><span class="p">()</span>
     <span class="p">}</span>
 
-    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;%d\t%v\n&quot;</span><span class="p">,</span> <span class="nx">size</span><span class="p">,</span> <span class="nx">sliceDuration</span><span class="o">-</span><span class="nx">mapDuration</span><span class="p">)</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%d</span><span class="se">\t</span><span class="s">%v</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">sliceDuration</span><span class="o">-</span><span class="n">mapDuration</span><span class="p">)</span>
   <span class="p">}</span>
-<span class="p">}</span></code></pre></div>
+<span class="p">}</span></code></pre></figure>
 
 <p>And here is the output:</p>
 

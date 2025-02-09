@@ -6,7 +6,6 @@
 <title>sync.Pool vs chan pool - Erik's Code</title>
 
 <meta name=keywords content="go golang sync Pool chan benchmark">
-<link rel="author" href="https://plus.google.com/+ErikDubbelboer" />
 
 
 <link href="/css/common.css" media="screen" rel="stylesheet" type="text/css">
@@ -46,94 +45,94 @@ BenchmarkChanPool-4 300000000           266  ns/op         0 B/op        0 alloc
 
 <p>And here is the code:</p>
 
-<div class="highlight"><pre><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">test</span>
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="k">package</span> <span class="n">test</span>
 
-<span class="kn">import</span> <span class="p">(</span>
-	<span class="s">&quot;sync&quot;</span>
-	<span class="s">&quot;testing&quot;</span>
+<span class="k">import</span> <span class="p">(</span>
+	<span class="s">"sync"</span>
+	<span class="s">"testing"</span>
 <span class="p">)</span>
 
-<span class="kd">type</span> <span class="nx">somestruct</span> <span class="kd">struct</span> <span class="p">{</span>
-	<span class="nx">x</span> <span class="kt">int</span>
+<span class="k">type</span> <span class="n">somestruct</span> <span class="k">struct</span> <span class="p">{</span>
+	<span class="n">x</span> <span class="kt">int</span>
 <span class="p">}</span>
 
-<span class="kd">var</span> <span class="nx">g</span> <span class="o">*</span><span class="nx">somestruct</span>
+<span class="k">var</span> <span class="n">g</span> <span class="o">*</span><span class="n">somestruct</span>
 
-<span class="c1">// No pool</span>
+<span class="c">// No pool</span>
 
-<span class="kd">func</span> <span class="nx">BenchmarkNoPool</span><span class="p">(</span><span class="nx">b</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">B</span><span class="p">)</span> <span class="p">{</span>
-	<span class="nx">b</span><span class="p">.</span><span class="nx">RunParallel</span><span class="p">(</span><span class="kd">func</span><span class="p">(</span><span class="nx">pb</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">PB</span><span class="p">)</span> <span class="p">{</span>
-		<span class="k">for</span> <span class="nx">pb</span><span class="p">.</span><span class="nx">Next</span><span class="p">()</span> <span class="p">{</span>
-			<span class="nx">x</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">somestruct</span><span class="p">{}</span>
-			<span class="nx">g</span> <span class="p">=</span> <span class="nx">x</span>
+<span class="k">func</span> <span class="n">BenchmarkNoPool</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">B</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">b</span><span class="o">.</span><span class="n">RunParallel</span><span class="p">(</span><span class="k">func</span><span class="p">(</span><span class="n">pb</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">PB</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">for</span> <span class="n">pb</span><span class="o">.</span><span class="n">Next</span><span class="p">()</span> <span class="p">{</span>
+			<span class="n">x</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="n">somestruct</span><span class="p">{}</span>
+			<span class="n">g</span> <span class="o">=</span> <span class="n">x</span>
 		<span class="p">}</span>
 	<span class="p">})</span>
 <span class="p">}</span>
 
-<span class="c1">// sync.Pool</span>
+<span class="c">// sync.Pool</span>
 
-<span class="kd">func</span> <span class="nx">BenchmarkSyncPool</span><span class="p">(</span><span class="nx">b</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">B</span><span class="p">)</span> <span class="p">{</span>
-	<span class="nx">p</span> <span class="o">:=</span> <span class="nx">sync</span><span class="p">.</span><span class="nx">Pool</span><span class="p">{</span>
-		<span class="nx">New</span><span class="p">:</span> <span class="kd">func</span><span class="p">()</span> <span class="kd">interface</span><span class="p">{}</span> <span class="p">{</span>
-			<span class="k">return</span> <span class="o">&amp;</span><span class="nx">somestruct</span><span class="p">{}</span>
+<span class="k">func</span> <span class="n">BenchmarkSyncPool</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">B</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">p</span> <span class="o">:=</span> <span class="n">sync</span><span class="o">.</span><span class="n">Pool</span><span class="p">{</span>
+		<span class="n">New</span><span class="o">:</span> <span class="k">func</span><span class="p">()</span> <span class="k">interface</span><span class="p">{}</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="o">&amp;</span><span class="n">somestruct</span><span class="p">{}</span>
 		<span class="p">},</span>
 	<span class="p">}</span>
 
-	<span class="nx">b</span><span class="p">.</span><span class="nx">RunParallel</span><span class="p">(</span><span class="kd">func</span><span class="p">(</span><span class="nx">pb</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">PB</span><span class="p">)</span> <span class="p">{</span>
-		<span class="k">for</span> <span class="nx">pb</span><span class="p">.</span><span class="nx">Next</span><span class="p">()</span> <span class="p">{</span>
-			<span class="nx">x</span> <span class="o">:=</span> <span class="nx">p</span><span class="p">.</span><span class="nx">Get</span><span class="p">().(</span><span class="o">*</span><span class="nx">somestruct</span><span class="p">)</span>
-			<span class="nx">g</span> <span class="p">=</span> <span class="nx">x</span>
-			<span class="nx">p</span><span class="p">.</span><span class="nx">Put</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span>
+	<span class="n">b</span><span class="o">.</span><span class="n">RunParallel</span><span class="p">(</span><span class="k">func</span><span class="p">(</span><span class="n">pb</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">PB</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">for</span> <span class="n">pb</span><span class="o">.</span><span class="n">Next</span><span class="p">()</span> <span class="p">{</span>
+			<span class="n">x</span> <span class="o">:=</span> <span class="n">p</span><span class="o">.</span><span class="n">Get</span><span class="p">()</span><span class="o">.</span><span class="p">(</span><span class="o">*</span><span class="n">somestruct</span><span class="p">)</span>
+			<span class="n">g</span> <span class="o">=</span> <span class="n">x</span>
+			<span class="n">p</span><span class="o">.</span><span class="n">Put</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 		<span class="p">}</span>
 	<span class="p">})</span>
 <span class="p">}</span>
 
-<span class="c1">// Channel pool</span>
+<span class="c">// Channel pool</span>
 
-<span class="kd">type</span> <span class="nx">Pool</span> <span class="kd">struct</span> <span class="p">{</span>
-	<span class="nx">New</span> <span class="kd">func</span><span class="p">()</span> <span class="kd">interface</span><span class="p">{}</span>
+<span class="k">type</span> <span class="n">Pool</span> <span class="k">struct</span> <span class="p">{</span>
+	<span class="n">New</span> <span class="k">func</span><span class="p">()</span> <span class="k">interface</span><span class="p">{}</span>
 
-	<span class="nx">pool</span> <span class="kd">chan</span> <span class="kd">interface</span><span class="p">{}</span>
+	<span class="n">pool</span> <span class="k">chan</span> <span class="k">interface</span><span class="p">{}</span>
 <span class="p">}</span>
 
-<span class="kd">func</span> <span class="nx">NewPool</span><span class="p">(</span><span class="nx">n</span> <span class="kd">func</span><span class="p">()</span> <span class="kd">interface</span><span class="p">{})</span> <span class="nx">Pool</span> <span class="p">{</span>
-	<span class="nx">p</span> <span class="o">:=</span> <span class="nx">Pool</span><span class="p">{</span>
-		<span class="nx">New</span><span class="p">:</span> <span class="nx">n</span><span class="p">,</span>
-		<span class="nx">pool</span><span class="p">:</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kd">interface</span><span class="p">{},</span> <span class="mi">1024</span><span class="p">),</span>
+<span class="k">func</span> <span class="n">NewPool</span><span class="p">(</span><span class="n">n</span> <span class="k">func</span><span class="p">()</span> <span class="k">interface</span><span class="p">{})</span> <span class="n">Pool</span> <span class="p">{</span>
+	<span class="n">p</span> <span class="o">:=</span> <span class="n">Pool</span><span class="p">{</span>
+		<span class="n">New</span><span class="o">:</span> <span class="n">n</span><span class="p">,</span>
+		<span class="n">pool</span><span class="o">:</span> <span class="nb">make</span><span class="p">(</span><span class="k">chan</span> <span class="k">interface</span><span class="p">{},</span> <span class="m">1024</span><span class="p">),</span>
 	<span class="p">}</span>
 
-	<span class="k">return</span> <span class="nx">p</span>
+	<span class="k">return</span> <span class="n">p</span>
 <span class="p">}</span>
 
-<span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="nx">Pool</span><span class="p">)</span> <span class="nx">Get</span><span class="p">()</span> <span class="kd">interface</span><span class="p">{}</span> <span class="p">{</span>
+<span class="k">func</span> <span class="p">(</span><span class="n">p</span> <span class="n">Pool</span><span class="p">)</span> <span class="n">Get</span><span class="p">()</span> <span class="k">interface</span><span class="p">{}</span> <span class="p">{</span>
 	<span class="k">select</span> <span class="p">{</span>
-	<span class="k">case</span> <span class="nx">o</span> <span class="o">:=</span> <span class="o">&lt;-</span><span class="nx">p</span><span class="p">.</span><span class="nx">pool</span><span class="p">:</span>
-		<span class="k">return</span> <span class="nx">o</span>
-	<span class="k">default</span><span class="p">:</span>
-		<span class="k">return</span> <span class="nx">p</span><span class="p">.</span><span class="nx">New</span><span class="p">()</span>
+	<span class="k">case</span> <span class="n">o</span> <span class="o">:=</span> <span class="o">&lt;-</span><span class="n">p</span><span class="o">.</span><span class="n">pool</span><span class="o">:</span>
+		<span class="k">return</span> <span class="n">o</span>
+	<span class="k">default</span><span class="o">:</span>
+		<span class="k">return</span> <span class="n">p</span><span class="o">.</span><span class="n">New</span><span class="p">()</span>
 	<span class="p">}</span>
 <span class="p">}</span>
 
-<span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="nx">Pool</span><span class="p">)</span> <span class="nx">Put</span><span class="p">(</span><span class="nx">o</span> <span class="kd">interface</span><span class="p">{})</span> <span class="p">{</span>
+<span class="k">func</span> <span class="p">(</span><span class="n">p</span> <span class="n">Pool</span><span class="p">)</span> <span class="n">Put</span><span class="p">(</span><span class="n">o</span> <span class="k">interface</span><span class="p">{})</span> <span class="p">{</span>
 	<span class="k">select</span> <span class="p">{</span>
-	<span class="k">case</span> <span class="nx">p</span><span class="p">.</span><span class="nx">pool</span> <span class="o">&lt;-</span> <span class="nx">o</span><span class="p">:</span>
-	<span class="k">default</span><span class="p">:</span>
+	<span class="k">case</span> <span class="n">p</span><span class="o">.</span><span class="n">pool</span> <span class="o">&lt;-</span> <span class="n">o</span><span class="o">:</span>
+	<span class="k">default</span><span class="o">:</span>
 	<span class="p">}</span>
 <span class="p">}</span>
 
-<span class="kd">func</span> <span class="nx">BenchmarkChanPool</span><span class="p">(</span><span class="nx">b</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">B</span><span class="p">)</span> <span class="p">{</span>
-	<span class="nx">p</span> <span class="o">:=</span> <span class="nx">NewPool</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="kd">interface</span><span class="p">{}</span> <span class="p">{</span>
-		<span class="k">return</span> <span class="o">&amp;</span><span class="nx">somestruct</span><span class="p">{}</span>
+<span class="k">func</span> <span class="n">BenchmarkChanPool</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">B</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">p</span> <span class="o">:=</span> <span class="n">NewPool</span><span class="p">(</span><span class="k">func</span><span class="p">()</span> <span class="k">interface</span><span class="p">{}</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="o">&amp;</span><span class="n">somestruct</span><span class="p">{}</span>
 	<span class="p">})</span>
 
-	<span class="nx">b</span><span class="p">.</span><span class="nx">RunParallel</span><span class="p">(</span><span class="kd">func</span><span class="p">(</span><span class="nx">pb</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">PB</span><span class="p">)</span> <span class="p">{</span>
-		<span class="k">for</span> <span class="nx">pb</span><span class="p">.</span><span class="nx">Next</span><span class="p">()</span> <span class="p">{</span>
-			<span class="nx">x</span> <span class="o">:=</span> <span class="nx">p</span><span class="p">.</span><span class="nx">Get</span><span class="p">().(</span><span class="o">*</span><span class="nx">somestruct</span><span class="p">)</span>
-			<span class="nx">g</span> <span class="p">=</span> <span class="nx">x</span>
-			<span class="nx">p</span><span class="p">.</span><span class="nx">Put</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span>
+	<span class="n">b</span><span class="o">.</span><span class="n">RunParallel</span><span class="p">(</span><span class="k">func</span><span class="p">(</span><span class="n">pb</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">PB</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">for</span> <span class="n">pb</span><span class="o">.</span><span class="n">Next</span><span class="p">()</span> <span class="p">{</span>
+			<span class="n">x</span> <span class="o">:=</span> <span class="n">p</span><span class="o">.</span><span class="n">Get</span><span class="p">()</span><span class="o">.</span><span class="p">(</span><span class="o">*</span><span class="n">somestruct</span><span class="p">)</span>
+			<span class="n">g</span> <span class="o">=</span> <span class="n">x</span>
+			<span class="n">p</span><span class="o">.</span><span class="n">Put</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 		<span class="p">}</span>
 	<span class="p">})</span>
-<span class="p">}</span></code></pre></div>
+<span class="p">}</span></code></pre></figure>
 
 
 

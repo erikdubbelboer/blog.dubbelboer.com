@@ -6,7 +6,6 @@
 <title>Weirdness in php getters/setters - Erik's Code</title>
 
 <meta name=keywords content="php getter setter">
-<link rel="author" href="https://plus.google.com/+ErikDubbelboer" />
 
 
 <link href="/css/common.css" media="screen" rel="stylesheet" type="text/css">
@@ -36,50 +35,50 @@
 
 <p>While writing some PHP I ran into the following undocumented behaviour. When calling a getter for a property recursively PHP will always return NULL on the recursive calls.</p>
 
-<div class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span>
+<figure class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span>
 
-<span class="k">class</span> <span class="nc">Test</span> <span class="p">{</span>
+<span class="kd">class</span> <span class="nc">Test</span> <span class="p">{</span>
   <span class="k">private</span> <span class="nv">$data</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
 
-  <span class="k">public</span> <span class="k">function</span> <span class="nf">__set</span><span class="p">(</span><span class="nv">$name</span><span class="p">,</span> <span class="nv">$value</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">data</span><span class="p">[</span><span class="nv">$name</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$value</span><span class="p">;</span>
+  <span class="k">public</span> <span class="k">function</span> <span class="n">__set</span><span class="p">(</span><span class="nv">$name</span><span class="p">,</span> <span class="nv">$value</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nv">$this</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="nv">$name</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$value</span><span class="p">;</span>
   <span class="p">}</span>
 
-  <span class="k">public</span> <span class="k">function</span> <span class="nf">__get</span><span class="p">(</span><span class="nv">$name</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="p">(</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">data</span><span class="p">[</span><span class="nv">$name</span><span class="p">]))</span> <span class="p">{</span>
-      <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">data</span><span class="p">[</span><span class="nv">$name</span><span class="p">];</span>
+  <span class="k">public</span> <span class="k">function</span> <span class="n">__get</span><span class="p">(</span><span class="nv">$name</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="k">isset</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="nv">$name</span><span class="p">]))</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="nv">$name</span><span class="p">];</span>
     <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-      <span class="nb">call_user_func</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="nv">$this</span><span class="p">,</span> <span class="s1">&#39;get&#39;</span><span class="o">.</span><span class="nb">ucfirst</span><span class="p">(</span><span class="nv">$name</span><span class="p">)));</span>
+      <span class="nb">call_user_func</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="nv">$this</span><span class="p">,</span> <span class="s1">'get'</span><span class="mf">.</span><span class="nb">ucfirst</span><span class="p">(</span><span class="nv">$name</span><span class="p">)));</span>
 
-      <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">data</span><span class="p">[</span><span class="nv">$name</span><span class="p">];</span>
+      <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="nv">$name</span><span class="p">];</span>
     <span class="p">}</span>
   <span class="p">}</span>
 
-  <span class="k">public</span> <span class="k">function</span> <span class="nf">__isset</span><span class="p">(</span><span class="nv">$name</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="nb">isset</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">data</span><span class="p">[</span><span class="nv">$name</span><span class="p">]);</span>
+  <span class="k">public</span> <span class="k">function</span> <span class="n">__isset</span><span class="p">(</span><span class="nv">$name</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">isset</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="nv">$name</span><span class="p">]);</span>
   <span class="p">}</span>
 
 
   <span class="c1">// This function will be called inside __get.</span>
-  <span class="k">public</span> <span class="k">function</span> <span class="nf">getSomething</span><span class="p">()</span> <span class="p">{</span>
-    <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">something</span> <span class="o">=</span> <span class="mi">1337</span><span class="p">;</span>
+  <span class="k">public</span> <span class="k">function</span> <span class="n">getSomething</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nv">$this</span><span class="o">-&gt;</span><span class="n">something</span> <span class="o">=</span> <span class="mi">1337</span><span class="p">;</span>
 
-    <span class="nb">var_dump</span><span class="p">(</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">something</span><span class="p">));</span> <span class="c1">// Outputs: true</span>
+    <span class="nb">var_dump</span><span class="p">(</span><span class="k">isset</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="n">something</span><span class="p">));</span> <span class="c1">// Outputs: true</span>
 
 
-    <span class="c1">// Since we just set it and isset returns it&#39;s set I assume we should now be able to access it.</span>
-    <span class="nb">var_dump</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">something</span><span class="p">);</span> <span class="c1">// Doesn&#39;t work, outputs: NULL</span>
+    <span class="c1">// Since we just set it and isset returns it's set I assume we should now be able to access it.</span>
+    <span class="nb">var_dump</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="n">something</span><span class="p">);</span> <span class="c1">// Doesn't work, outputs: NULL</span>
 
 
     <span class="c1">// This does work (expected since isset also worked).</span>
-    <span class="nb">var_dump</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">data</span><span class="p">[</span><span class="s1">&#39;something&#39;</span><span class="p">]);</span> <span class="c1">// Does work, outputs: 1337</span>
+    <span class="nb">var_dump</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="s1">'something'</span><span class="p">]);</span> <span class="c1">// Does work, outputs: 1337</span>
   <span class="p">}</span>
 <span class="p">}</span>
 
 
-<span class="nv">$t</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Test</span><span class="p">();</span>
+<span class="nv">$t</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Test</span><span class="p">();</span>
 
-<span class="nb">var_dump</span><span class="p">(</span><span class="nv">$t</span><span class="o">-&gt;</span><span class="na">something</span><span class="p">);</span> <span class="c1">// Outputs: 1337</span></code></pre></div>
+<span class="nb">var_dump</span><span class="p">(</span><span class="nv">$t</span><span class="o">-&gt;</span><span class="n">something</span><span class="p">);</span> <span class="c1">// Outputs: 1337</span></code></pre></figure>
 
 
 

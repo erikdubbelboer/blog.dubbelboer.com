@@ -6,7 +6,6 @@
 <title>AJAX file upload problem - Erik's Code</title>
 
 <meta name=keywords content="ajax javascript php">
-<link rel="author" href="https://plus.google.com/+ErikDubbelboer" />
 
 
 <link href="/css/common.css" media="screen" rel="stylesheet" type="text/css">
@@ -36,33 +35,33 @@
 
 <p>For one of our company websites we have an HTML file upload utility.</p>
 
-<div class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">file</span> <span class="na">id=</span><span class="s">input</span> <span class="na">onchange=</span><span class="s">&quot;handleFiles(this.files)&quot;</span><span class="nt">&gt;</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">file</span> <span class="na">id=</span><span class="s">input</span> <span class="na">onchange=</span><span class="s">"handleFiles(this.files)"</span><span class="nt">&gt;</span></code></pre></figure>
 
 <p>The utility uses an XMLHttpRequest to post the files to our server.</p>
 
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nx">handleFiles</span><span class="p">(</span><span class="nx">files</span><span class="p">)</span> <span class="p">{</span>
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nf">handleFiles</span><span class="p">(</span><span class="nx">files</span><span class="p">)</span> <span class="p">{</span>
   <span class="kd">var</span> <span class="nx">xhr</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">;</span>
-  <span class="nx">xhr</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">&#39;post&#39;</span><span class="p">,</span> <span class="nx">handler</span><span class="p">.</span><span class="nx">url</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
-  <span class="nx">xhr</span><span class="p">.</span><span class="nx">setRequestHeader</span><span class="p">(</span><span class="s1">&#39;X-File-Name&#39;</span> <span class="p">,</span> <span class="nx">files</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">fileName</span><span class="p">);</span>
-  <span class="nx">xhr</span><span class="p">.</span><span class="nx">setRequestHeader</span><span class="p">(</span><span class="s1">&#39;X-File-Size&#39;</span> <span class="p">,</span> <span class="nx">files</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">fileSize</span><span class="p">);</span>
-  <span class="nx">xhr</span><span class="p">.</span><span class="nx">setRequestHeader</span><span class="p">(</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="s1">&#39;application/x-www-form-urlencoded&#39;</span><span class="p">);</span>
-  <span class="nx">xhr</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="nx">files</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
-<span class="p">}</span></code></pre></div>
+  <span class="nx">xhr</span><span class="p">.</span><span class="nf">open</span><span class="p">(</span><span class="dl">'</span><span class="s1">post</span><span class="dl">'</span><span class="p">,</span> <span class="nx">handler</span><span class="p">.</span><span class="nx">url</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+  <span class="nx">xhr</span><span class="p">.</span><span class="nf">setRequestHeader</span><span class="p">(</span><span class="dl">'</span><span class="s1">X-File-Name</span><span class="dl">'</span> <span class="p">,</span> <span class="nx">files</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">fileName</span><span class="p">);</span>
+  <span class="nx">xhr</span><span class="p">.</span><span class="nf">setRequestHeader</span><span class="p">(</span><span class="dl">'</span><span class="s1">X-File-Size</span><span class="dl">'</span> <span class="p">,</span> <span class="nx">files</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">fileSize</span><span class="p">);</span>
+  <span class="nx">xhr</span><span class="p">.</span><span class="nf">setRequestHeader</span><span class="p">(</span><span class="dl">'</span><span class="s1">Content-Type</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">application/x-www-form-urlencoded</span><span class="dl">'</span><span class="p">);</span>
+  <span class="nx">xhr</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span><span class="nx">files</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+<span class="p">}</span></code></pre></figure>
 
 <p>As you can see the file is send to the server on which puts it in the right place.</p>
 
-<div class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span>
+<figure class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span>
 
-<span class="nv">$filedata</span> <span class="o">=</span> <span class="nb">file_get_contents</span><span class="p">(</span><span class="s1">&#39;php://input&#39;</span><span class="p">);</span>
-<span class="nv">$filename</span> <span class="o">=</span> <span class="nv">$_SERVER</span><span class="p">[</span><span class="s1">&#39;HTTP_X_FILE_NAME&#39;</span><span class="p">];</span>
+<span class="nv">$filedata</span> <span class="o">=</span> <span class="nb">file_get_contents</span><span class="p">(</span><span class="s1">'php://input'</span><span class="p">);</span>
+<span class="nv">$filename</span> <span class="o">=</span> <span class="nv">$_SERVER</span><span class="p">[</span><span class="s1">'HTTP_X_FILE_NAME'</span><span class="p">];</span>
 
-<span class="c1">// do something with $filedata and $filename</span></code></pre></div>
+<span class="c1">// do something with $filedata and $filename</span></code></pre></figure>
 
-<p>This has worked perfectly for a while until recently I had a file which failed to upload giving me the PHP error <code>Warning: Input variables exceeded 1000. To increase the limit change max_input_vars in php.ini.</code>. Other files still seem to work but this specific file failed. The file was only 20kb so that wasn’t the problem.</p>
+<p>This has worked perfectly for a while until recently I had a file which failed to upload giving me the PHP error <code class="language-plaintext highlighter-rouge">Warning: Input variables exceeded 1000. To increase the limit change max_input_vars in php.ini.</code>. Other files still seem to work but this specific file failed. The file was only 20kb so that wasn’t the problem.</p>
 
-<p>After printing the contents of <code>$_POST</code> I found that PHP was trying to parse the raw file contents into an url encoded array of input variables. Apparently PHP has been doing this with our files all along but this specific file contained many <code>&amp;</code> characters which made it reach it’s input limit.</p>
+<p>After printing the contents of <code class="language-plaintext highlighter-rouge">$_POST</code> I found that PHP was trying to parse the raw file contents into an url encoded array of input variables. Apparently PHP has been doing this with our files all along but this specific file contained many <code class="language-plaintext highlighter-rouge">&amp;</code> characters which made it reach it’s input limit.</p>
 
-<p>The bug was fixed by changing the <code>Content-type</code> of the AJAX request to <code>application/octet-stream</code>. This way PHP won’t try to parse the input data.</p>
+<p>The bug was fixed by changing the <code class="language-plaintext highlighter-rouge">Content-type</code> of the AJAX request to <code class="language-plaintext highlighter-rouge">application/octet-stream</code>. This way PHP won’t try to parse the input data.</p>
 
 
 

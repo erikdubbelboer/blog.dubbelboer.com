@@ -6,7 +6,6 @@
 <title>UE4 DistributionVectorUniformParam Particle Distribution - Erik's Code</title>
 
 <meta name=keywords content="unreal engine ue4 distribution vector particle uniform param">
-<link rel="author" href="https://plus.google.com/+ErikDubbelboer" />
 
 
 <link href="/css/common.css" media="screen" rel="stylesheet" type="text/css">
@@ -42,16 +41,16 @@ To fix this I created the missing Distribution Vector Uniform Param.</p>
 
 <p><a href="https://gist.github.com/erikdubbelboer/cd674cd29399bc9bddb9c9c8a6bd7886#file-distributionvectoruniformparam-h">DistributionVectorUniformParam.h</a></p>
 
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="cp">#pragma once</span>
-
-<span class="cp">#include &quot;CoreMinimal.h&quot;</span>
-<span class="cp">#include &quot;Distributions/DistributionVector.h&quot;</span>
-
-<span class="cp">#include &quot;DistributionVectorUniformParam.generated.h&quot;</span>
-
+<figure class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="cp">#pragma once
+</span>
+<span class="cp">#include</span> <span class="cpf">"CoreMinimal.h"</span><span class="cp">
+#include</span> <span class="cpf">"Distributions/DistributionVector.h"</span><span class="cp">
+</span>
+<span class="cp">#include</span> <span class="cpf">"DistributionVectorUniformParam.generated.h"</span><span class="cp">
+</span>
 
 <span class="n">UCLASS</span><span class="p">(</span><span class="n">collapsecategories</span><span class="p">,</span> <span class="n">hidecategories</span> <span class="o">=</span> <span class="n">Object</span><span class="p">,</span> <span class="n">editinlinenew</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">PROJECT_API</span> <span class="nl">UDistributionVectorUniformParam</span> <span class="p">:</span> <span class="k">public</span> <span class="n">UDistributionVector</span>
+<span class="k">class</span> <span class="nc">PROJECT_API</span> <span class="n">UDistributionVectorUniformParam</span> <span class="o">:</span> <span class="k">public</span> <span class="n">UDistributionVector</span>
 <span class="p">{</span>
   <span class="n">GENERATED_UCLASS_BODY</span><span class="p">()</span>
 
@@ -68,7 +67,7 @@ To fix this I created the missing Distribution Vector Uniform Param.</p>
   <span class="n">UPROPERTY</span><span class="p">(</span><span class="n">EditAnywhere</span><span class="p">)</span>
   <span class="n">FVector</span> <span class="n">DefaultMin</span><span class="p">;</span>
 
-  <span class="k">virtual</span> <span class="n">FVector</span> <span class="n">GetValue</span><span class="p">(</span><span class="kt">float</span> <span class="n">F</span> <span class="o">=</span> <span class="mf">0.f</span><span class="p">,</span> <span class="n">UObject</span><span class="o">*</span> <span class="n">Data</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">int32</span> <span class="n">LastExtreme</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="k">struct</span> <span class="n">FRandomStream</span><span class="o">*</span> <span class="n">InRandomStream</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">)</span> <span class="k">const</span> <span class="k">override</span><span class="p">;</span>
+  <span class="k">virtual</span> <span class="n">FVector</span> <span class="n">GetValue</span><span class="p">(</span><span class="kt">float</span> <span class="n">F</span> <span class="o">=</span> <span class="mf">0.</span><span class="n">f</span><span class="p">,</span> <span class="n">UObject</span><span class="o">*</span> <span class="n">Data</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">int32</span> <span class="n">LastExtreme</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="k">struct</span> <span class="nc">FRandomStream</span><span class="o">*</span> <span class="n">InRandomStream</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">)</span> <span class="k">const</span> <span class="k">override</span><span class="p">;</span>
 
   <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">CanBeBaked</span><span class="p">()</span> <span class="k">const</span> <span class="k">override</span> <span class="p">{</span> <span class="k">return</span> <span class="nb">false</span><span class="p">;</span> <span class="p">}</span>
   <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">IsPostLoadThreadSafe</span><span class="p">()</span> <span class="k">const</span> <span class="k">override</span> <span class="p">{</span> <span class="k">return</span> <span class="nb">true</span><span class="p">;</span> <span class="p">};</span>
@@ -78,21 +77,21 @@ To fix this I created the missing Distribution Vector Uniform Param.</p>
 
 <span class="k">private</span><span class="o">:</span>
   <span class="kt">bool</span> <span class="n">GetParamValue</span><span class="p">(</span><span class="n">UObject</span><span class="o">*</span> <span class="n">Data</span><span class="p">,</span> <span class="n">FName</span> <span class="n">ParamName</span><span class="p">,</span> <span class="n">FVector</span><span class="o">&amp;</span> <span class="n">OutVector</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
-<span class="p">};</span></code></pre></div>
+<span class="p">};</span></code></pre></figure>
 
 <p><a href="https://gist.github.com/erikdubbelboer/cd674cd29399bc9bddb9c9c8a6bd7886#file-distributionvectoruniformparam-cpp">DistributionVectorUniformParam.cpp</a></p>
 
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="cp">#include &quot;DistributionVectorUniformParam.h&quot;</span>
-
-<span class="cp">#include &quot;Particles/ParticleSystemComponent.h&quot;</span>
-
+<figure class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="cp">#include</span> <span class="cpf">"DistributionVectorUniformParam.h"</span><span class="cp">
+</span>
+<span class="cp">#include</span> <span class="cpf">"Particles/ParticleSystemComponent.h"</span><span class="cp">
+</span>
 
 <span class="n">UDistributionVectorUniformParam</span><span class="o">::</span><span class="n">UDistributionVectorUniformParam</span><span class="p">(</span><span class="k">const</span> <span class="n">FObjectInitializer</span><span class="o">&amp;</span> <span class="n">ObjectInitializer</span><span class="p">)</span>
   <span class="o">:</span> <span class="n">Super</span><span class="p">(</span><span class="n">ObjectInitializer</span><span class="p">)</span>
 <span class="p">{</span>
 <span class="p">}</span>
 
-<span class="n">FVector</span> <span class="n">UDistributionVectorUniformParam</span><span class="o">::</span><span class="n">GetValue</span><span class="p">(</span><span class="kt">float</span> <span class="n">F</span><span class="p">,</span> <span class="n">UObject</span><span class="o">*</span> <span class="n">Data</span><span class="p">,</span> <span class="n">int32</span> <span class="n">Extreme</span><span class="p">,</span> <span class="k">struct</span> <span class="n">FRandomStream</span><span class="o">*</span> <span class="n">InRandomStream</span><span class="p">)</span> <span class="k">const</span>
+<span class="n">FVector</span> <span class="n">UDistributionVectorUniformParam</span><span class="o">::</span><span class="n">GetValue</span><span class="p">(</span><span class="kt">float</span> <span class="n">F</span><span class="p">,</span> <span class="n">UObject</span><span class="o">*</span> <span class="n">Data</span><span class="p">,</span> <span class="n">int32</span> <span class="n">Extreme</span><span class="p">,</span> <span class="k">struct</span> <span class="nc">FRandomStream</span><span class="o">*</span> <span class="n">InRandomStream</span><span class="p">)</span> <span class="k">const</span>
 <span class="p">{</span>
   <span class="n">FVector</span> <span class="n">LocalMax</span> <span class="o">=</span> <span class="n">DefaultMax</span><span class="p">;</span>
   <span class="n">FVector</span> <span class="n">LocalMin</span> <span class="o">=</span> <span class="n">DefaultMin</span><span class="p">;</span>
@@ -111,9 +110,9 @@ To fix this I created the missing Distribution Vector Uniform Param.</p>
     <span class="n">LocalMin</span> <span class="o">=</span> <span class="n">ParamMin</span><span class="p">;</span>
   <span class="p">}</span>
 
-  <span class="kt">float</span> <span class="n">fX</span> <span class="o">=</span> <span class="n">LocalMin</span><span class="p">.</span><span class="n">X</span> <span class="o">+</span> <span class="p">(</span><span class="n">LocalMax</span><span class="p">.</span><span class="n">X</span> <span class="o">-</span> <span class="n">LocalMin</span><span class="p">.</span><span class="n">X</span><span class="p">)</span> <span class="o">*</span> <span class="n">DIST_GET_RANDOM_VALUE</span><span class="p">(</span><span class="n">InRandomStream</span><span class="p">);</span>
-  <span class="kt">float</span> <span class="n">fY</span> <span class="o">=</span> <span class="n">LocalMin</span><span class="p">.</span><span class="n">Y</span> <span class="o">+</span> <span class="p">(</span><span class="n">LocalMax</span><span class="p">.</span><span class="n">Y</span> <span class="o">-</span> <span class="n">LocalMin</span><span class="p">.</span><span class="n">Y</span><span class="p">)</span> <span class="o">*</span> <span class="n">DIST_GET_RANDOM_VALUE</span><span class="p">(</span><span class="n">InRandomStream</span><span class="p">);</span>
-  <span class="kt">float</span> <span class="n">fZ</span> <span class="o">=</span> <span class="n">LocalMin</span><span class="p">.</span><span class="n">Z</span> <span class="o">+</span> <span class="p">(</span><span class="n">LocalMax</span><span class="p">.</span><span class="n">Z</span> <span class="o">-</span> <span class="n">LocalMin</span><span class="p">.</span><span class="n">Z</span><span class="p">)</span> <span class="o">*</span> <span class="n">DIST_GET_RANDOM_VALUE</span><span class="p">(</span><span class="n">InRandomStream</span><span class="p">);</span>
+  <span class="kt">float</span> <span class="n">fX</span> <span class="o">=</span> <span class="n">LocalMin</span><span class="p">.</span><span class="n">X</span> <span class="o">+</span> <span class="p">(</span><span class="n">LocalMax</span><span class="p">.</span><span class="n">X</span> <span class="o">-</span> <span class="n">LocalMin</span><span class="p">.</span><span class="n">X</span><span class="p">)</span> <span class="o">*</span> <span class="nf">DIST_GET_RANDOM_VALUE</span><span class="p">(</span><span class="n">InRandomStream</span><span class="p">);</span>
+  <span class="kt">float</span> <span class="n">fY</span> <span class="o">=</span> <span class="n">LocalMin</span><span class="p">.</span><span class="n">Y</span> <span class="o">+</span> <span class="p">(</span><span class="n">LocalMax</span><span class="p">.</span><span class="n">Y</span> <span class="o">-</span> <span class="n">LocalMin</span><span class="p">.</span><span class="n">Y</span><span class="p">)</span> <span class="o">*</span> <span class="nf">DIST_GET_RANDOM_VALUE</span><span class="p">(</span><span class="n">InRandomStream</span><span class="p">);</span>
+  <span class="kt">float</span> <span class="n">fZ</span> <span class="o">=</span> <span class="n">LocalMin</span><span class="p">.</span><span class="n">Z</span> <span class="o">+</span> <span class="p">(</span><span class="n">LocalMax</span><span class="p">.</span><span class="n">Z</span> <span class="o">-</span> <span class="n">LocalMin</span><span class="p">.</span><span class="n">Z</span><span class="p">)</span> <span class="o">*</span> <span class="nf">DIST_GET_RANDOM_VALUE</span><span class="p">(</span><span class="n">InRandomStream</span><span class="p">);</span>
 
   <span class="k">return</span> <span class="nf">FVector</span><span class="p">(</span><span class="n">fX</span><span class="p">,</span> <span class="n">fY</span><span class="p">,</span> <span class="n">fZ</span><span class="p">);</span>
 <span class="p">}</span>
@@ -128,7 +127,7 @@ To fix this I created the missing Distribution Vector Uniform Param.</p>
     <span class="n">bFoundParam</span> <span class="o">=</span> <span class="n">ParticleComp</span><span class="o">-&gt;</span><span class="n">GetAnyVectorParameter</span><span class="p">(</span><span class="n">ParamName</span><span class="p">,</span> <span class="n">OutVector</span><span class="p">);</span>
   <span class="p">}</span>
   <span class="k">return</span> <span class="n">bFoundParam</span><span class="p">;</span>
-<span class="p">}</span></code></pre></div>
+<span class="p">}</span></code></pre></figure>
 
 
 

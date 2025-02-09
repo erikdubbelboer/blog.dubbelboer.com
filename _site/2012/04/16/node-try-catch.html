@@ -6,7 +6,6 @@
 <title>V8 performance inside try/catch - Erik's Code</title>
 
 <meta name=keywords content="nodejs javascript optimize v8">
-<link rel="author" href="https://plus.google.com/+ErikDubbelboer" />
 
 
 <link href="/css/common.css" media="screen" rel="stylesheet" type="text/css">
@@ -36,50 +35,50 @@
 
 <p>I have learned recently that V8, the javascript engine behind nodejs can’t optimize inside a try/catch block. Just look at the running times of the next two examples:</p>
 
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">function</span> <span class="nx">test</span><span class="p">()</span> <span class="p">{</span>
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">function</span> <span class="nf">test</span><span class="p">()</span> <span class="p">{</span>
   <span class="k">try</span> <span class="p">{</span>
-    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">1000000000</span><span class="p">;</span> <span class="o">++</span><span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
-      <span class="k">if</span> <span class="p">(</span><span class="nx">i</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for </span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">1000000000</span><span class="p">;</span> <span class="o">++</span><span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if </span><span class="p">(</span><span class="nx">i</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
         <span class="p">;</span>
       <span class="p">}</span>
     <span class="p">}</span>
-  <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+  <span class="p">}</span> <span class="k">catch </span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
   <span class="p">}</span>
 <span class="p">}</span>
 
-<span class="nx">test</span><span class="p">();</span></code></pre></div>
+<span class="nf">test</span><span class="p">();</span></code></pre></figure>
 
-<p>This example takes on average <code>9</code> seconds to complete.</p>
+<p>This example takes on average <code class="language-plaintext highlighter-rouge">9</code> seconds to complete.</p>
 
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">function</span> <span class="nx">test</span><span class="p">()</span> <span class="p">{</span>
-  <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">1000000000</span><span class="p">;</span> <span class="o">++</span><span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="p">(</span><span class="nx">i</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">function</span> <span class="nf">test</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">for </span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">1000000000</span><span class="p">;</span> <span class="o">++</span><span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if </span><span class="p">(</span><span class="nx">i</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
       <span class="p">;</span>
     <span class="p">}</span>
   <span class="p">}</span>
 <span class="p">}</span>
 
 <span class="k">try</span> <span class="p">{</span>
-  <span class="nx">test</span><span class="p">();</span>
-<span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
-<span class="p">}</span></code></pre></div>
+  <span class="nf">test</span><span class="p">();</span>
+<span class="p">}</span> <span class="k">catch </span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+<span class="p">}</span></code></pre></figure>
 
-<p>While this very similar example takes an average of <code>1.7</code> seconds to complete.</p>
+<p>While this very similar example takes an average of <code class="language-plaintext highlighter-rouge">1.7</code> seconds to complete.</p>
 
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">function</span> <span class="nx">test</span><span class="p">()</span> <span class="p">{</span>
-  <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">1000000000</span><span class="p">;</span> <span class="o">++</span><span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">function</span> <span class="nf">test</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">for </span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">1000000000</span><span class="p">;</span> <span class="o">++</span><span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">try</span> <span class="p">{</span>
-      <span class="k">if</span> <span class="p">(</span><span class="nx">i</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if </span><span class="p">(</span><span class="nx">i</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
         <span class="p">;</span>
       <span class="p">}</span>
-    <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">}</span> <span class="k">catch </span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
     <span class="p">}</span>
   <span class="p">}</span>
 <span class="p">}</span>
 
-<span class="nx">test</span><span class="p">();</span></code></pre></div>
+<span class="nf">test</span><span class="p">();</span></code></pre></figure>
 
-<p>Setting up a try/catch frame is also very expensive as can be seen by this example taking an average of <code>11</code> seconds.</p>
+<p>Setting up a try/catch frame is also very expensive as can be seen by this example taking an average of <code class="language-plaintext highlighter-rouge">11</code> seconds.</p>
 
 
 

@@ -6,7 +6,6 @@
 <title>204 No Content and cookies - Erik's Code</title>
 
 <meta name=keywords content="204 header cookie http">
-<link rel="author" href="https://plus.google.com/+ErikDubbelboer" />
 
 
 <link href="/css/common.css" media="screen" rel="stylesheet" type="text/css">
@@ -40,55 +39,55 @@
 
 <p>What I found is that <strong>all major browsers</strong>, IE (6, 7, 8, 9, 10, 11), FF (6 - 29), Safari (5 - 7), Opera (12 - 22) on both windows and Mac, <strong>set cookies on 204 http responses</strong>.</p>
 
-<h3 id="cookiephp">204cookie.php</h3>
+<h3 id="204cookiephp">204cookie.php</h3>
 
-<div class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span>
+<figure class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span>
 
-<span class="k">if</span> <span class="p">(</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;show&#39;</span><span class="p">]))</span> <span class="p">{</span>
-<span class="cp">?&gt;</span><span class="x"></span>
-<span class="x">&lt;!doctype html&gt;</span>
-<span class="x">&lt;html&gt;</span>
-<span class="x">&lt;head&gt;</span>
-<span class="x">&lt;meta charset=utf-8&gt;</span>
-<span class="x">&lt;title&gt;204 cookie test&lt;/title&gt;</span>
-<span class="x">&lt;/head&gt;</span>
-<span class="x">&lt;body&gt;</span>
+<span class="k">if</span> <span class="p">(</span><span class="k">isset</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">'show'</span><span class="p">]))</span> <span class="p">{</span>
+<span class="cp">?&gt;</span>
+<span class="cp">&lt;!doctype html&gt;</span>
+<span class="nt">&lt;html&gt;</span>
+<span class="nt">&lt;head&gt;</span>
+<span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">utf-8</span><span class="nt">&gt;</span>
+<span class="nt">&lt;title&gt;</span>204 cookie test<span class="nt">&lt;/title&gt;</span>
+<span class="nt">&lt;/head&gt;</span>
+<span class="nt">&lt;body&gt;</span>
 <span class="cp">&lt;?</span>
-  <span class="k">if</span> <span class="p">(</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$_COOKIE</span><span class="p">[</span><span class="s1">&#39;test&#39;</span><span class="p">])</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nv">$_COOKIE</span><span class="p">[</span><span class="s1">&#39;test&#39;</span><span class="p">]</span> <span class="o">===</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;show&#39;</span><span class="p">]))</span> <span class="p">{</span>
-    <span class="k">echo</span> <span class="s1">&#39;Success&#39;</span><span class="p">;</span>
+  <span class="k">if</span> <span class="p">(</span><span class="k">isset</span><span class="p">(</span><span class="nv">$_COOKIE</span><span class="p">[</span><span class="s1">'test'</span><span class="p">])</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nv">$_COOKIE</span><span class="p">[</span><span class="s1">'test'</span><span class="p">]</span> <span class="o">===</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s1">'show'</span><span class="p">]))</span> <span class="p">{</span>
+    <span class="k">echo</span> <span class="s1">'Success'</span><span class="p">;</span>
   <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-    <span class="k">echo</span> <span class="s1">&#39;Failed&#39;</span><span class="p">;</span>
+    <span class="k">echo</span> <span class="s1">'Failed'</span><span class="p">;</span>
   <span class="p">}</span>
-<span class="cp">?&gt;</span><span class="x">&lt;br&gt;&lt;br&gt;&lt;a href=&quot;?a=</span><span class="cp">&lt;?</span><span class="o">=</span><span class="nb">microtime</span><span class="p">(</span><span class="k">true</span><span class="p">)</span> <span class="cm">/* Random url to prevent caching. */</span><span class="cp">?&gt;</span><span class="x">&quot;&gt;try again...&lt;/a&gt;&lt;br&gt;</span>
-<span class="x">&lt;/body&gt;</span>
-<span class="x">&lt;/html&gt;</span>
+<span class="cp">?&gt;</span><span class="nt">&lt;br&gt;&lt;br&gt;&lt;a</span> <span class="na">href=</span><span class="s">"?a=</span><span class="cp">&lt;?=</span><span class="nb">microtime</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span> <span class="cm">/* Random url to prevent caching. */</span><span class="cp">?&gt;</span><span class="s">"</span><span class="nt">&gt;</span>try again...<span class="nt">&lt;/a&gt;&lt;br&gt;</span>
+<span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
 <span class="cp">&lt;?</span>
-<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;set&#39;</span><span class="p">]))</span> <span class="p">{</span>
-  <span class="nb">header</span><span class="p">(</span><span class="s1">&#39;P3P: CP=&quot;no policy&quot;&#39;</span><span class="p">);</span>
-  <span class="nb">setcookie</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;set&#39;</span><span class="p">],</span> <span class="nb">time</span><span class="p">()</span> <span class="o">+</span> <span class="mi">60</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="s1">&#39;.dubbelboer.com&#39;</span><span class="p">);</span>
-  <span class="nb">header</span><span class="p">(</span><span class="s1">&#39;HTTP/1.0 204 No Content&#39;</span><span class="p">);</span>
+<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="k">isset</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">'set'</span><span class="p">]))</span> <span class="p">{</span>
+  <span class="nb">header</span><span class="p">(</span><span class="s1">'P3P: CP="no policy"'</span><span class="p">);</span>
+  <span class="nb">setcookie</span><span class="p">(</span><span class="s1">'test'</span><span class="p">,</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s1">'set'</span><span class="p">],</span> <span class="nb">time</span><span class="p">()</span> <span class="o">+</span> <span class="mi">60</span><span class="p">,</span> <span class="s1">'/'</span><span class="p">,</span> <span class="s1">'.dubbelboer.com'</span><span class="p">);</span>
+  <span class="nb">header</span><span class="p">(</span><span class="s1">'HTTP/1.0 204 No Content'</span><span class="p">);</span>
 <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-  <span class="nv">$id</span> <span class="o">=</span> <span class="nb">intval</span><span class="p">(</span><span class="nb">microtime</span><span class="p">(</span><span class="k">true</span><span class="p">));</span>
-<span class="cp">?&gt;</span><span class="x"></span>
-<span class="x">&lt;!doctype html&gt;</span>
-<span class="x">&lt;html&gt;</span>
-<span class="x">&lt;head&gt;</span>
-<span class="x">&lt;meta charset=utf-8&gt;</span>
-<span class="x">&lt;title&gt;204 cookie test&lt;/title&gt;</span>
-<span class="x">&lt;/head&gt;</span>
-<span class="x">&lt;body&gt;</span>
-<span class="x">&lt;iframe src=&quot;?set=</span><span class="cp">&lt;?</span><span class="o">=</span><span class="nv">$id</span><span class="cp">?&gt;</span><span class="x">&quot; width=1 height=1&gt;&lt;/iframe&gt;</span>
-<span class="x">Placing cookie...&lt;br&gt;</span>
-<span class="x">&lt;script&gt;</span>
-<span class="x">// Give the iframe some time to load.</span>
-<span class="x">setTimeout(function() {</span>
-<span class="x">  document.location = &#39;?show=</span><span class="cp">&lt;?</span><span class="o">=</span><span class="nv">$id</span><span class="cp">?&gt;</span><span class="x">&#39;;</span>
-<span class="x">}, 2000);</span>
-<span class="x">&lt;/script&gt;</span>
-<span class="x">&lt;/body&gt;</span>
-<span class="x">&lt;/html&gt;</span>
+  <span class="nv">$id</span> <span class="o">=</span> <span class="nb">intval</span><span class="p">(</span><span class="nb">microtime</span><span class="p">(</span><span class="kc">true</span><span class="p">));</span>
+<span class="cp">?&gt;</span>
+<span class="cp">&lt;!doctype html&gt;</span>
+<span class="nt">&lt;html&gt;</span>
+<span class="nt">&lt;head&gt;</span>
+<span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">utf-8</span><span class="nt">&gt;</span>
+<span class="nt">&lt;title&gt;</span>204 cookie test<span class="nt">&lt;/title&gt;</span>
+<span class="nt">&lt;/head&gt;</span>
+<span class="nt">&lt;body&gt;</span>
+<span class="nt">&lt;iframe</span> <span class="na">src=</span><span class="s">"?set=</span><span class="cp">&lt;?=</span><span class="nv">$id</span><span class="cp">?&gt;</span><span class="s">"</span> <span class="na">width=</span><span class="s">1</span> <span class="na">height=</span><span class="s">1</span><span class="nt">&gt;&lt;/iframe&gt;</span>
+Placing cookie...<span class="nt">&lt;br&gt;</span>
+<span class="nt">&lt;script&gt;</span>
+<span class="c1">// Give the iframe some time to load.</span>
+<span class="nf">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nb">document</span><span class="p">.</span><span class="nx">location</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">?show=</span><span class="cp">&lt;?=</span><span class="nv">$id</span><span class="cp">?&gt;</span><span class="dl">'</span><span class="p">;</span>
+<span class="p">},</span> <span class="mi">2000</span><span class="p">);</span>
+<span class="nt">&lt;/script&gt;</span>
+<span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
 <span class="cp">&lt;?</span>
-<span class="p">}</span></code></pre></div>
+<span class="p">}</span></code></pre></figure>
 
 
 

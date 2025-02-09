@@ -6,7 +6,6 @@
 <title>Blurring images in PHP - Erik's Code</title>
 
 <meta name=keywords content="php image blur filter">
-<link rel="author" href="https://plus.google.com/+ErikDubbelboer" />
 
 
 <link href="/css/common.css" media="screen" rel="stylesheet" type="text/css">
@@ -73,12 +72,12 @@
 
 <p>I did not use the <a href="http://php.net/imagefilter">IMG_FILTER_SELECTIVE_BLUR</a> filter since for some reason it messed up all the colors.</p>
 
-<div class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span>
+<figure class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span>
 
-<span class="k">function</span> <span class="nf">blur</span><span class="p">(</span><span class="nv">$name</span><span class="p">,</span> <span class="nv">$cb</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">echo</span> <span class="nv">$name</span> <span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+<span class="k">function</span> <span class="n">blur</span><span class="p">(</span><span class="nv">$name</span><span class="p">,</span> <span class="nv">$cb</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">echo</span> <span class="nv">$name</span> <span class="p">,</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">;</span>
 
-  <span class="nv">$image</span> <span class="o">=</span> <span class="nb">imagecreatefrompng</span><span class="p">(</span><span class="s1">&#39;normal.png&#39;</span><span class="p">);</span>
+  <span class="nv">$image</span> <span class="o">=</span> <span class="nb">imagecreatefrompng</span><span class="p">(</span><span class="s1">'normal.png'</span><span class="p">);</span>
 
   <span class="c1">// The imagefilter functions only work on the whole image.</span>
   <span class="c1">// We only want to blur half of the image so copy half to a temporary image,</span>
@@ -89,27 +88,27 @@
   <span class="nb">imagecopy</span>  <span class="p">(</span><span class="nv">$image</span><span class="p">,</span> <span class="nv">$tempImage</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">400</span><span class="p">,</span> <span class="mi">600</span><span class="p">);</span>
   <span class="nb">imagedestroy</span><span class="p">(</span><span class="nv">$tempImage</span><span class="p">);</span>
 
-  <span class="nb">imagepng</span><span class="p">(</span><span class="nv">$image</span><span class="p">,</span> <span class="nv">$name</span> <span class="o">.</span> <span class="s1">&#39;.png&#39;</span><span class="p">);</span>
+  <span class="nb">imagepng</span><span class="p">(</span><span class="nv">$image</span><span class="p">,</span> <span class="nv">$name</span> <span class="mf">.</span> <span class="s1">'.png'</span><span class="p">);</span>
 <span class="p">}</span>
 
 
-<span class="nx">blur</span><span class="p">(</span><span class="s1">&#39;gaussian&#39;</span><span class="p">,</span> <span class="k">function</span><span class="p">(</span><span class="nv">$image</span><span class="p">)</span> <span class="p">{</span>
-  <span class="nb">imagefilter</span><span class="p">(</span><span class="nv">$image</span><span class="p">,</span> <span class="nx">IMG_FILTER_GAUSSIAN_BLUR</span><span class="p">);</span>
+<span class="nf">blur</span><span class="p">(</span><span class="s1">'gaussian'</span><span class="p">,</span> <span class="k">function</span><span class="p">(</span><span class="nv">$image</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nb">imagefilter</span><span class="p">(</span><span class="nv">$image</span><span class="p">,</span> <span class="no">IMG_FILTER_GAUSSIAN_BLUR</span><span class="p">);</span>
 <span class="p">});</span>
 
-<span class="nx">blur</span><span class="p">(</span><span class="s1">&#39;gaussian20&#39;</span><span class="p">,</span> <span class="k">function</span><span class="p">(</span><span class="nv">$image</span><span class="p">)</span> <span class="p">{</span>
+<span class="nf">blur</span><span class="p">(</span><span class="s1">'gaussian20'</span><span class="p">,</span> <span class="k">function</span><span class="p">(</span><span class="nv">$image</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">for</span> <span class="p">(</span><span class="nv">$i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nv">$i</span> <span class="o">&lt;</span> <span class="mi">20</span><span class="p">;</span> <span class="o">++</span><span class="nv">$i</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nb">imagefilter</span><span class="p">(</span><span class="nv">$image</span><span class="p">,</span> <span class="nx">IMG_FILTER_GAUSSIAN_BLUR</span><span class="p">);</span>
+    <span class="nb">imagefilter</span><span class="p">(</span><span class="nv">$image</span><span class="p">,</span> <span class="no">IMG_FILTER_GAUSSIAN_BLUR</span><span class="p">);</span>
   <span class="p">}</span>
 <span class="p">});</span>
 
 <span class="k">foreach</span> <span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">)</span> <span class="k">as</span> <span class="nv">$i</span><span class="p">)</span> <span class="p">{</span>
-  <span class="nx">blur</span><span class="p">(</span><span class="s1">&#39;smooth&#39;</span> <span class="o">.</span> <span class="nv">$i</span><span class="p">,</span> <span class="k">function</span><span class="p">(</span><span class="nv">$image</span><span class="p">)</span> <span class="k">use</span><span class="p">(</span><span class="nv">$i</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nb">imagefilter</span><span class="p">(</span><span class="nv">$image</span><span class="p">,</span> <span class="nx">IMG_FILTER_SMOOTH</span><span class="p">,</span> <span class="nv">$i</span><span class="p">);</span>
+  <span class="nf">blur</span><span class="p">(</span><span class="s1">'smooth'</span> <span class="mf">.</span> <span class="nv">$i</span><span class="p">,</span> <span class="k">function</span><span class="p">(</span><span class="nv">$image</span><span class="p">)</span> <span class="k">use</span><span class="p">(</span><span class="nv">$i</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nb">imagefilter</span><span class="p">(</span><span class="nv">$image</span><span class="p">,</span> <span class="no">IMG_FILTER_SMOOTH</span><span class="p">,</span> <span class="nv">$i</span><span class="p">);</span>
   <span class="p">});</span>
 <span class="p">}</span>
 
-<span class="nx">blur</span><span class="p">(</span><span class="s1">&#39;custom-horizontal&#39;</span><span class="p">,</span> <span class="k">function</span><span class="p">(</span><span class="nv">$image</span><span class="p">)</span> <span class="p">{</span>
+<span class="nf">blur</span><span class="p">(</span><span class="s1">'custom-horizontal'</span><span class="p">,</span> <span class="k">function</span><span class="p">(</span><span class="nv">$image</span><span class="p">)</span> <span class="p">{</span>
   <span class="nv">$matrix</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
     <span class="k">array</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
     <span class="k">array</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
@@ -117,14 +116,14 @@
   <span class="p">);</span>
 
   <span class="c1">// For normal use the third argument should be the sum of all the values in the matrix.</span>
-  <span class="nb">imageconvolution</span><span class="p">(</span><span class="nv">$image</span><span class="p">,</span> <span class="nv">$matrix</span><span class="p">,</span> <span class="nb">array_sum</span><span class="p">(</span><span class="nb">array_map</span><span class="p">(</span><span class="s1">&#39;array_sum&#39;</span><span class="p">,</span> <span class="nv">$matrix</span><span class="p">)),</span> <span class="mi">0</span><span class="p">);</span>
+  <span class="nb">imageconvolution</span><span class="p">(</span><span class="nv">$image</span><span class="p">,</span> <span class="nv">$matrix</span><span class="p">,</span> <span class="nb">array_sum</span><span class="p">(</span><span class="nb">array_map</span><span class="p">(</span><span class="s1">'array_sum'</span><span class="p">,</span> <span class="nv">$matrix</span><span class="p">)),</span> <span class="mi">0</span><span class="p">);</span>
 <span class="p">});</span>
 
-<span class="nx">blur</span><span class="p">(</span><span class="s1">&#39;gaussian-smooth-4-gaussian&#39;</span><span class="p">,</span> <span class="k">function</span><span class="p">(</span><span class="nv">$image</span><span class="p">)</span> <span class="p">{</span>
-  <span class="nb">imagefilter</span><span class="p">(</span><span class="nv">$image</span><span class="p">,</span> <span class="nx">IMG_FILTER_GAUSSIAN_BLUR</span><span class="p">);</span>
-  <span class="nb">imagefilter</span><span class="p">(</span><span class="nv">$image</span><span class="p">,</span> <span class="nx">IMG_FILTER_SMOOTH</span><span class="p">,</span> <span class="o">-</span><span class="mi">4</span><span class="p">);</span>
-  <span class="nb">imagefilter</span><span class="p">(</span><span class="nv">$image</span><span class="p">,</span> <span class="nx">IMG_FILTER_GAUSSIAN_BLUR</span><span class="p">);</span>
-<span class="p">});</span></code></pre></div>
+<span class="nf">blur</span><span class="p">(</span><span class="s1">'gaussian-smooth-4-gaussian'</span><span class="p">,</span> <span class="k">function</span><span class="p">(</span><span class="nv">$image</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nb">imagefilter</span><span class="p">(</span><span class="nv">$image</span><span class="p">,</span> <span class="no">IMG_FILTER_GAUSSIAN_BLUR</span><span class="p">);</span>
+  <span class="nb">imagefilter</span><span class="p">(</span><span class="nv">$image</span><span class="p">,</span> <span class="no">IMG_FILTER_SMOOTH</span><span class="p">,</span> <span class="o">-</span><span class="mi">4</span><span class="p">);</span>
+  <span class="nb">imagefilter</span><span class="p">(</span><span class="nv">$image</span><span class="p">,</span> <span class="no">IMG_FILTER_GAUSSIAN_BLUR</span><span class="p">);</span>
+<span class="p">});</span></code></pre></figure>
 
 
 

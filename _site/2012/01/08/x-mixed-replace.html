@@ -6,7 +6,6 @@
 <title>The multipart/x-mixed-replace content type - Erik's Code</title>
 
 <meta name=keywords content="php http content-type multipart x-mixed-replace">
-<link rel="author" href="https://plus.google.com/+ErikDubbelboer" />
 
 
 <link href="/css/common.css" media="screen" rel="stylesheet" type="text/css">
@@ -38,40 +37,40 @@
 
 <p>Using this special Content-type you can replace the contents of a page. You can find this example here: <a href="http://dubbelboer.com/multipart.php">dubbelboer.com/multipart.php</a>.</p>
 
-<div class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span>
+<figure class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span>
 
-<span class="c1">// Make sure PHP isn&#39;t buffereing anything.</span>
+<span class="c1">// Make sure PHP isn't buffereing anything.</span>
 <span class="nb">ob_end_clean</span><span class="p">();</span>
 
 <span class="c1">// Sending this header will prevent nginx from buffering the output.</span>
-<span class="nb">header</span><span class="p">(</span><span class="s1">&#39;X-Accel-Buffering: no&#39;</span><span class="p">);</span>
+<span class="nb">header</span><span class="p">(</span><span class="s1">'X-Accel-Buffering: no'</span><span class="p">);</span>
 
-<span class="nb">header</span><span class="p">(</span><span class="s1">&#39;Content-type: multipart/x-mixed-replace; boundary=endofsection&#39;</span><span class="p">);</span>
+<span class="nb">header</span><span class="p">(</span><span class="s1">'Content-type: multipart/x-mixed-replace; boundary=endofsection'</span><span class="p">);</span>
 
 <span class="c1">// Keep in mind that the empty line is important to separate the headers</span>
 <span class="c1">// from the content.</span>
-<span class="k">echo</span> <span class="s1">&#39;Content-type: text/plain</span>
+<span class="k">echo</span> <span class="s1">'Content-type: text/plain
 
-<span class="s1">After 5 seconds this will go away and a cat will appear...</span>
-<span class="s1">--endofsection</span>
-<span class="s1">&#39;</span><span class="p">;</span>
-<span class="nb">flush</span><span class="p">();</span> <span class="c1">// Don&#39;t forget to flush the content to the browser.</span>
+After 5 seconds this will go away and a cat will appear...
+--endofsection
+'</span><span class="p">;</span>
+<span class="nb">flush</span><span class="p">();</span> <span class="c1">// Don't forget to flush the content to the browser.</span>
 
 
 <span class="nb">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>
 
 
-<span class="k">echo</span> <span class="s1">&#39;Content-type: image/jpg</span>
+<span class="k">echo</span> <span class="s1">'Content-type: image/jpg
 
-<span class="s1">&#39;</span><span class="p">;</span>
+'</span><span class="p">;</span>
 
-<span class="nv">$stream</span> <span class="o">=</span> <span class="nb">fopen</span><span class="p">(</span><span class="s1">&#39;cat.jpg&#39;</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">);</span>
+<span class="nv">$stream</span> <span class="o">=</span> <span class="nb">fopen</span><span class="p">(</span><span class="s1">'cat.jpg'</span><span class="p">,</span> <span class="s1">'rb'</span><span class="p">);</span>
 <span class="nb">fpassthru</span><span class="p">(</span><span class="nv">$stream</span><span class="p">);</span>
 <span class="nb">fclose</span><span class="p">(</span><span class="nv">$stream</span><span class="p">);</span>
 
-<span class="k">echo</span> <span class="s1">&#39;</span>
-<span class="s1">--endofsection</span>
-<span class="s1">&#39;</span><span class="p">;</span></code></pre></div>
+<span class="k">echo</span> <span class="s1">'
+--endofsection
+'</span><span class="p">;</span></code></pre></figure>
 
 <p>It’s fun to experiment with but since it isn’t supported by IE it’s not really practical for real usage.</p>
 

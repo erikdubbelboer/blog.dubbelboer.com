@@ -6,7 +6,6 @@
 <title>How many redirects do browsers follow (updated 2015-04-07) - Erik's Code</title>
 
 <meta name=keywords content="302 redirects browsers ie firefox chrome opera safari">
-<link rel="author" href="https://plus.google.com/+ErikDubbelboer" />
 
 
 <link href="/css/common.css" media="screen" rel="stylesheet" type="text/css">
@@ -53,26 +52,26 @@ There are some posts about this but I couldn’t find a source which was up to d
 
 <p>And here’s the little nodejs script I used to test this.</p>
 
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">http</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;http&#39;</span><span class="p">);</span>
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">http</span> <span class="o">=</span> <span class="nf">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">http</span><span class="dl">'</span><span class="p">);</span>
 
-<span class="nx">http</span><span class="p">.</span><span class="nx">createServer</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
-  <span class="kd">var</span> <span class="nx">n</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">request</span><span class="p">.</span><span class="nx">url</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="mi">2</span><span class="p">));</span>
+<span class="nx">http</span><span class="p">.</span><span class="nf">createServer</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">n</span> <span class="o">=</span> <span class="nf">parseInt</span><span class="p">(</span><span class="nx">request</span><span class="p">.</span><span class="nx">url</span><span class="p">.</span><span class="nf">substr</span><span class="p">(</span><span class="mi">2</span><span class="p">));</span>
 
-  <span class="k">if</span> <span class="p">(</span><span class="nb">isNaN</span><span class="p">(</span><span class="nx">n</span><span class="p">))</span> <span class="p">{</span>
+  <span class="k">if </span><span class="p">(</span><span class="nf">isNaN</span><span class="p">(</span><span class="nx">n</span><span class="p">))</span> <span class="p">{</span>
     <span class="nx">n</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
   <span class="p">}</span>
 
-  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">n</span><span class="p">);</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nf">log</span><span class="p">(</span><span class="nx">n</span><span class="p">);</span>
 
-  <span class="nx">response</span><span class="p">.</span><span class="nx">writeHead</span><span class="p">(</span><span class="mi">302</span><span class="p">,</span> <span class="p">{</span>
-    <span class="s1">&#39;Location&#39;</span>      <span class="o">:</span> <span class="s1">&#39;?&#39;</span> <span class="o">+</span> <span class="p">(</span><span class="nx">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
-    <span class="s1">&#39;Cache-Control&#39;</span> <span class="o">:</span> <span class="s1">&#39;no-cache, must-revalidate&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;Expires&#39;</span>       <span class="o">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
-    <span class="s1">&#39;Connection&#39;</span>    <span class="o">:</span> <span class="s1">&#39;close&#39;</span>
+  <span class="nx">response</span><span class="p">.</span><span class="nf">writeHead</span><span class="p">(</span><span class="mi">302</span><span class="p">,</span> <span class="p">{</span>
+    <span class="dl">'</span><span class="s1">Location</span><span class="dl">'</span>      <span class="p">:</span> <span class="dl">'</span><span class="s1">?</span><span class="dl">'</span> <span class="o">+</span> <span class="p">(</span><span class="nx">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="dl">'</span><span class="s1">Cache-Control</span><span class="dl">'</span> <span class="p">:</span> <span class="dl">'</span><span class="s1">no-cache, must-revalidate</span><span class="dl">'</span><span class="p">,</span>
+    <span class="dl">'</span><span class="s1">Expires</span><span class="dl">'</span>       <span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="dl">'</span><span class="s1">Connection</span><span class="dl">'</span>    <span class="p">:</span> <span class="dl">'</span><span class="s1">close</span><span class="dl">'</span>
   <span class="p">});</span>
 
-  <span class="nx">response</span><span class="p">.</span><span class="nx">end</span><span class="p">();</span>
-<span class="p">}).</span><span class="nx">listen</span><span class="p">(</span><span class="mi">12345</span><span class="p">);</span></code></pre></div>
+  <span class="nx">response</span><span class="p">.</span><span class="nf">end</span><span class="p">();</span>
+<span class="p">}).</span><span class="nf">listen</span><span class="p">(</span><span class="mi">12345</span><span class="p">);</span></code></pre></figure>
 
 
 

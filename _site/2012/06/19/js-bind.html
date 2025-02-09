@@ -6,7 +6,6 @@
 <title>Binding functions in javascript - Erik's Code</title>
 
 <meta name=keywords content="javascript">
-<link rel="author" href="https://plus.google.com/+ErikDubbelboer" />
 
 
 <link href="/css/common.css" media="screen" rel="stylesheet" type="text/css">
@@ -36,21 +35,21 @@
 
 <p>A very useful javascript function that not many people seem to know is <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Function/bind">bind()</a></p>
 
-<p><code>bind()</code> allows you to set the <code>this</code> variable a function is executed in. When using a more object oriented approach this can be very useful.</p>
+<p><code class="language-plaintext highlighter-rouge">bind()</code> allows you to set the <code class="language-plaintext highlighter-rouge">this</code> variable a function is executed in. When using a more object oriented approach this can be very useful.</p>
 
-<p>Another thing you can do with <code>bind()</code> is pre assign some of the arguments provided to the function. This can be used to pass additional arguments to your event handlers.</p>
+<p>Another thing you can do with <code class="language-plaintext highlighter-rouge">bind()</code> is pre assign some of the arguments provided to the function. This can be used to pass additional arguments to your event handlers.</p>
 
 <p>See this simple example:</p>
 
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">http</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;http&#39;</span><span class="p">);</span>
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">http</span> <span class="o">=</span> <span class="nf">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">http</span><span class="dl">'</span><span class="p">);</span>
 
-<span class="kd">function</span> <span class="nx">handleRequest</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
-  <span class="nx">res</span><span class="p">.</span><span class="nx">writeHead</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Content-Type&#39;</span><span class="o">:</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">});</span>
-  <span class="nx">res</span><span class="p">.</span><span class="nx">end</span><span class="p">(</span><span class="s1">&#39;data: &#39;</span> <span class="o">+</span> <span class="nx">data</span><span class="p">);</span>
+<span class="kd">function</span> <span class="nf">handleRequest</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">res</span><span class="p">.</span><span class="nf">writeHead</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="p">{</span><span class="dl">'</span><span class="s1">Content-Type</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">text/plain</span><span class="dl">'</span><span class="p">});</span>
+  <span class="nx">res</span><span class="p">.</span><span class="nf">end</span><span class="p">(</span><span class="dl">'</span><span class="s1">data: </span><span class="dl">'</span> <span class="o">+</span> <span class="nx">data</span><span class="p">);</span>
 <span class="p">}</span>
 
-<span class="nx">http</span><span class="p">.</span><span class="nx">createServer</span><span class="p">(</span><span class="nx">handleRequest</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="s1">&#39;1337&#39;</span>     <span class="p">)).</span><span class="nx">listen</span><span class="p">(</span><span class="mi">8081</span><span class="p">);</span>
-<span class="nx">http</span><span class="p">.</span><span class="nx">createServer</span><span class="p">(</span><span class="nx">handleRequest</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="s1">&#39;something&#39;</span><span class="p">)).</span><span class="nx">listen</span><span class="p">(</span><span class="mi">8082</span><span class="p">);</span></code></pre></div>
+<span class="nx">http</span><span class="p">.</span><span class="nf">createServer</span><span class="p">(</span><span class="nx">handleRequest</span><span class="p">.</span><span class="nf">bind</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="dl">'</span><span class="s1">1337</span><span class="dl">'</span>     <span class="p">)).</span><span class="nf">listen</span><span class="p">(</span><span class="mi">8081</span><span class="p">);</span>
+<span class="nx">http</span><span class="p">.</span><span class="nf">createServer</span><span class="p">(</span><span class="nx">handleRequest</span><span class="p">.</span><span class="nf">bind</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="dl">'</span><span class="s1">something</span><span class="dl">'</span><span class="p">)).</span><span class="nf">listen</span><span class="p">(</span><span class="mi">8082</span><span class="p">);</span></code></pre></figure>
 
 
 

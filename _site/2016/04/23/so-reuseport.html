@@ -6,7 +6,6 @@
 <title>SO_REUSEPORT support - Erik's Code</title>
 
 <meta name=keywords content="SO_REUSEPORT linux kernel tcp">
-<link rel="author" href="https://plus.google.com/+ErikDubbelboer" />
 
 
 <link href="/css/common.css" media="screen" rel="stylesheet" type="text/css">
@@ -44,30 +43,30 @@ It is also very useful for graceful upgrades of high availability processes.</p>
 
 <p>To read more about SO_REUSEPORT please see: <a href="https://lwn.net/Articles/542629/" target="_blank">https://lwn.net/Articles/542629/</a></p>
 
-<div class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;stdio.h&gt;</span>
-<span class="cp">#include &lt;errno.h&gt;</span>
-<span class="cp">#include &lt;sys/socket.h&gt;</span>
-<span class="cp">#include &lt;unistd.h&gt;</span>
-
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;errno.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;sys/socket.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
+</span>
 <span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-<span class="cp">#ifdef SO_REUSEPORT</span>
-  <span class="kt">int</span> <span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="p">(</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">SOCK_STREAM</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+<span class="cp">#ifdef SO_REUSEPORT
+</span>  <span class="kt">int</span> <span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="p">(</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">SOCK_STREAM</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
   <span class="kt">int</span> <span class="n">reuse</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
   <span class="k">if</span> <span class="p">(</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">SO_REUSEPORT</span><span class="p">,</span> <span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">reuse</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">reuse</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">errno</span> <span class="o">==</span> <span class="n">EINVAL</span> <span class="o">||</span> <span class="n">errno</span> <span class="o">==</span> <span class="n">ENOPROTOOPT</span><span class="p">)</span> <span class="p">{</span>
-      <span class="n">printf</span><span class="p">(</span><span class="s">&quot;SO_REUSEPORT is not supported by your kernel</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+      <span class="n">printf</span><span class="p">(</span><span class="s">"SO_REUSEPORT is not supported by your kernel</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
     <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-      <span class="n">printf</span><span class="p">(</span><span class="s">&quot;unknown error</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+      <span class="n">printf</span><span class="p">(</span><span class="s">"unknown error</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
     <span class="p">}</span>
   <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;SO_REUSEPORT is supported</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"SO_REUSEPORT is supported</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
   <span class="p">}</span>
   <span class="n">close</span><span class="p">(</span><span class="n">sock</span><span class="p">);</span>
-<span class="cp">#else</span>
-  <span class="n">printf</span><span class="p">(</span><span class="s">&quot;SO_REUSEPORT is not supported by your include files</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
-<span class="cp">#endif</span>
-  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span></code></pre></div>
+<span class="cp">#else
+</span>  <span class="n">printf</span><span class="p">(</span><span class="s">"SO_REUSEPORT is not supported by your include files</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+<span class="cp">#endif
+</span>  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
 
 
 

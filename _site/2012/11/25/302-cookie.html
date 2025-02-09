@@ -6,7 +6,6 @@
 <title>302 redirects and cookies - Erik's Code</title>
 
 <meta name=keywords content="302 header redirect cookie 301 http">
-<link rel="author" href="https://plus.google.com/+ErikDubbelboer" />
 
 
 <link href="/css/common.css" media="screen" rel="stylesheet" type="text/css">
@@ -40,30 +39,30 @@
 
 <p>What I found is that <strong>all major browsers</strong>, IE (6, 7, 8, 9, 10), FF (17), Safari (6.0.2), Opera (12.11) on both windows and Mac, <strong>set cookies on redirects</strong>. This is true for both 301 and 302 redirects. But keep in mind that 301 responses are cached much more aggressively most by browsers.</p>
 
-<h3 id="cookiephp">302cookie.php</h3>
+<h3 id="302cookiephp">302cookie.php</h3>
 
-<div class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span>
+<figure class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span>
 
-<span class="k">if</span> <span class="p">(</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;show&#39;</span><span class="p">]))</span> <span class="p">{</span>
+<span class="k">if</span> <span class="p">(</span><span class="k">isset</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">'show'</span><span class="p">]))</span> <span class="p">{</span>
   <span class="c1">// Delete the cookie (note: it will still be set in $_COOKIE).</span>
-  <span class="nb">setcookie</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">);</span>
+  <span class="nb">setcookie</span><span class="p">(</span><span class="s1">'test'</span><span class="p">);</span>
 
-  <span class="k">echo</span> <span class="s1">&#39;Cookie was: &#39;</span><span class="p">;</span>
+  <span class="k">echo</span> <span class="s1">'Cookie was: '</span><span class="p">;</span>
 
-  <span class="k">if</span> <span class="p">(</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$_COOKIE</span><span class="p">[</span><span class="s1">&#39;test&#39;</span><span class="p">])</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nv">$_COOKIE</span><span class="p">[</span><span class="s1">&#39;test&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;show&#39;</span><span class="p">]))</span> <span class="p">{</span>
-    <span class="k">echo</span> <span class="s1">&#39;SET&#39;</span><span class="p">;</span>
+  <span class="k">if</span> <span class="p">(</span><span class="k">isset</span><span class="p">(</span><span class="nv">$_COOKIE</span><span class="p">[</span><span class="s1">'test'</span><span class="p">])</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nv">$_COOKIE</span><span class="p">[</span><span class="s1">'test'</span><span class="p">]</span> <span class="o">==</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s1">'show'</span><span class="p">]))</span> <span class="p">{</span>
+    <span class="k">echo</span> <span class="s1">'SET'</span><span class="p">;</span>
   <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-    <span class="k">echo</span> <span class="s1">&#39;NOT SET&#39;</span><span class="p">;</span>
+    <span class="k">echo</span> <span class="s1">'NOT SET'</span><span class="p">;</span>
   <span class="p">}</span>
 
   <span class="c1">// Make sure this is a new url. This is needed for 301 responses which are otherwise cached.</span>
-  <span class="k">echo</span> <span class="s1">&#39;&lt;br&gt;&lt;a href=&quot;?a=&#39;</span> <span class="p">,</span> <span class="nb">microtime</span><span class="p">(</span><span class="k">true</span><span class="p">)</span> <span class="p">,</span> <span class="s1">&#39;&quot;&gt;try again&lt;/a&gt;&#39;</span><span class="p">;</span>
+  <span class="k">echo</span> <span class="s1">'&lt;br&gt;&lt;a href="?a='</span> <span class="p">,</span> <span class="nb">microtime</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span> <span class="p">,</span> <span class="s1">'"&gt;try again&lt;/a&gt;'</span><span class="p">;</span>
 <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-  <span class="nv">$id</span> <span class="o">=</span> <span class="nb">microtime</span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
+  <span class="nv">$id</span> <span class="o">=</span> <span class="nb">microtime</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
 
-  <span class="nb">setcookie</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="nv">$id</span><span class="p">,</span> <span class="nb">time</span><span class="p">()</span> <span class="o">+</span> <span class="mi">4</span><span class="p">);</span>
-  <span class="nb">header</span><span class="p">(</span><span class="s1">&#39;Location: ?show=&#39;</span> <span class="o">.</span> <span class="nv">$id</span><span class="p">,</span> <span class="k">true</span><span class="p">,</span> <span class="mi">302</span><span class="p">);</span> <span class="c1">// Could also use 301.</span>
-<span class="p">}</span></code></pre></div>
+  <span class="nb">setcookie</span><span class="p">(</span><span class="s1">'test'</span><span class="p">,</span> <span class="nv">$id</span><span class="p">,</span> <span class="nb">time</span><span class="p">()</span> <span class="o">+</span> <span class="mi">4</span><span class="p">);</span>
+  <span class="nb">header</span><span class="p">(</span><span class="s1">'Location: ?show='</span> <span class="mf">.</span> <span class="nv">$id</span><span class="p">,</span> <span class="kc">true</span><span class="p">,</span> <span class="mi">302</span><span class="p">);</span> <span class="c1">// Could also use 301.</span>
+<span class="p">}</span></code></pre></figure>
 
 
 

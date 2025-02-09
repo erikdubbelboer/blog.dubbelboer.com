@@ -6,7 +6,6 @@
 <title>All you need to know about SYN floods - Erik's Code</title>
 
 <meta name=keywords content="c tcp kernel syn cookies">
-<link rel="author" href="https://plus.google.com/+ErikDubbelboer" />
 
 
 <meta name=description content="A deep look into what causes the 'Possible SYN flooding on port ...' message.">
@@ -38,7 +37,7 @@
 
 <h2 id="syn-cookies">SYN cookies</h2>
 
-<p>So one day I noticed <code>/var/log/syslog</code> on one of our servers was filled with the following message:</p>
+<p>So one day I noticed <code class="language-plaintext highlighter-rouge">/var/log/syslog</code> on one of our servers was filled with the following message:</p>
 
 <pre>
 TCP: Possible SYN flooding on port 80. Sending cookies.
@@ -66,36 +65,36 @@ SYN flood warnings in logs not being really flooded, your server
 is seriously misconfigured.
 </pre>
 
-<p>To fix this problem I started by increasing the <code>net.ipv4.tcp_max_syn_backlog</code> kernel parameter. On our Ubuntu system the default was 2048 so I changed it to 4096 and restarted our application.</p>
+<p>To fix this problem I started by increasing the <code class="language-plaintext highlighter-rouge">net.ipv4.tcp_max_syn_backlog</code> kernel parameter. On our Ubuntu system the default was 2048 so I changed it to 4096 and restarted our application.</p>
 
 <p>Nothing changed and the flooding messages still kept being emitted.
-I tried tuning some more parameters like <code>tcp_synack_retries</code> and <code>netdev_max_backlog</code> but nothing helped.
+I tried tuning some more parameters like <code class="language-plaintext highlighter-rouge">tcp_synack_retries</code> and <code class="language-plaintext highlighter-rouge">netdev_max_backlog</code> but nothing helped.
 Finally a friend pointed out to me that I could be looking at the actual kernel source to find out why the message was still being emitted.</p>
 
 <h2 id="going-back-to-the-source">Going back to the source</h2>
 
 <p>The obvious place to start this search was the function that actually emitted the message.</p>
 
-<p>I found the function in <a href="https://github.com/torvalds/linux/blob/v2.6.38/net/ipv4/tcp_ipv4.c#L799"><code>net/ipv4/tcp_ipv4.c</code></a>:</p>
+<p>I found the function in <a href="https://github.com/torvalds/linux/blob/v2.6.38/net/ipv4/tcp_ipv4.c#L799"><code class="language-plaintext highlighter-rouge">net/ipv4/tcp_ipv4.c</code></a>:</p>
 
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="k">static</span> <span class="kt">void</span> <span class="nf">syn_flood_warning</span><span class="p">(</span><span class="k">const</span> <span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">)</span>
+<figure class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="k">static</span> <span class="kt">void</span> <span class="nf">syn_flood_warning</span><span class="p">(</span><span class="k">const</span> <span class="k">struct</span> <span class="nc">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">)</span>
 <span class="p">{</span>
   <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">msg</span><span class="p">;</span>
 
-<span class="cp">#ifdef CONFIG_SYN_COOKIES</span>
-  <span class="k">if</span> <span class="p">(</span><span class="n">sysctl_tcp_syncookies</span><span class="p">)</span>
-    <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;Sending cookies&quot;</span><span class="p">;</span>
+<span class="cp">#ifdef CONFIG_SYN_COOKIES
+</span>  <span class="k">if</span> <span class="p">(</span><span class="n">sysctl_tcp_syncookies</span><span class="p">)</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="s">"Sending cookies"</span><span class="p">;</span>
   <span class="k">else</span>
-<span class="cp">#endif</span>
-    <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;Dropping request&quot;</span><span class="p">;</span>
+<span class="cp">#endif
+</span>    <span class="n">msg</span> <span class="o">=</span> <span class="s">"Dropping request"</span><span class="p">;</span>
 
-  <span class="n">pr_info</span><span class="p">(</span><span class="s">&quot;TCP: Possible SYN flooding on port %d. %s.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+  <span class="n">pr_info</span><span class="p">(</span><span class="s">"TCP: Possible SYN flooding on port %d. %s.</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span>
         <span class="n">ntohs</span><span class="p">(</span><span class="n">tcp_hdr</span><span class="p">(</span><span class="n">skb</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">dest</span><span class="p">),</span> <span class="n">msg</span><span class="p">);</span>
-<span class="p">}</span></code></pre></div>
+<span class="p">}</span></code></pre></figure>
 
-<p>This function was only being called from one point, another function in <a href="https://github.com/torvalds/linux/blob/v2.6.38/net/ipv4/tcp_ipv4.c#L1213"><code>net/ipv4/tcp_ipv4.c</code></a>:</p>
+<p>This function was only being called from one point, another function in <a href="https://github.com/torvalds/linux/blob/v2.6.38/net/ipv4/tcp_ipv4.c#L1213"><code class="language-plaintext highlighter-rouge">net/ipv4/tcp_ipv4.c</code></a>:</p>
 
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="kt">int</span> <span class="nf">tcp_v4_conn_request</span><span class="p">(</span><span class="k">struct</span> <span class="n">sock</span> <span class="o">*</span><span class="n">sk</span><span class="p">,</span> <span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">)</span>
+<figure class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="kt">int</span> <span class="nf">tcp_v4_conn_request</span><span class="p">(</span><span class="k">struct</span> <span class="nc">sock</span> <span class="o">*</span><span class="n">sk</span><span class="p">,</span> <span class="k">struct</span> <span class="nc">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">)</span>
 <span class="p">{</span>
   <span class="c1">// ...</span>
 
@@ -104,48 +103,48 @@ Finally a friend pointed out to me that I could be looking at the actual kernel 
       <span class="n">syn_flood_warning</span><span class="p">(</span><span class="n">skb</span><span class="p">);</span>
 
   <span class="c1">// ...</span>
-<span class="p">}</span></code></pre></div>
+<span class="p">}</span></code></pre></figure>
 
 <p>This function is called every time a new connection is set up.
-The <code>net_ratelimit()</code> is only there to prevent the syslog from being flooded with messages.
-So I followed the <code>inet_csk_reqsk_queue_is_full()</code> function to see what caused it to return true.</p>
+The <code class="language-plaintext highlighter-rouge">net_ratelimit()</code> is only there to prevent the syslog from being flooded with messages.
+So I followed the <code class="language-plaintext highlighter-rouge">inet_csk_reqsk_queue_is_full()</code> function to see what caused it to return true.</p>
 
-<p>The function is defined in <a href="https://github.com/torvalds/linux/blob/v2.6.38/include/net/inet_connection_sock.h#L289"><code>include/net/inet_connection_sock.h</code></a>:</p>
+<p>The function is defined in <a href="https://github.com/torvalds/linux/blob/v2.6.38/include/net/inet_connection_sock.h#L289"><code class="language-plaintext highlighter-rouge">include/net/inet_connection_sock.h</code></a>:</p>
 
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="k">static</span> <span class="kr">inline</span> <span class="kt">int</span> <span class="nf">inet_csk_reqsk_queue_is_full</span><span class="p">(</span><span class="k">const</span> <span class="k">struct</span> <span class="n">sock</span> <span class="o">*</span><span class="n">sk</span><span class="p">)</span>
+<figure class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="k">static</span> <span class="kr">inline</span> <span class="kt">int</span> <span class="nf">inet_csk_reqsk_queue_is_full</span><span class="p">(</span><span class="k">const</span> <span class="k">struct</span> <span class="nc">sock</span> <span class="o">*</span><span class="n">sk</span><span class="p">)</span>
 <span class="p">{</span>
   <span class="k">return</span> <span class="n">reqsk_queue_is_full</span><span class="p">(</span><span class="o">&amp;</span><span class="n">inet_csk</span><span class="p">(</span><span class="n">sk</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">icsk_accept_queue</span><span class="p">);</span>
-<span class="p">}</span></code></pre></div>
+<span class="p">}</span></code></pre></figure>
 
-<p>It simply calles another function in <a href="https://github.com/torvalds/linux/blob/v2.6.38/include/net/request_sock.h#L236"><code>include/net/request_sock.h</code></a>:</p>
+<p>It simply calles another function in <a href="https://github.com/torvalds/linux/blob/v2.6.38/include/net/request_sock.h#L236"><code class="language-plaintext highlighter-rouge">include/net/request_sock.h</code></a>:</p>
 
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="k">static</span> <span class="kr">inline</span> <span class="kt">int</span> <span class="nf">reqsk_queue_is_full</span><span class="p">(</span><span class="k">const</span> <span class="k">struct</span> <span class="n">request_sock_queue</span> <span class="o">*</span><span class="n">queue</span><span class="p">)</span>
+<figure class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="k">static</span> <span class="kr">inline</span> <span class="kt">int</span> <span class="nf">reqsk_queue_is_full</span><span class="p">(</span><span class="k">const</span> <span class="k">struct</span> <span class="nc">request_sock_queue</span> <span class="o">*</span><span class="n">queue</span><span class="p">)</span>
 <span class="p">{</span>
   <span class="k">return</span> <span class="n">queue</span><span class="o">-&gt;</span><span class="n">listen_opt</span><span class="o">-&gt;</span><span class="n">qlen</span> <span class="o">&gt;&gt;</span> <span class="n">queue</span><span class="o">-&gt;</span><span class="n">listen_opt</span><span class="o">-&gt;</span><span class="n">max_qlen_log</span><span class="p">;</span>
-<span class="p">}</span></code></pre></div>
+<span class="p">}</span></code></pre></figure>
 
 <p>So this is the actual check to see if the backlog is full.
 At a first glance the function looks a bit strange.
 The queue length is bit shifted by a max length variable.
-<code>qlen</code> is an integer so shifting it to the left will decrease it’s value.
-<code>max_qlen_log</code> is a base 2 logarithm of the max queue length (which can only be a power of 2).
-So when <code>qlen</code> is smaller than the maximum queue length all 1 bits will be shifted out and the return value will be 0. When <code>qlen</code> is larger it will still have bits set to 1 and the function will return a positive number.</p>
+<code class="language-plaintext highlighter-rouge">qlen</code> is an integer so shifting it to the left will decrease it’s value.
+<code class="language-plaintext highlighter-rouge">max_qlen_log</code> is a base 2 logarithm of the max queue length (which can only be a power of 2).
+So when <code class="language-plaintext highlighter-rouge">qlen</code> is smaller than the maximum queue length all 1 bits will be shifted out and the return value will be 0. When <code class="language-plaintext highlighter-rouge">qlen</code> is larger it will still have bits set to 1 and the function will return a positive number.</p>
 
-<p>So where is <code>max_qlen_log</code> set?</p>
+<p>So where is <code class="language-plaintext highlighter-rouge">max_qlen_log</code> set?</p>
 
 <h2 id="size-of-the-backlog">Size of the backlog</h2>
 
-<p>Searching for an assignment of <code>max_qlen_log</code> I found only one place.</p>
+<p>Searching for an assignment of <code class="language-plaintext highlighter-rouge">max_qlen_log</code> I found only one place.</p>
 
-<p><a href="https://github.com/torvalds/linux/blob/v2.6.38/net/core/request_sock.c#L38"><code>net/core/request_sock.c</code></a>:</p>
+<p><a href="https://github.com/torvalds/linux/blob/v2.6.38/net/core/request_sock.c#L38"><code class="language-plaintext highlighter-rouge">net/core/request_sock.c</code></a>:</p>
 
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="kt">int</span> <span class="nf">reqsk_queue_alloc</span><span class="p">(</span><span class="k">struct</span> <span class="n">request_sock_queue</span> <span class="o">*</span><span class="n">queue</span><span class="p">,</span>
+<figure class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="kt">int</span> <span class="nf">reqsk_queue_alloc</span><span class="p">(</span><span class="k">struct</span> <span class="nc">request_sock_queue</span> <span class="o">*</span><span class="n">queue</span><span class="p">,</span>
                       <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">nr_table_entries</span><span class="p">)</span>
 <span class="p">{</span>
   <span class="c1">// ...</span>
 
-  <span class="n">nr_table_entries</span> <span class="o">=</span> <span class="kt">min_t</span><span class="p">(</span><span class="n">u32</span><span class="p">,</span> <span class="n">nr_table_entries</span><span class="p">,</span> <span class="n">sysctl_max_syn_backlog</span><span class="p">);</span>
-  <span class="n">nr_table_entries</span> <span class="o">=</span> <span class="kt">max_t</span><span class="p">(</span><span class="n">u32</span><span class="p">,</span> <span class="n">nr_table_entries</span><span class="p">,</span> <span class="mi">8</span><span class="p">);</span>
+  <span class="n">nr_table_entries</span> <span class="o">=</span> <span class="n">min_t</span><span class="p">(</span><span class="n">u32</span><span class="p">,</span> <span class="n">nr_table_entries</span><span class="p">,</span> <span class="n">sysctl_max_syn_backlog</span><span class="p">);</span>
+  <span class="n">nr_table_entries</span> <span class="o">=</span> <span class="n">max_t</span><span class="p">(</span><span class="n">u32</span><span class="p">,</span> <span class="n">nr_table_entries</span><span class="p">,</span> <span class="mi">8</span><span class="p">);</span>
   <span class="n">nr_table_entries</span> <span class="o">=</span> <span class="n">roundup_pow_of_two</span><span class="p">(</span><span class="n">nr_table_entries</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
 
   <span class="c1">// ...</span>
@@ -155,48 +154,48 @@ So when <code>qlen</code> is smaller than the maximum queue length all 1 bits wi
        <span class="n">lopt</span><span class="o">-&gt;</span><span class="n">max_qlen_log</span><span class="o">++</span><span class="p">);</span>
 
   <span class="c1">// ...</span>
-<span class="p">}</span></code></pre></div>
+<span class="p">}</span></code></pre></figure>
 
-<p>The <code>reqsk_queue_alloc()</code> function is called each time a new socket starts listening for connections.
-As you can see from the code <code>max_qlen_log</code> will depend on the <code>nr_table_entries</code> argument.</p>
+<p>The <code class="language-plaintext highlighter-rouge">reqsk_queue_alloc()</code> function is called each time a new socket starts listening for connections.
+As you can see from the code <code class="language-plaintext highlighter-rouge">max_qlen_log</code> will depend on the <code class="language-plaintext highlighter-rouge">nr_table_entries</code> argument.</p>
 
-<p>First <code>nr_table_entries</code> is bound to the 8,<code>sysctl_max_syn_backlog</code> range.
-This is the first sign of a kernel parameter, namely <code>net.ipv4.tcp_max_syn_backlog</code>, that I tried to tune.
+<p>First <code class="language-plaintext highlighter-rouge">nr_table_entries</code> is bound to the 8,<code class="language-plaintext highlighter-rouge">sysctl_max_syn_backlog</code> range.
+This is the first sign of a kernel parameter, namely <code class="language-plaintext highlighter-rouge">net.ipv4.tcp_max_syn_backlog</code>, that I tried to tune.
 Apparently it has some effect on the backlog size but it only specifies a maximum, not the actual value like many resources would have you believe.</p>
 
-<p><code>nr_table_entries</code> then it is incremented by 1 (which still seems strange to me, see below) and rounded to the nearest power of 2.
-The for loop then sets <code>max_qlen_log</code> to the base 2 logarithm of <code>nr_table_entries</code>.</p>
+<p><code class="language-plaintext highlighter-rouge">nr_table_entries</code> then it is incremented by 1 (which still seems strange to me, see below) and rounded to the nearest power of 2.
+The for loop then sets <code class="language-plaintext highlighter-rouge">max_qlen_log</code> to the base 2 logarithm of <code class="language-plaintext highlighter-rouge">nr_table_entries</code>.</p>
 
-<p>So from this function I found the maximum size of the backlog is bound by <code>net.ipv4.tcp_max_syn_backlog</code> but the actual size is determined by the <code>nr_table_entries</code> argument.
-Time to find out where <code>reqsk_queue_alloc()</code> is called.</p>
+<p>So from this function I found the maximum size of the backlog is bound by <code class="language-plaintext highlighter-rouge">net.ipv4.tcp_max_syn_backlog</code> but the actual size is determined by the <code class="language-plaintext highlighter-rouge">nr_table_entries</code> argument.
+Time to find out where <code class="language-plaintext highlighter-rouge">reqsk_queue_alloc()</code> is called.</p>
 
-<p>The only place it is called from is in <a href="https://github.com/torvalds/linux/blob/v2.6.38/net/ipv4/inet_connection_sock.c#L621"><code>net/ipv4/inet_connection_sock.c</code></a>:</p>
+<p>The only place it is called from is in <a href="https://github.com/torvalds/linux/blob/v2.6.38/net/ipv4/inet_connection_sock.c#L621"><code class="language-plaintext highlighter-rouge">net/ipv4/inet_connection_sock.c</code></a>:</p>
 
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="kt">int</span> <span class="nf">inet_csk_listen_start</span><span class="p">(</span><span class="k">struct</span> <span class="n">sock</span> <span class="o">*</span><span class="n">sk</span><span class="p">,</span> <span class="k">const</span> <span class="kt">int</span> <span class="n">nr_table_entries</span><span class="p">)</span>
+<figure class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="kt">int</span> <span class="nf">inet_csk_listen_start</span><span class="p">(</span><span class="k">struct</span> <span class="nc">sock</span> <span class="o">*</span><span class="n">sk</span><span class="p">,</span> <span class="k">const</span> <span class="kt">int</span> <span class="n">nr_table_entries</span><span class="p">)</span>
 <span class="p">{</span>
   <span class="c1">// ...</span>
 
   <span class="n">reqsk_queue_alloc</span><span class="p">(</span><span class="o">&amp;</span><span class="n">icsk</span><span class="o">-&gt;</span><span class="n">icsk_accept_queue</span><span class="p">,</span> <span class="n">nr_table_entries</span><span class="p">);</span>
 
   <span class="c1">// ...</span>
-<span class="p">}</span></code></pre></div>
+<span class="p">}</span></code></pre></figure>
 
-<p>The <code>inet_csk_listen_start()</code> function does nothing with the <code>nr_table_entries</code> argument and is itself called in <a href="https://github.com/torvalds/linux/blob/v2.6.38/net/ipv4/af_inet.c#L192"><code>net/ipv4/af_inet.c</code></a>:</p>
+<p>The <code class="language-plaintext highlighter-rouge">inet_csk_listen_start()</code> function does nothing with the <code class="language-plaintext highlighter-rouge">nr_table_entries</code> argument and is itself called in <a href="https://github.com/torvalds/linux/blob/v2.6.38/net/ipv4/af_inet.c#L192"><code class="language-plaintext highlighter-rouge">net/ipv4/af_inet.c</code></a>:</p>
 
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="kt">int</span> <span class="nf">inet_listen</span><span class="p">(</span><span class="k">struct</span> <span class="n">socket</span> <span class="o">*</span><span class="n">sock</span><span class="p">,</span> <span class="kt">int</span> <span class="n">backlog</span><span class="p">)</span>
+<figure class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="kt">int</span> <span class="nf">inet_listen</span><span class="p">(</span><span class="k">struct</span> <span class="nc">socket</span> <span class="o">*</span><span class="n">sock</span><span class="p">,</span> <span class="kt">int</span> <span class="n">backlog</span><span class="p">)</span>
 <span class="p">{</span>
   <span class="c1">// ...</span>
 
   <span class="n">err</span> <span class="o">=</span> <span class="n">inet_csk_listen_start</span><span class="p">(</span><span class="n">sk</span><span class="p">,</span> <span class="n">backlog</span><span class="p">);</span>
 
   <span class="c1">// ...</span>
-<span class="p">}</span></code></pre></div>
+<span class="p">}</span></code></pre></figure>
 
-<p>This function doesn’t change the backlog size either. The function is not called directly in the source but is assign to a function pointer inside the <code>inet_stream_ops</code> struct in <a href="https://github.com/torvalds/linux/blob/v2.6.38/net/ipv4/af_inet.c#L907"><code>net/ipv4/af_inet.c</code></a>.</p>
+<p>This function doesn’t change the backlog size either. The function is not called directly in the source but is assign to a function pointer inside the <code class="language-plaintext highlighter-rouge">inet_stream_ops</code> struct in <a href="https://github.com/torvalds/linux/blob/v2.6.38/net/ipv4/af_inet.c#L907"><code class="language-plaintext highlighter-rouge">net/ipv4/af_inet.c</code></a>.</p>
 
-<p>The pointer in the struct is called in <a href="https://github.com/torvalds/linux/blob/v2.6.38/net/socket.c#L1440"><code>net/socket.c</code></a>:</p>
+<p>The pointer in the struct is called in <a href="https://github.com/torvalds/linux/blob/v2.6.38/net/socket.c#L1440"><code class="language-plaintext highlighter-rouge">net/socket.c</code></a>:</p>
 
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="n">SYSCALL_DEFINE2</span><span class="p">(</span><span class="n">listen</span><span class="p">,</span> <span class="kt">int</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="kt">int</span><span class="p">,</span> <span class="n">backlog</span><span class="p">)</span>
+<figure class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="n">SYSCALL_DEFINE2</span><span class="p">(</span><span class="n">listen</span><span class="p">,</span> <span class="kt">int</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="kt">int</span><span class="p">,</span> <span class="n">backlog</span><span class="p">)</span>
 <span class="p">{</span>
   <span class="c1">// ...</span>
 
@@ -214,31 +213,31 @@ Time to find out where <code>reqsk_queue_alloc()</code> is called.</p>
     <span class="n">sock</span><span class="o">-&gt;</span><span class="n">ops</span><span class="o">-&gt;</span><span class="n">listen</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">backlog</span><span class="p">);</span>
 
   <span class="c1">// ...</span>
-<span class="p">}</span></code></pre></div>
+<span class="p">}</span></code></pre></figure>
 
-<p>Now this is the actual <a href="http://linux.die.net/man/2/listen"><code>listen()</code> syscall</a> which has a backlog argument.
-This function also seems to put an upper limit on the backlog size. <code>sock_net(sock-&gt;sk)-&gt;core.sysctl_somaxconn</code> is another kernel parameter controlled by <code>net.core.somaxconn</code>. It defaults to the <a href="https://github.com/torvalds/linux/blob/v2.6.38/include/linux/socket.h#L240">SOMAXCONN</a> macro which equals 128 on our system.</p>
+<p>Now this is the actual <a href="http://linux.die.net/man/2/listen"><code class="language-plaintext highlighter-rouge">listen()</code> syscall</a> which has a backlog argument.
+This function also seems to put an upper limit on the backlog size. <code class="language-plaintext highlighter-rouge">sock_net(sock-&gt;sk)-&gt;core.sysctl_somaxconn</code> is another kernel parameter controlled by <code class="language-plaintext highlighter-rouge">net.core.somaxconn</code>. It defaults to the <a href="https://github.com/torvalds/linux/blob/v2.6.38/include/linux/socket.h#L240">SOMAXCONN</a> macro which equals 128 on our system.</p>
 
 <p>128 is quite low so I increased it to 4096 as well. I restarted our application but to my supprise the flooding message still kept being emitted.</p>
 
-<p>Lucky the application we are using is open source. So I opened up the source and found the application calling <code>listen()</code> with a backlog of again <code>SOMAXCONN</code>. After changing this to 1000000 (why not set it very high and let the kernel parameters limit it?), recompiling and restarting the application the message finally stopped.</p>
+<p>Lucky the application we are using is open source. So I opened up the source and found the application calling <code class="language-plaintext highlighter-rouge">listen()</code> with a backlog of again <code class="language-plaintext highlighter-rouge">SOMAXCONN</code>. After changing this to 1000000 (why not set it very high and let the kernel parameters limit it?), recompiling and restarting the application the message finally stopped.</p>
 
 <p><em>Note: kernel 3.3 does exactly the same as 2.6 (on which this post is based)</em></p>
 
 <h2 id="a-reasonably-backlog-size">A reasonably backlog size</h2>
 
-<p>In the <a href="https://github.com/torvalds/linux/blob/v2.6.38/net/core/request_sock.c#L38"><code>reqsk_queue_alloc()</code></a> function you can see an array of <code>request_sock *</code> pointers the size of <code>nr_table_entries</code> is allocated.
+<p>In the <a href="https://github.com/torvalds/linux/blob/v2.6.38/net/core/request_sock.c#L38"><code class="language-plaintext highlighter-rouge">reqsk_queue_alloc()</code></a> function you can see an array of <code class="language-plaintext highlighter-rouge">request_sock *</code> pointers the size of <code class="language-plaintext highlighter-rouge">nr_table_entries</code> is allocated.
 On a 64 bit system the size of the <a href="https://github.com/torvalds/linux/blob/v2.6.38/include/net/request_sock.h#L54">request_sock</a> is 56 bytes. Plus the 8 bytes for the pointer makes it around 64 bytes per entry. So 4096 entries would only take up 0.25 MB. 4096 should be enough for most servers but you can see that increasing it even more wouldn’t be a problem.</p>
 
 <p>Keep in mind that setting the backlog to 4096 will actually make it 8192 entries big.
-This because of the strange <code>+ 1</code> in <code>nr_table_entries = roundup_pow_of_two(nr_table_entries + 1);</code>.
+This because of the strange <code class="language-plaintext highlighter-rouge">+ 1</code> in <code class="language-plaintext highlighter-rouge">nr_table_entries = roundup_pow_of_two(nr_table_entries + 1);</code>.
 This is the reason that software like <a href="https://github.com/git-mirror/nginx/blob/master/src/os/unix/ngx_linux_config.h#L97">nginx</a>, <a href="https://github.com/antirez/redis/blob/unstable/src/anet.c#L265">redis</a> and <a href="http://httpd.apache.org/docs/2.0/mod/mpm_common.html#listenbacklog">apache</a> all set the backlog to 511.</p>
 
 <h2 id="conclusion">Conclusion</h2>
 
 <p>The main thing I learned from this all is that using open source software allows you to track and fix problems that closed source software would not.</p>
 
-<p>Also fixing the SYN flooding problem requires you to modify <code>net.ipv4.tcp_max_syn_backlog</code>, <code>net.core.somaxconn</code> and the backlog size passed to the <code>listen()</code> syscall.</p>
+<p>Also fixing the SYN flooding problem requires you to modify <code class="language-plaintext highlighter-rouge">net.ipv4.tcp_max_syn_backlog</code>, <code class="language-plaintext highlighter-rouge">net.core.somaxconn</code> and the backlog size passed to the <code class="language-plaintext highlighter-rouge">listen()</code> syscall.</p>
 
 
 

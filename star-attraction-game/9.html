@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Star Attraction Game</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #222; }
+        canvas { background-color: #111; display: block; }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let width = window.innerWidth;
+        let height = window.innerHeight;
+
+        canvas.width = width;
+        canvas.height = height;
+
+        // Function to generate random coordinates within safe bounds (central area)
+        function getRandomCentralPosition(radius, existingObjects, centerX, centerY, maxDistanceFromCenter) {
+            let x, y;
+            let valid = false;
+            const minDistance = radius * 3;
+
+            while (!valid) {
+                // Generate polar coordinates
+                const angle = Math.random() * 2 * Math.PI;
+                const distance = Math.random() * maxDistanceFromCenter;
+
+                // Convert to Cartesian coordinates
+                x = centerX + distance * Math.cos(angle);
+                y = centerY + distance * Math.sin(angle);
+
+                valid = true;
+
+                // Check for boundary violations
+                if (x < minDistance || x > width - minDistance || y < minDistance || y > height - minDistance) {
+                    valid = false;
+                    continue;
+                }
+
+                // Check for collisions
+                for (const obj of existingObjects) {
+                    const dx = x - obj.x;
+                    const dy = y - obj.y;
+                    const distanceSq = dx * dx + dy * dy;
+                    if (distanceSq < (radius + obj.radius) * (radius + obj.radius) * 1.2) {
+                        valid = false;
+                        break;
+                    }
+                }
+            }
+            return { x, y };
+        }
+
+        // Function to generate coordinates near the edges
+        function getRandomEdgePosition(radius, existingObjects) {
+            let x, y;
+            let valid = false;
+            const edgeBuffer = radius * 2;
+
+            while (!valid) {
+                // Randomly choose a side
+                const side = Math.floor(Math.random() * 4);
+
+                switch (side) {
+                    case 0: // Top
+                        x = edgeBuffer + Math.random() * (width - 2 * edgeBuffer);
+                        y = edgeBuffer;
+                        break;
+                    case 1: // Right
+                        x = width - edgeBuffer;
+                        y = edgeBuffer + Math.random() * (height - 2 * edgeBuffer);
+                        break;
+                    case 2: // Bottom
+                        x = edgeBuffer + Math.random() * (width - 2 * edgeBuffer);
+                        y = height - edgeBuffer;
+                        break;
+                    case 3: // Left
+                        x = edgeBuffer;
+                        y = edgeBuffer + Math.random() * (height - 2 * edgeBuffer);
+                        break;
+                }
+
+                valid = true;
+
+                // Check for collisions
+                for (const obj of existingObjects) {
+                    const dx = x - obj.x;
+                    const dy = y - obj.y;
+                    const distanceSq = dx * dx + dy * dy;
+                    if (distanceSq < (radius + obj.radius) * (radius + obj.radius) * 1.2) {
+                        valid = false;
+                        break;
+                    }
+                }
+            }
+
+            return { x, y };
+        }
+
+
+        // Game Objects
+        let startPoint = {};
+        let projectile = {};
+        let attractors = [];
+        let goal = {};
+
+        //Initialize mouse location
+        let mouseX = width / 2;
+        let mouseY = height / 2;
+
+        function initializeGameObjects() {
+            const numberOfAttractors = 3;
+            attractors = [];
+
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const maxDistanceFromCenter = Math.min(width, height) / 4;
+
+            for (let i = 0; i < numberOfAttractors; i++) {
+                const radius = 20 + Math.random() * 30;
+                const mass = radius;
+
+                const existingObjects = attractors;
+                const { x, y } = getRandomCentralPosition(radius, existingObjects, centerX, centerY, maxDistanceFromCenter);
+                attractors.push({ x, y, radius, mass });
+            }
+
+            const allObjects = [...attractors];
+
+            startPointRadius = 8;
+            startPoint = { ...getRandomEdgePosition(startPointRadius, allObjects), radius: startPointRadius };
+
+            projectile = {
+                x: startPoint.x,
+                y: startPoint.y,
+                radius: 5,
+                velocityX: 0,
+                velocityY: 0,
+                active: false
+            };
+
+            goalRadius = 10;
+
+            goal = { ...getRandomEdgePosition(goalRadius, allObjects), radius: goalRadius };
+        }
+
+        // Game Constants
+        const gravityConstant = 0.15;
+        const launchMultiplier = 0.01;
+        const velocityDampening = 0.99;
+
+        // Event Listeners
+        canvas.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        canvas.addEventListener('mousedown', () => {
+            if (!projectile.active) {
+                const dx = mouseX - startPoint.x;
+                const dy = mouseY - startPoint.y;
+
+                projectile.velocityX = dx * launchMultiplier;
+                projectile.velocityY = dy * launchMultiplier;
+                projectile.active = true;
+                projectile.x = startPoint.x;
+                projectile.y = startPoint.y;
+            }
+        });
+
+        // Game Loop
+        function update() {
+            if (projectile.active) {
+                // Apply Gravity
+                for (const attractor of attractors) {
+                    const dx = attractor.x - projectile.x;
+                    const dy = attractor.y - projectile.y;
+                    const distanceSq = dx * dx + dy * dy;
+                    const force = gravityConstant * attractor.mass / distanceSq;
+
+                    projectile.velocityX += force * dx;
+                    projectile.velocityY += force * dy;
+                }
+
+                // Move Projectile
+                projectile.x += projectile.velocityX;
+                projectile.y += projectile.velocityY;
+
+                // Dampen Velocity
+                projectile.velocityX *= velocityDampening;
+                projectile.velocityY *= velocityDampening;
+
+                // Check for Attractor Hit
+                for (const attractor of attractors) {
+                    const dx = attractor.x - projectile.x;
+                    const dy = attractor.y - projectile.y;
+                    const distanceSq = dx * dx + dy * dy;
+
+                    if (distanceSq < (projectile.radius + attractor.radius) * (projectile.radius + attractor.radius)) {
+                        projectile.active = false;
+                        projectile.x = startPoint.x;
+                        projectile.y = startPoint.y;
+                        projectile.velocityX = 0;
+                        projectile.velocityY = 0;
+                        console.log("Hit attractor, reset projectile");
+                        break;
+                    }
+                }
+
+                // Check for Target Hit
+                const dxTarget = goal.x - projectile.x;
+                const dyTarget = goal.y - projectile.y;
+                const distanceSqTarget = dxTarget * dxTarget + dyTarget * dyTarget;
+                if (distanceSqTarget < (projectile.radius + goal.radius) * (projectile.radius + goal.radius)) {
+                    projectile.active = false;
+                    console.log("Target Hit!");
+                    initializeGameObjects(); // Generate new level on hit
+                    return;
+                }
+
+                // Check if out of bounds
+                if (projectile.x < 0 || projectile.x > width || projectile.y < 0 || projectile.y > height) {
+                    projectile.active = false;
+                    projectile.x = startPoint.x;
+                    projectile.y = startPoint.y;
+                    projectile.velocityX = 0;
+                    projectile.velocityY = 0;
+                }
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, width, height);
+
+            // Draw Aiming Line
+            if (!projectile.active) {
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(startPoint.x, startPoint.y);
+                ctx.lineTo(mouseX, mouseY);
+                ctx.stroke();
+            }
+
+            // Draw Start Point
+            ctx.fillStyle = 'white';
+            ctx.beginPath();
+            ctx.arc(startPoint.x, startPoint.y, 8, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Draw Attractors
+            ctx.fillStyle = 'lightblue';
+            for (const attractor of attractors) {
+                ctx.beginPath();
+                ctx.arc(attractor.x, attractor.y, attractor.radius, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Draw Goals
+            ctx.fillStyle = 'lightgreen';
+            ctx.beginPath();
+            ctx.arc(goal.x, goal.y, goal.radius, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Draw Projectile
+            ctx.fillStyle = 'yellow';
+            ctx.beginPath();
+            ctx.arc(projectile.x, projectile.y, projectile.radius, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function gameLoop() {
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Initialize and Start the game
+        initializeGameObjects();
+        gameLoop();
+
+        // Resize Listener
+        window.addEventListener('resize', () => {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+        });
+
+    </script>
+</body>
+</html>
