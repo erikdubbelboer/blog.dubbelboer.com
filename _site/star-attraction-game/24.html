@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Star Attraction Game</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #222; touch-action: none; } /* touch-action: none; important for mobile */
+        canvas { margin: 0; overflow: hidden; background-color: #111; display: block; touch-action: none;} /* touch-action: none; important for mobile */
+        #score {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            font-family: sans-serif;
+            font-size: 20px;
+            pointer-events: none; /* Prevent text from blocking touch */
+        }
+
+        #shots {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: white;
+            font-family: sans-serif;
+            font-size: 20px;
+            pointer-events: none; /* Prevent text from blocking touch */
+        }
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <div id="score">Score: 0</div>
+    <div id="shots">Shots Left: 10</div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreDisplay = document.getElementById('score');
+        const shotsDisplay = document.getElementById('shots');
+
+        let width = window.innerWidth;
+        let height = window.innerHeight;
+
+        canvas.width = width;
+        canvas.height = height;
+
+        // Function to generate random coordinates within safe bounds (central area)
+        function getRandomCentralPosition(radius, existingObjects, centerX, centerY, minDistanceFromCenter, maxDistanceFromCenter) {
+            let x, y;
+            let valid = false;
+            const minObjDistance = radius * 3;
+
+            while (!valid) {
+                const angle = Math.random() * 2 * Math.PI;
+                const distance = minDistanceFromCenter + Math.random() * (maxDistanceFromCenter - minDistanceFromCenter);
+
+                x = centerX + distance * Math.cos(angle);
+                y = centerY + distance * Math.sin(angle);
+
+                valid = true;
+
+                if (x < minObjDistance || x > width - minObjDistance || y < minObjDistance || y > height - minObjDistance) {
+                    valid = false;
+                    continue;
+                }
+
+                for (const obj of existingObjects) {
+                    const dx = x - obj.x;
+                    const dy = y - obj.y;
+                    const distanceSq = dx * dx + dy * dy;
+                    if (distanceSq < (radius + obj.radius) * (radius + obj.radius) * 1.2) {
+                        valid = false;
+                        break;
+                    }
+                }
+            }
+
+             if (x === 0) {
+                x = 1;
+             }
+            if (y === 0) {
+                 y = 1;
+            }
+
+            return { x, y };
+        }
+
+        // Function to generate coordinates near the edges (Only for startPoint)
+        function getRandomEdgePosition(radius, existingObjects) {
+            let x, y;
+            let valid = false;
+            const edgeBuffer = radius * 2;
+
+            while (!valid) {
+                const side = Math.floor(Math.random() * 4);
+
+                switch (side) {
+                    case 0:
+                        x = edgeBuffer + Math.random() * (width - 2 * edgeBuffer);
+                        y = edgeBuffer;
+                        break;
+                    case 1:
+                        x = width - edgeBuffer;
+                        y = edgeBuffer + Math.random() * (height - 2 * edgeBuffer);
+                        break;
+                    case 2:
+                        x = edgeBuffer + Math.random() * (width - 2 * edgeBuffer);
+                        y = height - edgeBuffer;
+                        break;
+                    case 3:
+                        x = edgeBuffer;
+                        y = edgeBuffer + Math.random() * (height - 2 * edgeBuffer);
+                        break;
+                }
+
+                valid = true;
+
+                for (const obj of existingObjects) {
+                    const dx = x - obj.x;
+                    const dy = y - obj.y;
+                    const distanceSq = dx * dx + dy * dy;
+                    if (distanceSq < (radius + obj.radius) * (radius + obj.radius) * 1.2) {
+                        valid = false;
+                        break;
+                    }
+                }
+            }
+            if (x === 0) {
+                x = 1;
+             }
+            if (y === 0) {
+                 y = 1;
+            }
+            return { x, y };
+        }
+
+        // Game Objects
+        let startPoint = {};
+        let projectiles = []; // Array of projectiles
+        let attractors = [];
+        let goal = {};
+
+        //Initialize mouse/touch location
+        let mouseX = width / 2;
+        let mouseY = height / 2;
+        let isMouseDown = false; // Track mouse/touch press
+
+        // Game State
+        let score = 0;
+        const maxShots = 10;
+        let shotsTaken = 0;
+
+        //For animating the goal
+        let targetScale = 1;
+        let targetScaleDirection = 0.005;
+
+        function initializeGameObjects() {
+            const numberOfAttractors = 3;
+            attractors = [];
+
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const minDistanceFromCenter = Math.min(width, height) / 4;
+            const maxDistanceFromCenter = Math.min(width, height) / 3;
+
+            for (let i = 0; i < numberOfAttractors; i++) {
+                const radius = 20 + Math.random() * 30;
+                const mass = radius;
+
+                const existingObjects = attractors;
+                const { x, y } = getRandomCentralPosition(radius, existingObjects, centerX, centerY, minDistanceFromCenter, maxDistanceFromCenter);
+                attractors.push({ x, y, radius, mass });
+            }
+
+            const allObjects = [...attractors];
+
+            startPointRadius = 8;
+            startPoint = { ...getRandomEdgePosition(startPointRadius, allObjects), radius: startPointRadius };
+
+            projectiles = []; // Clear existing projectiles.
+
+            goalRadius = 10;
+
+            // Now target also spawns in central area
+            const { x: goalX, y: goalY } = getRandomCentralPosition(goalRadius, allObjects, centerX, centerY, minDistanceFromCenter, maxDistanceFromCenter);
+            goal = { x: goalX, y: goalY, radius: goalRadius, trail: [] }; // Also initialize trail here
+             shotsTaken = 0; // Reset shots taken
+             updateShotsDisplay()
+
+        }
+
+        // Game Constants
+        const gravityConstant = 0.10;  // Slightly less gravity
+        const launchMultiplier = 0.001; // Lower Launch Multiplier
+        const velocityDampening = 0.99;
+        const launchPowerExponent = 1.7; // Increase launch power for the longer the line is.
+        const maxVelocity = 6.66; //Maximum velocity 2/3 of old one
+
+        // Event Listeners
+        function handleMove(e) {
+          e.preventDefault(); // Prevent scrolling
+          if (e.touches) {
+              mouseX = e.touches[0].clientX;
+              mouseY = e.touches[0].clientY;
+          } else {
+              mouseX = e.clientX;
+              mouseY = e.clientY;
+          }
+        }
+
+
+        // Mouse and Touch event listeners
+        canvas.addEventListener('mousemove', handleMove);
+        canvas.addEventListener('touchstart', (e) => { isMouseDown = true; handleMove(e); }); // Track touch start
+        canvas.addEventListener('touchmove', handleMove);
+        canvas.addEventListener('mousedown', () => { isMouseDown = true;}); // Track mouse start
+        canvas.addEventListener('mouseup', handleRelease); //Release is the same on touch and click.
+        canvas.addEventListener('touchend', handleRelease);
+        canvas.addEventListener('mouseleave', () => { isMouseDown = false; }); // Stop drawing when mouse leaves canvas
+        canvas.addEventListener('touchcancel', () => { isMouseDown = false; }); // Handle touch cancel (e.g., finger leaves screen)
+
+        function handleRelease() {
+            isMouseDown = false; //Set to false no matter what.
+            if (shotsTaken < maxShots) {
+                const dx = mouseX - startPoint.x;
+                const dy = mouseY - startPoint.y;
+
+                //Calculate launchPower with the increased exponent
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                let launchPower = Math.pow(distance, launchPowerExponent) * launchMultiplier; // Increase force based on distance
+
+                 if (distance === 0) {
+                    launchPower = 0.1;
+                }
+                let velocityX = dx / (distance || 1) * launchPower
+                let velocityY = dy / (distance || 1) * launchPower
+                 if (velocityX === 0) {
+                   velocityX = 0.1;
+                }
+                if (velocityY === 0) {
+                  velocityY = 0.1;
+                }
+
+                //Limit velocity
+                const speed = Math.sqrt(velocityX * velocityX + velocityY * velocityY);
+                 if (speed > maxVelocity) {
+                     velocityX = velocityX / speed * maxVelocity;
+                     velocityY = velocityY / speed * maxVelocity;
+                 }
+
+
+                const newProjectile = {  // Create a new projectile each click
+                    x: startPoint.x,
+                    y: startPoint.y,
+                    radius: 5,
+                    velocityX: velocityX,
+                    velocityY: velocityY,
+                    active: true,
+                    trail: [] // Init the trail, empty array.
+                };
+
+
+                projectiles.push(newProjectile);
+                 shotsTaken++;
+                 updateShotsDisplay();
+             }
+
+        }
+
+        // Game Loop
+        function update() {
+
+            // Animate goal
+            targetScale += targetScaleDirection;
+            if (targetScale > 1.1 || targetScale < 0.9) {
+                targetScaleDirection *= -1; // Reverse the direction of scaling when bounds are hit
+            }
+
+            // Loop through all projectiles
+            for (let i = 0; i < projectiles.length; i++) {
+                let projectile = projectiles[i];
+
+                if (projectile.active) {
+                    // Apply Gravity
+                    for (const attractor of attractors) {
+                        const dx = attractor.x - projectile.x;
+                        const dy = attractor.y - projectile.y;
+                        const distanceSq = dx * dx + dy * dy;
+                        const force = gravityConstant * attractor.mass / distanceSq;
+
+                        projectile.velocityX += force * dx;
+                        projectile.velocityY += force * dy;
+                    }
+
+                    // Move Projectile
+                    projectile.x += projectile.velocityX;
+                    projectile.y += projectile.velocityY;
+
+                    // Dampen Velocity
+                    projectile.velocityX *= velocityDampening;
+                    projectile.velocityY *= velocityDampening;
+
+                     //Update trail
+                    projectile.trail.push({ x: projectile.x, y: projectile.y });
+                     if (projectile.trail.length > 50) {
+                         projectile.trail.shift(); //Remove item if it is longer than 50
+                     }
+
+                    // Check for Attractor Hit
+                    for (const attractor of attractors) {
+                        const dx = attractor.x - projectile.x;
+                        const dy = attractor.y - projectile.y;
+                        const distanceSq = dx * dx + dy * dy;
+
+                        if (distanceSq < (projectile.radius + attractor.radius) * (projectile.radius + attractor.radius)) {
+                            projectile.active = false;
+                            projectile.velocityX = 0;
+                            projectile.velocityY = 0;
+                            //Remove current projectile.
+                            projectiles.splice(i, 1);
+                            i--;
+                            console.log("Hit attractor, reset projectile");
+                            break;
+                        }
+                    }
+
+                    // Check for Target Hit
+                    const dxTarget = goal.x - projectile.x;
+                    const dyTarget = goal.y - projectile.y;
+                    const distanceSqTarget = dxTarget * dxTarget + dyTarget * dyTarget;
+                    if (distanceSqTarget < (projectile.radius + goal.radius) * (projectile.radius + goal.radius)) {
+                        projectile.active = false;
+                        projectiles.splice(i, 1);
+                        i--;
+                        score++;
+                        scoreDisplay.textContent = `Score: ${score}`;
+                        console.log("Target Hit!");
+                        initializeGameObjects(); // Generate new level on hit
+                        return;
+                    }
+
+                    // Check if out of bounds
+                    if (projectile.x < 0 || projectile.x > width || projectile.y < 0 || projectile.y > height) {
+                        projectile.active = false;
+                        projectiles.splice(i, 1);
+                        i--;
+                        break; //Break out of the small sun loop.
+                    }
+                }
+            }
+
+             //If you missed all the shots
+            if (shotsTaken >= maxShots && projectiles.length == 0) {
+                 initializeGameObjects();
+             }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, width, height);
+
+            // Draw Aiming Line only if mouse/touch is down
+            if (isMouseDown) {
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(startPoint.x, startPoint.y);
+                ctx.lineTo(mouseX, mouseY);
+                ctx.stroke();
+            }
+
+
+            // Draw Start Point
+            ctx.fillStyle = 'white';
+            ctx.beginPath();
+            ctx.arc(startPoint.x, startPoint.y, 8, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Draw Attractors
+            for (const attractor of attractors) {
+                // Draw the "glow"
+                ctx.shadowColor = 'lightblue';  // Glow color
+                ctx.shadowBlur = 20;           // Glow blur
+                ctx.fillStyle = 'lightblue';      // Planet fill color
+
+                ctx.beginPath();
+                ctx.arc(attractor.x, attractor.y, attractor.radius, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.shadowColor = null; // Reset shadow properties
+                ctx.shadowBlur = null;
+
+            }
+
+            // Draw Goals
+            ctx.fillStyle = 'lightgreen';
+            ctx.save(); // Save current transformation matrix
+            ctx.translate(goal.x, goal.y); // Move to goal's position
+            ctx.scale(targetScale, targetScale); // Apply scaling
+            ctx.beginPath();
+            ctx.arc(0, 0, goal.radius, 0, Math.PI * 2); //Draw from the center
+            ctx.fill();
+            ctx.restore(); // Restore original transformation matrix
+
+            // Draw Projectiles
+            ctx.fillStyle = 'yellow';
+            for (const projectile of projectiles) {
+                //Draw trail
+                for (let j = 0; j < projectile.trail.length; j++) {
+                  const trailPoint = projectile.trail[j];
+                  ctx.fillStyle = `rgba(255, 255, 0, ${j / projectile.trail.length})`; //Fade color over trail
+                  ctx.beginPath();
+                  ctx.arc(trailPoint.x, trailPoint.y, 2, 0, Math.PI * 2);
+                  ctx.fill();
+                }
+
+                ctx.beginPath();
+                ctx.arc(projectile.x, projectile.y, projectile.radius, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function updateShotsDisplay() {
+             shotsDisplay.textContent = `Shots Left: ${maxShots - shotsTaken}`;
+        }
+
+        function gameLoop() {
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Initialize and Start the game
+        initializeGameObjects();
+        updateShotsDisplay()
+        gameLoop();
+
+        // Resize Listener
+        window.addEventListener('resize', () => {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+        });
+
+    </script>
+</body>
+</html>

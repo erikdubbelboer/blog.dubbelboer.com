@@ -33,12 +33,14 @@
 <em>Date: 09 Feb 2025</em><br>
 <em>Author: Erik Dubbelboer</em>
 
-<p>This is an experiment to recreate the basics of <a href="https://store.steampowered.com/app/1519770/nbody/" target="_blank">Sokpop’s n-body</a> game in HTML5 canvas using the new Gemini 2.0 Flash. The game is a simple physics-based game where you shoot a comet towards a target while other stars or suns attract the comet you shoot. The game is simple but has a nice feel to it.</p>
+<p>This is an experiment to recreate the basics of <a href="https://store.steampowered.com/app/1519770/nbody/" target="_blank">Sokpop’s n-body</a> game, in HTML5 canvas using, the new Gemini 2.0 Flash. The game is a simple physics-based game where you shoot a comet towards a target while other stars or suns attract the comet you shoot. The game is simple but has a nice feel to it.</p>
+
+<p>I tried to do this purely by talking to the LLM. I didn’t look at the code until the end. I wanted to see if someone without any programming knowledge could build a game this way.</p>
 
 <p>Why Gemini 2.0 Flash? It’s a state of the art model, with a big context window, and it’s cheap. If I were to build a game building service, I would use this model.</p>
 
-<p>This is the game after 23 iterations:</p>
-<iframe id="iframe-23" src="/star-attraction-game/23.html" width="920" height="518"></iframe>
+<p>This is the game after 24 iterations:</p>
+<iframe src="/star-attraction-game/24.html" width="920" height="518"></iframe>
 
 <h2 id="iteration-1">Iteration 1</h2>
 
@@ -302,10 +304,23 @@ The respawning over and over seems to happen when the amount of shots I have lef
 <iframe id="iframe-23" src="/star-attraction-game/23.html" width="920" height="518"></iframe>
 <p style="margin-top: 1px"><button onclick="document.getElementById('iframe-23').src = '/star-attraction-game/23.html'" class="button">Reload</button></p>
 
+<h2 id="iteration-24">Iteration 24</h2>
+
+<p>Prompt:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Add mobile support including mobile Safari. Pressing the screen should show the line, releasing my finger should shoot a ball.
+</code></pre></div></div>
+<p>Output:</p>
+
+<iframe id="iframe-24" src="/star-attraction-game/24.html" width="920" height="518"></iframe>
+<p style="margin-top: 1px"><button onclick="document.getElementById('iframe-24').src = '/star-attraction-game/24.html'" class="button">Reload</button></p>
+
 <h2 id="final-thoughts">Final Thoughts</h2>
 
-<p>At this point I thought the game was good enough and stopped iterating. It was a fun experiment to see how far I could get with just a few prompts and not doing anything with code myself. The game is simple but has a nice feel to it. I hope you enjoyed this little journey through the development of this small game with Gemini 2.0 Flash.</p>
+<p>At this point, I thought the game was good enough and stopped iterating. I had a look at the code, which, besides some weird indentation, was actually pretty good and easy to read.</p>
 
+<p>One thing I would do different next time is trying to expose variables like attactor strength and ball speed as adjustable controls, so I can tune them without having to ask the LLM in multiple iterations.</p>
+
+<p>It was a fun experiment to see how far I could get with just a few prompts, and not doing anything with code myself. The game is simple, but has a nice feel to it. I hope you enjoyed this little journey through the development of this small game with Gemini 2.0 Flash.</p>
 
 
 <div id=disqus_thread></div>

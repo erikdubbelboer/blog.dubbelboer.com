@@ -4,12 +4,14 @@ layout: post
 keywords: html5 canvas game llm gemini gemini-2.0-flash
 ---
 
-This is an experiment to recreate the basics of <a href="https://store.steampowered.com/app/1519770/nbody/" target="_blank">Sokpop's n-body</a> game in HTML5 canvas using the new Gemini 2.0 Flash. The game is a simple physics-based game where you shoot a comet towards a target while other stars or suns attract the comet you shoot. The game is simple but has a nice feel to it.
+This is an experiment to recreate the basics of <a href="https://store.steampowered.com/app/1519770/nbody/" target="_blank">Sokpop's n-body</a> game, in HTML5 canvas using, the new Gemini 2.0 Flash. The game is a simple physics-based game where you shoot a comet towards a target while other stars or suns attract the comet you shoot. The game is simple but has a nice feel to it.
+
+I tried to do this purely by talking to the LLM. I didn't look at the code until the end. I wanted to see if someone without any programming knowledge could build a game this way.
 
 Why Gemini 2.0 Flash? It's a state of the art model, with a big context window, and it's cheap. If I were to build a game building service, I would use this model.
 
-This is the game after 23 iterations:
-<iframe id="iframe-23" src="/star-attraction-game/23.html" width="920" height="518"></iframe>
+This is the game after 24 iterations:
+<iframe src="/star-attraction-game/24.html" width="920" height="518"></iframe>
 
 ## Iteration 1
 
@@ -298,7 +300,21 @@ Output:
 <iframe id="iframe-23" src="/star-attraction-game/23.html" width="920" height="518"></iframe>
 <p style="margin-top: 1px"><button onclick="document.getElementById('iframe-23').src = '/star-attraction-game/23.html'" class="button">Reload</button></p>
 
+## Iteration 24
+
+Prompt:
+```
+Add mobile support including mobile Safari. Pressing the screen should show the line, releasing my finger should shoot a ball.
+```
+Output:
+
+<iframe id="iframe-24" src="/star-attraction-game/24.html" width="920" height="518"></iframe>
+<p style="margin-top: 1px"><button onclick="document.getElementById('iframe-24').src = '/star-attraction-game/24.html'" class="button">Reload</button></p>
+
 ## Final Thoughts
 
-At this point I thought the game was good enough and stopped iterating. It was a fun experiment to see how far I could get with just a few prompts and not doing anything with code myself. The game is simple but has a nice feel to it. I hope you enjoyed this little journey through the development of this small game with Gemini 2.0 Flash.
+At this point, I thought the game was good enough and stopped iterating. I had a look at the code, which, besides some weird indentation, was actually pretty good and easy to read.
 
+One thing I would do different next time is trying to expose variables like attactor strength and ball speed as adjustable controls, so I can tune them without having to ask the LLM in multiple iterations.
+
+It was a fun experiment to see how far I could get with just a few prompts, and not doing anything with code myself. The game is simple, but has a nice feel to it. I hope you enjoyed this little journey through the development of this small game with Gemini 2.0 Flash.

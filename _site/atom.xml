@@ -3,7 +3,7 @@
   <title>Erik's Code</title>
   <link href="https://blog.dubbelboer.com/atom.xml" rel="self" />
   <link href="https://blog.dubbelboer.com/" />
-  <updated>2025-02-09T04:08:27+00:00</updated>
+  <updated>2025-02-10T01:40:56+00:00</updated>
   <id>https://blog.dubbelboer.com/</id>
   <author>
     <name>Erik Dubbelboer</name>
@@ -16,12 +16,14 @@
     <link href="https://blog.dubbelboer.com/2025/02/09/attraction-game-gemini.html"/>
     <updated>2025-02-09T00:00:00+00:00</updated>
     <id>https://blog.dubbelboer.com/2025/02/09/attraction-game-gemini</id>
-    <content type="html">&lt;p&gt;This is an experiment to recreate the basics of &lt;a href=&quot;https://store.steampowered.com/app/1519770/nbody/&quot; target=&quot;_blank&quot;&gt;Sokpop’s n-body&lt;/a&gt; game in HTML5 canvas using the new Gemini 2.0 Flash. The game is a simple physics-based game where you shoot a comet towards a target while other stars or suns attract the comet you shoot. The game is simple but has a nice feel to it.&lt;/p&gt;
+    <content type="html">&lt;p&gt;This is an experiment to recreate the basics of &lt;a href=&quot;https://store.steampowered.com/app/1519770/nbody/&quot; target=&quot;_blank&quot;&gt;Sokpop’s n-body&lt;/a&gt; game, in HTML5 canvas using, the new Gemini 2.0 Flash. The game is a simple physics-based game where you shoot a comet towards a target while other stars or suns attract the comet you shoot. The game is simple but has a nice feel to it.&lt;/p&gt;
+
+&lt;p&gt;I tried to do this purely by talking to the LLM. I didn’t look at the code until the end. I wanted to see if someone without any programming knowledge could build a game this way.&lt;/p&gt;
 
 &lt;p&gt;Why Gemini 2.0 Flash? It’s a state of the art model, with a big context window, and it’s cheap. If I were to build a game building service, I would use this model.&lt;/p&gt;
 
-&lt;p&gt;This is the game after 23 iterations:&lt;/p&gt;
-&lt;iframe id=&quot;iframe-23&quot; src=&quot;/star-attraction-game/23.html&quot; width=&quot;920&quot; height=&quot;518&quot;&gt;&lt;/iframe&gt;
+&lt;p&gt;This is the game after 24 iterations:&lt;/p&gt;
+&lt;iframe src=&quot;/star-attraction-game/24.html&quot; width=&quot;920&quot; height=&quot;518&quot;&gt;&lt;/iframe&gt;
 
 &lt;h2 id=&quot;iteration-1&quot;&gt;Iteration 1&lt;/h2&gt;
 
@@ -285,10 +287,23 @@ The respawning over and over seems to happen when the amount of shots I have lef
 &lt;iframe id=&quot;iframe-23&quot; src=&quot;/star-attraction-game/23.html&quot; width=&quot;920&quot; height=&quot;518&quot;&gt;&lt;/iframe&gt;
 &lt;p style=&quot;margin-top: 1px&quot;&gt;&lt;button onclick=&quot;document.getElementById(&apos;iframe-23&apos;).src = &apos;/star-attraction-game/23.html&apos;&quot; class=&quot;button&quot;&gt;Reload&lt;/button&gt;&lt;/p&gt;
 
+&lt;h2 id=&quot;iteration-24&quot;&gt;Iteration 24&lt;/h2&gt;
+
+&lt;p&gt;Prompt:&lt;/p&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Add mobile support including mobile Safari. Pressing the screen should show the line, releasing my finger should shoot a ball.
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;Output:&lt;/p&gt;
+
+&lt;iframe id=&quot;iframe-24&quot; src=&quot;/star-attraction-game/24.html&quot; width=&quot;920&quot; height=&quot;518&quot;&gt;&lt;/iframe&gt;
+&lt;p style=&quot;margin-top: 1px&quot;&gt;&lt;button onclick=&quot;document.getElementById(&apos;iframe-24&apos;).src = &apos;/star-attraction-game/24.html&apos;&quot; class=&quot;button&quot;&gt;Reload&lt;/button&gt;&lt;/p&gt;
+
 &lt;h2 id=&quot;final-thoughts&quot;&gt;Final Thoughts&lt;/h2&gt;
 
-&lt;p&gt;At this point I thought the game was good enough and stopped iterating. It was a fun experiment to see how far I could get with just a few prompts and not doing anything with code myself. The game is simple but has a nice feel to it. I hope you enjoyed this little journey through the development of this small game with Gemini 2.0 Flash.&lt;/p&gt;
+&lt;p&gt;At this point, I thought the game was good enough and stopped iterating. I had a look at the code, which, besides some weird indentation, was actually pretty good and easy to read.&lt;/p&gt;
 
+&lt;p&gt;One thing I would do different next time is trying to expose variables like attactor strength and ball speed as adjustable controls, so I can tune them without having to ask the LLM in multiple iterations.&lt;/p&gt;
+
+&lt;p&gt;It was a fun experiment to see how far I could get with just a few prompts, and not doing anything with code myself. The game is simple, but has a nice feel to it. I hope you enjoyed this little journey through the development of this small game with Gemini 2.0 Flash.&lt;/p&gt;
 </content>
   </entry>
   
